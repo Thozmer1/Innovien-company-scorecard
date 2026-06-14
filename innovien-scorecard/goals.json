@@ -7,9 +7,9 @@
   "quarterEnd": "2026-06-28",
   "lookbackWeeks": 13,
   "company": {
-    "weeklySpreadGoal": 350000,
-    "qtrStartsGoal": 60,
-    "avgStartGoal": 1300,
+    "weeklySpreadGoal": 364000,
+    "qtrStartsGoal": 101,
+    "avgStartGoal": 1000,
     "pendingAvgGoal": 1300,
     "weeklyLockupCountGoal": 10,
     "weeklyLockupSpreadGoal": 12000,

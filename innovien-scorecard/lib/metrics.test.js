@@ -91,5 +91,13 @@ assert.strictEqual(r.raffle.drawingsEarned, 0, "1 qualifying < batch 2 => no dra
 assert.strictEqual(r.raffle.startsToNext, 1, "need 1 more to hit batch of 2");
 assert.ok(r.raffle.leaderboard.find(x=>x.name==="Mollie Ferguson" && x.asAM===1), "Mollie earns an AM ticket");
 assert.ok(r.raffle.leaderboard.find(x=>x.name==="Brennan" && x.asRecruiter===1), "Brennan earns a recruiter ticket");
+// --- Canonical weekly-data override ---
+const r2 = buildScorecard(data, goals, "2026-06-14", { company:{ weekly_spread: 324317 }, scorecard:{ net_new_starts: 42, pending_total_spread: 88000, active_consultants: 279, lockup_spread: null } });
+assert.strictEqual(r2.scorecard.weeklySpread.actual, 324317, "weekly_spread pinned from canonical file");
+assert.strictEqual(r2.scorecard.netNewStarts.actual, 42, "net_new_starts pinned");
+assert.strictEqual(r2.scorecard.pendingStarts.totalSpread, 88000, "pending total pinned");
+assert.strictEqual(r2.scorecard.activeConsultants, 279, "active consultants pinned");
+assert.strictEqual(r2.scorecard.weeklyLockUp.spread, r.scorecard.weeklyLockUp.spread, "null field falls back to live Notion value");
+assert.strictEqual(r2.goalTracking.weeklySubAvg.actual, r.goalTracking.weeklySubAvg.actual, "other tabs unaffected by scorecard override");
 console.log("ALL TESTS PASSED ✅  (weeklySpread, starts, fill ratio, meetings, subs, forecast, bench)");
 console.log(JSON.stringify({ weeklySpread: r.scorecard.weeklySpread, fillRatio: r.goalTracking.fillRatio, forecastWeeks: r.scorecard.forecast.length }, null, 2));

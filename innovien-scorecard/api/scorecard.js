@@ -16,6 +16,10 @@ export default async function handler(req, res) {
       return res.status(200).json({ ...cache.payload, cached: true });
     }
     const goals = JSON.parse(await readFile(new URL("../goals.json", import.meta.url)));
+    // Canonical weekly data file (single source of truth shared across dashboards).
+    // Drives the Stretch Scorecard tab; any null field falls back to live Notion.
+    let weekly = null;
+    try { weekly = JSON.parse(await readFile(new URL("../weekly_data.json", import.meta.url))); } catch {}
     const notion = getClient();
 
     const [ac, rd, am, or_, pe, inx, esf, psf, goalRows] = await Promise.all([
@@ -94,13 +98,14 @@ export default async function handler(req, res) {
     };
 
     const asOf = new Date().toISOString().slice(0, 10);
-    const result = buildScorecard(data, goals, asOf);
+    const result = buildScorecard(data, goals, asOf, weekly);
     result.rowCounts = {
       activeContracts: ac.length, recruiterDaily: rd.length, amWeekly: am.length,
       openReqs: or_.length, placementEvents: pe.length, innovienNext: inx.length,
       esf: esf.length, psf: psf.length, goals: goalRows.length,
     };
     result.goalsApplied = goalsApplied;
+    result.weeklyDataWeekEnding = weekly?.meta?.week_ending || null;
     result.generatedAt = new Date().toISOString();
     cache = { at: Date.now(), payload: result };
     return res.status(200).json({ ...result, cached: false });

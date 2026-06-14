@@ -32,7 +32,7 @@ function bucketSum(rows, keyFn, valFn) {
   return m;
 }
 
-export function buildScorecard(data, goals, asOfStr) {
+export function buildScorecard(data, goals, asOfStr, weekly) {
   const asOf = d(asOfStr) || new Date();
   const qStart = d(goals.quarterStart);
   const qEnd = d(goals.quarterEnd);
@@ -165,30 +165,59 @@ export function buildScorecard(data, goals, asOfStr) {
 
   const kpi = (actual, goal, fmt) => ({ actual, goal, pct: goal ? round((actual / goal) * 100) : null, onPace: goal ? actual >= goal : null, fmt });
 
+  // --- Canonical weekly-data overrides (Scorecard tab). null/undefined = keep live Notion value. ---
+  const _wco = (weekly && weekly.company) || {};
+  const _wsc = (weekly && weekly.scorecard) || {};
+  const ov = (v, cur) => (v === null || v === undefined) ? cur : v;
+  const oWeeklySpread = ov(_wco.weekly_spread, weeklySpread);
+  const oNetNew       = ov(_wsc.net_new_starts, qtrStarts);
+  const oAvgStart     = ov(_wsc.avg_start_spread, avgStartSpread);
+  const oPendCount    = ov(_wsc.pending_count, pendingCount);
+  const oPendAvg      = ov(_wsc.pending_avg_spread, pendingAvgSpread);
+  const oPendTot      = ov(_wsc.pending_total_spread, pendingSpread);
+  const oLockCount    = ov(_wsc.lockup_count, lockupCount);
+  const oLockSpread   = ov(_wsc.lockup_spread, lockupSpread);
+  const oDumpCount    = ov(_wsc.dumpin_count, dumpInCount);
+  const oDumpSpread   = ov(_wsc.dumpin_spread, dumpInSpread);
+  const oActive       = ov(_wsc.active_consultants, activeCount);
+  const oRedeployed   = ov(_wsc.redeployed, redeployed);
+  const oBench        = ov(_wsc.available_bench, availableBench);
+  let oForecast = forecast;
+  if (_wsc.forecast && _wsc.forecast.length) {
+    // File-provided weekly In/Out (e.g. from the Power BI Stretch scorecard cols W/X).
+    // Compute running cumulative + past/forecast flag so the chart renders identically.
+    let _cum = 0;
+    oForecast = _wsc.forecast.map(w => {
+      const pin = w.plannedIn || 0, pout = w.plannedOut || 0, net = pin - pout; _cum += net;
+      const wd = d(w.weekStart);
+      return { weekStart: w.weekStart, plannedIn: Math.round(pin), plannedOut: Math.round(pout),
+               net: Math.round(net), cumNet: Math.round(_cum), isPast: wd ? wd < asOf : false };
+    });
+  }
+  const pct = (a, go) => go ? round((a / go) * 100) : null;
+  const onp = (a, go) => go ? a >= go : null;
+
   return {
     meta: {
       asOf: asOfStr, quarterLabel: goals.quarterLabel,
       baselineWeekStart: goals.baselineWeekStart, quarterStart: goals.quarterStart, quarterEnd: goals.quarterEnd, lookbackWeeks: lookback,
     },
     scorecard: {
-      weeklySpread: kpi(weeklySpread, g.weeklySpreadGoal, "usd"),
-      netNewStarts: kpi(qtrStarts, g.qtrStartsGoal, "int"),
-      avgStartSpread: kpi(avgStartSpread, g.avgStartGoal, "usd"),
-      pendingStarts: { count: pendingCount, avgSpread: pendingAvgSpread, totalSpread: pendingSpread,
-        avgGoal: g.pendingAvgGoal, avgPct: g.pendingAvgGoal ? round((pendingAvgSpread / g.pendingAvgGoal) * 100) : null,
-        avgOnPace: g.pendingAvgGoal ? pendingAvgSpread >= g.pendingAvgGoal : null },
-      weeklyLockUp: { count: lockupCount, spread: lockupSpread,
+      weeklySpread: kpi(oWeeklySpread, g.weeklySpreadGoal, "usd"),
+      netNewStarts: kpi(oNetNew, g.qtrStartsGoal, "int"),
+      avgStartSpread: kpi(oAvgStart, g.avgStartGoal, "usd"),
+      pendingStarts: { count: oPendCount, avgSpread: oPendAvg, totalSpread: oPendTot,
+        avgGoal: g.pendingAvgGoal, avgPct: pct(oPendAvg, g.pendingAvgGoal), avgOnPace: onp(oPendAvg, g.pendingAvgGoal) },
+      weeklyLockUp: { count: oLockCount, spread: oLockSpread,
         countGoal: g.weeklyLockupCountGoal, spreadGoal: g.weeklyLockupSpreadGoal,
-        countPct: g.weeklyLockupCountGoal ? round((lockupCount / g.weeklyLockupCountGoal) * 100) : null,
-        countOnPace: g.weeklyLockupCountGoal ? lockupCount >= g.weeklyLockupCountGoal : null,
-        spreadPct: g.weeklyLockupSpreadGoal ? round((lockupSpread / g.weeklyLockupSpreadGoal) * 100) : null,
-        spreadOnPace: g.weeklyLockupSpreadGoal ? lockupSpread >= g.weeklyLockupSpreadGoal : null,
+        countPct: pct(oLockCount, g.weeklyLockupCountGoal), countOnPace: onp(oLockCount, g.weeklyLockupCountGoal),
+        spreadPct: pct(oLockSpread, g.weeklyLockupSpreadGoal), spreadOnPace: onp(oLockSpread, g.weeklyLockupSpreadGoal),
         weekStart: wkStart.toISOString().slice(0,10) },
-      dumpIn: { count: dumpInCount, spread: dumpInSpread },
-      activeConsultants: activeCount,
-      redeployed: kpi(redeployed, g.redeployedGoal, "int"),
-      availableBench,
-      forecast,
+      dumpIn: { count: oDumpCount, spread: oDumpSpread },
+      activeConsultants: oActive,
+      redeployed: kpi(oRedeployed, g.redeployedGoal, "int"),
+      availableBench: oBench,
+      forecast: oForecast,
     },
     goalTracking: {
       weeklySubAvg: kpi(weeklySubAvg, g.weeklySubGoal, "dec"),
