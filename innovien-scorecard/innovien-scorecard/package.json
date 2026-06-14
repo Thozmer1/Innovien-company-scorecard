@@ -1,0 +1,14 @@
+{
+  "name": "innovien-weekly-stretch-scorecard",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Live Innovien daily company scoreboard (Weekly Stretch) fed from Comtrak-via-Notion. Recreates the Power BI 'Weekly Stretch Wkbk' as a Vercel-deployable web dashboard.",
+  "type": "module",
+  "scripts": {
+    "dev": "vercel dev",
+    "selftest": "node lib/metrics.test.js"
+  },
+  "dependencies": {
+    "@notionhq/client": "^2.2.15"
+  }
+}
