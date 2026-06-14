@@ -301,9 +301,9 @@
   "scorecard": {
     "net_new_starts": 82,
     "avg_start_spread": 1155,
-    "pending_count": 0,
-    "pending_avg_spread": 1176,
-    "pending_total_spread": 0,
+    "pending_count": null,
+    "pending_avg_spread": null,
+    "pending_total_spread": null,
     "lockup_count": null,
     "lockup_spread": null,
     "dumpin_count": 102,

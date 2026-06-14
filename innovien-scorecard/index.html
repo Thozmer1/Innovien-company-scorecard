@@ -135,8 +135,8 @@ function render(d){
   const p=sc.pendingStarts, lu=sc.weeklyLockUp, di=sc.dumpIn;
   const wk='<span class="goal" style="font-size:12px;font-weight:400"> /wk</span>';
   const pendingSub =
-    `<div class="goal">${p.count.toLocaleString()} pending start${p.count===1?'':'s'} · future-dated</div>`+
-    `<div class="goal">Avg ${fmtUsd(p.avgSpread)}/wk${p.avgGoal?` · goal ${fmtUsd(p.avgGoal)}`:''}</div>`+
+    `<div class="goal">${p.count.toLocaleString()} pending start${p.count===1?'':'s'} · start date today → quarter end (live ESF/PSF)</div>`+
+    `<div class="goal">Total ${fmtUsd(p.totalSpread)}/wk${p.avgGoal?` · avg goal ${fmtUsd(p.avgGoal)}`:''}</div>`+
     (p.avgOnPace===null?'':paceLine((p.avgOnPace?'Avg ≥ goal':'Avg below goal')+(p.avgPct!=null?` · ${p.avgPct}%`:''),p.avgOnPace));
   const lockSub =
     `<div class="goal">${lu.count.toLocaleString()} new ESF/PSF this week${lu.countGoal?` · goal ${lu.countGoal}`:''}</div>`+
@@ -148,7 +148,7 @@ function render(d){
     kpiCard('Weekly Spread',sc.weeklySpread)+
     kpiCard('Net New Starts · Qtr',sc.netNewStarts)+
     kpiCard('Avg Weekly Spread / New Start',sc.avgStartSpread)+
-    multiCard('Pending Starts Spread',fmtUsd(p.totalSpread)+wk,pendingSub)+
+    multiCard('Pending Start Avg Spread',fmtUsd(p.avgSpread)+wk,pendingSub)+
     multiCard('Weekly Lock-Up Spread',fmtUsd(lu.spread)+wk,lockSub)+
     multiCard('Total Dump-In Spread',fmtUsd(di.spread),dumpSub);
 

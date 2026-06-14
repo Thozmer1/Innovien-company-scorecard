@@ -9,6 +9,8 @@ const within = (dateStr, start, end) => {
 };
 const round = (n, p = 0) => { const f = 10 ** p; return Math.round((n + Number.EPSILON) * f) / f; };
 const ACTIVE = new Set(["Active", "Ending Soon"]);
+// A start is "banked" only when confirmed: Notion uses "Started", the Power BI export uses "Complete".
+const BANKED_STATUS = new Set(["Started", "Complete"]);
 
 // Combine ESF + PSF into one "start form" list. PSF uses Weekly Contrib as its weekly spread.
 function unifyStarts(esf = [], psf = []) {
@@ -55,12 +57,12 @@ export function buildScorecard(data, goals, asOfStr, weekly) {
   const dated = starts.filter(r => r.startDate);
 
   // Tile 2/3: Net New Starts this quarter (already started: start date in [qStart, today]).
-  const netNew = dated.filter(r => { const t = d(r.startDate); return t >= qStart && t <= today; });
+  const netNew = dated.filter(r => { const t = d(r.startDate); return BANKED_STATUS.has(r.status) && t >= qStart && t <= today; });
   const qtrStarts = netNew.length;
   const avgStartSpread = avgSpread(netNew);
 
   // Tile 4: Pending starts = future-dated within the quarter (today, qEnd].
-  const pending = dated.filter(r => { const t = d(r.startDate); return t > today && t <= qEnd; });
+  const pending = dated.filter(r => { const t = d(r.startDate); return !BANKED_STATUS.has(r.status) && t >= today && t <= qEnd; });
   const pendingCount = pending.length;
   const pendingAvgSpread = avgSpread(pending);
   const pendingSpread = sumSpread(pending);
@@ -127,7 +129,7 @@ export function buildScorecard(data, goals, asOfStr, weekly) {
   // Qualifying = STARTED (start date <= today, not cancelled), since program start, weekly spread >= threshold.
   const qualifying = dated.filter(r => {
     const t = d(r.startDate);
-    return t <= today && (!progStart || t >= progStart) && (r.weeklySpread || 0) >= thr;
+    return BANKED_STATUS.has(r.status) && t <= today && (!progStart || t >= progStart) && (r.weeklySpread || 0) >= thr;
   }).sort((a, b) => (a.startDate < b.startDate ? 1 : -1));
   const qualifyingCount = qualifying.length;
   const drawingsEarned = Math.floor(qualifyingCount / batch);

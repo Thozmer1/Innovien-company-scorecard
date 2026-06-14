@@ -99,5 +99,17 @@ assert.strictEqual(r2.scorecard.pendingStarts.totalSpread, 88000, "pending total
 assert.strictEqual(r2.scorecard.activeConsultants, 279, "active consultants pinned");
 assert.strictEqual(r2.scorecard.weeklyLockUp.spread, r.scorecard.weeklyLockUp.spread, "null field falls back to live Notion value");
 assert.strictEqual(r2.goalTracking.weeklySubAvg.actual, r.goalTracking.weeklySubAvg.actual, "other tabs unaffected by scorecard override");
+// --- Banked requires Started/Complete status; pending requires not-yet-confirmed ---
+const stData = { activeContracts:[], recruiterDaily:[], amWeekly:[], openReqs:[], placementEvents:[], innovienNext:[],
+  esf:[
+    { status:"Pending Payroll", startDate:"2026-05-01", created:"2026-04-01", weeklySpread:2000, amOwner:"Jon Pack", recruiter:"Kelsie" }, // past date but NOT confirmed -> not banked, not pending(date<today)
+    { status:"Started",         startDate:"2026-06-26", created:"2026-06-01", weeklySpread:1500, amOwner:"Jon Pack", recruiter:"Kelsie" }, // confirmed but future -> not pending(banked status), not banked(date>today)
+    { status:"Pending Payroll", startDate:"2026-06-26", created:"2026-06-01", weeklySpread:1300, amOwner:"Jon Pack", recruiter:"Kelsie" }, // pending: future + not confirmed
+    { status:"Started",         startDate:"2026-05-10", created:"2026-04-20", weeklySpread:1800, amOwner:"Jon Pack", recruiter:"Kelsie" }, // banked: confirmed + past
+  ], psf:[] };
+const rs = buildScorecard(stData, goals, "2026-06-14");
+assert.strictEqual(rs.scorecard.netNewStarts.actual, 1, "only the Started+past ESF is banked");
+assert.strictEqual(rs.scorecard.pendingStarts.count, 1, "only the Pending-status + future ESF is pending");
+assert.strictEqual(rs.scorecard.pendingStarts.avgSpread, 1300, "pending avg = the 1300 pending-status record");
 console.log("ALL TESTS PASSED ✅  (weeklySpread, starts, fill ratio, meetings, subs, forecast, bench)");
 console.log(JSON.stringify({ weeklySpread: r.scorecard.weeklySpread, fillRatio: r.goalTracking.fillRatio, forecastWeeks: r.scorecard.forecast.length }, null, 2));
