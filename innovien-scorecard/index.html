@@ -197,7 +197,17 @@ function drawForecast(weeks){
   // past weeks = solid Innovien colors (actuals); future weeks = lighter (forecast)
   const inColors =weeks.map(w=>w.isPast?'#B0DD66':'rgba(176,221,102,0.45)');
   const outColors=weeks.map(w=>w.isPast?'#747777':'rgba(116,119,119,0.40)');
-  chart1=new Chart(ctx,{data:{labels,datasets:[
+  const kfmt=v=>{v=Math.abs(v); return v>=1000 ? '$'+(v/1000).toFixed(v>=10000?0:1)+'k' : '$'+Math.round(v);};
+  // inline plugin: draw the $ value at the tip of each In/Out bar
+  const barValueLabels={id:'barValueLabels',afterDatasetsDraw(chart){const{ctx}=chart;ctx.save();ctx.font='600 9px Calibri, sans-serif';ctx.textAlign='center';
+    [0,1].forEach(di=>{const meta=chart.getDatasetMeta(di); if(meta.hidden)return;
+      meta.data.forEach((el,i)=>{const raw=chart.data.datasets[di].data[i]; if(!raw)return;
+        ctx.fillStyle = di===0 ? '#3a5a10' : '#5a5c5c';
+        if(raw>=0){ctx.textBaseline='bottom'; ctx.fillText(kfmt(raw), el.x, el.y-2);}
+        else {ctx.textBaseline='top'; ctx.fillText(kfmt(raw), el.x, el.y+2);}
+      });});
+    ctx.restore();}};
+  chart1=new Chart(ctx,{plugins:[barValueLabels],data:{labels,datasets:[
     {type:'bar',label:'In the door (starts)',data:weeks.map(w=>w.plannedIn),backgroundColor:inColors,stack:'flow',order:2},
     {type:'bar',label:'Out the door (ended)',data:weeks.map(w=>-w.plannedOut),backgroundColor:outColors,stack:'flow',order:2},
     {type:'line',label:'Cumulative spread growth (vs baseline)',data:weeks.map(w=>w.cumNet),borderColor:'#3a5a10',backgroundColor:'#3a5a10',borderWidth:2,pointRadius:2,tension:.25,yAxisID:'yCum',order:1}
