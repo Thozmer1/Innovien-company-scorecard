@@ -1,0 +1,244 @@
+// Pure aggregation logic. Operates on plain mapped objects (no Notion coupling),
+// so it can be unit-tested with fixtures. Mirrors the Power BI "Weekly Stretch Wkbk" measures.
+
+const DAY = 86400000;
+const d = (s) => (s ? new Date(s + (s.length === 10 ? "T00:00:00Z" : "")) : null);
+const within = (dateStr, start, end) => {
+  const t = d(dateStr); if (!t) return false;
+  return (!start || t >= start) && (!end || t <= end);
+};
+const round = (n, p = 0) => { const f = 10 ** p; return Math.round((n + Number.EPSILON) * f) / f; };
+const ACTIVE = new Set(["Active", "Ending Soon"]);
+
+// Combine ESF + PSF into one "start form" list. PSF uses Weekly Contrib as its weekly spread.
+function unifyStarts(esf = [], psf = []) {
+  const out = [];
+  for (const e of esf) out.push({ type: "ESF", status: e.status, startDate: e.startDate, created: e.created, weeklySpread: e.weeklySpread || 0, amOwner: e.amOwner, recruiter: e.recruiter, consultant: e.candidate, client: e.client });
+  for (const p of psf) out.push({ type: "PSF", status: p.status, startDate: p.startDate, created: p.created, weeklySpread: p.weeklyContrib || 0, amOwner: p.amOwner, recruiter: p.recruiter, consultant: p.candidate, client: p.client });
+  return out.filter(r => r.status !== "Cancelled");
+}
+const sumSpread = rows => round(rows.reduce((s, r) => s + (r.weeklySpread || 0), 0));
+const avgSpread = rows => rows.length ? round(sumSpread(rows) / rows.length) : 0;
+
+
+// group-sum helper
+function bucketSum(rows, keyFn, valFn) {
+  const m = new Map();
+  for (const r of rows) {
+    const k = keyFn(r); if (k == null || k === "Unassigned") continue;
+    const v = valFn(r) || 0;
+    m.set(k, (m.get(k) || 0) + v);
+  }
+  return m;
+}
+
+export function buildScorecard(data, goals, asOfStr) {
+  const asOf = d(asOfStr) || new Date();
+  const qStart = d(goals.quarterStart);
+  const qEnd = d(goals.quarterEnd);
+  const lookback = goals.lookbackWeeks || 13;
+  const lookbackStart = new Date(asOf.getTime() - lookback * 7 * DAY);
+  const g = goals.company;
+
+  const { activeContracts = [], recruiterDaily = [], amWeekly = [], openReqs = [], placementEvents = [], innovienNext = [] } = data;
+
+  // ---------- STRETCH SCORECARD (page 1) ----------
+  // Tile 1: Weekly Spread = run-rate of active placements (Active Contracts).
+  const live = activeContracts.filter(c => ACTIVE.has(c.status));
+  const weeklySpread = round(live.reduce((s, c) => s + (c.weeklySpread || 0), 0));
+  const activeCount = live.length;
+
+  // Start forms: ESF + PSF unified, Cancelled removed. Classify by Start Date vs today.
+  const starts = unifyStarts(data.esf, data.psf);
+  const today = asOf;
+  const inQtr = ds => within(ds, qStart, qEnd);
+  const dated = starts.filter(r => r.startDate);
+
+  // Tile 2/3: Net New Starts this quarter (already started: start date in [qStart, today]).
+  const netNew = dated.filter(r => { const t = d(r.startDate); return t >= qStart && t <= today; });
+  const qtrStarts = netNew.length;
+  const avgStartSpread = avgSpread(netNew);
+
+  // Tile 4: Pending starts = future-dated within the quarter (today, qEnd].
+  const pending = dated.filter(r => { const t = d(r.startDate); return t > today && t <= qEnd; });
+  const pendingCount = pending.length;
+  const pendingAvgSpread = avgSpread(pending);
+  const pendingSpread = sumSpread(pending);
+
+  // Tile 5: Weekly Lock-Up = new ESF/PSF *created* in the current Mon-Sun week.
+  const wkStart = mondayOf(today); const wkEnd = new Date(wkStart.getTime() + 7 * DAY - 1);
+  const lockup = starts.filter(r => { const t = d(r.created); return t && t >= wkStart && t <= wkEnd; });
+  const lockupCount = lockup.length;
+  const lockupSpread = sumSpread(lockup);
+
+  // Tile 6: Dump-In = all (non-cancelled) starts with start date in the quarter = netNew + pending.
+  const dumpIn = dated.filter(r => inQtr(r.startDate));
+  const dumpInCount = dumpIn.length;
+  const dumpInSpread = sumSpread(dumpIn);
+
+  const redeployed = innovienNext.filter(p => p.matchStatus === "Placed").length;
+  const availableBench = innovienNext.filter(p => ["Available", "Searching", "Warm Match Found", "Outreach Sent", "Interview"].includes(p.matchStatus)).length;
+
+  // Spread In/Out forecast: by ISO week across the quarter
+  // Chart shows the ACTUAL quarter weeks only. The baseline week is a reference point and is
+  // excluded from every quarter actual; the cumulative line = spread growth from the baseline level
+  // (i.e. starts at $0 at quarter start).
+  const forecast = forecastByWeek(activeContracts, qStart, qEnd, asOf);
+
+  // ---------- Q2 GOAL TRACKING (page 2) ----------
+  const meetings13 = amWeekly.filter(a => a.activityType === "Meeting" && within(a.date, lookbackStart, asOf));
+  const amMeetingTotals = bucketSum(meetings13, r => r.am, () => 1);
+  const amMeetingAvg = mapToRows(amMeetingTotals, (am, total) => ({
+    name: am, weeklyAvg: round(total / lookback, 1), total,
+    goal: goalFor(goals.perAM, am, "weeklyMeetingGoal"),
+  }));
+
+  const subs13 = recruiterDaily.filter(r => within(r.date, lookbackStart, asOf));
+  const recSubTotals = bucketSum(subs13, r => r.recruiter, r => r.subs);
+  const recruiterSubAvg = mapToRows(recSubTotals, (rec, total) => ({
+    name: rec, weeklyAvg: round(total / lookback, 1), total: round(total),
+    goal: goalFor(goals.perRecruiter, rec, "weeklySubGoal"),
+  }));
+
+  const totalSubs13 = subs13.reduce((s, r) => s + (r.subs || 0), 0);
+  const weeklySubAvg = round(totalSubs13 / lookback, 1);
+
+  const meetingsQtr = amWeekly.filter(a => a.activityType === "Meeting" && within(a.date, qStart, qEnd)).length;
+
+  // Fill ratio = filled / openings on open reqs
+  const openReqRows = openReqs.filter(r => r.status === "Open");
+  const totOpenings = openReqRows.reduce((s, r) => s + (r.openings || 0), 0);
+  const totFilled = openReqRows.reduce((s, r) => s + (r.filled || 0), 0);
+  const fillRatio = totOpenings ? round(totFilled / totOpenings, 3) : 0;
+
+  const amOpenings = bucketSum(openReqRows, r => r.amOwner, r => r.openings);
+  const amFilled = bucketSum(openReqRows, r => r.amOwner, r => r.filled);
+  const amFillRatio = mapToRows(amOpenings, (am, openings) => {
+    const filled = amFilled.get(am) || 0;
+    return { name: am, ratio: openings ? round(filled / openings, 3) : 0, filled, openings,
+      goal: goalFor(goals.perAM, am, "fillRatioGoal") };
+  });
+
+  // ---------- $1,250 RAFFLE (page 3) ----------
+  const rcfg = goals.raffle || { threshold: 1250, batchSize: 15, programStart: goals.quarterStart };
+  const progStart = d(rcfg.programStart);
+  const batch = rcfg.batchSize || 15;
+  const thr = rcfg.threshold || 1250;
+  // Qualifying = STARTED (start date <= today, not cancelled), since program start, weekly spread >= threshold.
+  const qualifying = dated.filter(r => {
+    const t = d(r.startDate);
+    return t <= today && (!progStart || t >= progStart) && (r.weeklySpread || 0) >= thr;
+  }).sort((a, b) => (a.startDate < b.startDate ? 1 : -1));
+  const qualifyingCount = qualifying.length;
+  const drawingsEarned = Math.floor(qualifyingCount / batch);
+  const towardNext = qualifyingCount % batch;
+  const startsToNext = towardNext === 0 ? batch : batch - towardNext;
+  const progressPct = round((towardNext / batch) * 100);
+  const nextDrawingAt = (drawingsEarned + 1) * batch;
+
+  // Tickets: AM + recruiter each earn one per qualifying start.
+  const tix = new Map();
+  const bump = (name, role) => { if (!name || name === "Unassigned") return; const e = tix.get(name) || { asAM: 0, asRecruiter: 0 }; e[role]++; tix.set(name, e); };
+  qualifying.forEach(r => { bump(r.amOwner, "asAM"); bump(r.recruiter, "asRecruiter"); });
+  const leaderboard = [...tix.entries()].map(([name, e]) => ({ name, tickets: e.asAM + e.asRecruiter, asAM: e.asAM, asRecruiter: e.asRecruiter })).sort((a, b) => b.tickets - a.tickets);
+  const totalTickets = leaderboard.reduce((s2, x) => s2 + x.tickets, 0);
+
+  // On deck: future-dated qualifying (not yet started) since program start.
+  const onDeck = dated.filter(r => { const t = d(r.startDate); return t > today && (r.weeklySpread || 0) >= thr; });
+  const onDeckCount = onDeck.length;
+
+  const qualifyingList = qualifying.slice(0, 60).map(r => ({
+    consultant: r.consultant || "", client: r.client || "", amOwner: r.amOwner || "Unassigned",
+    recruiter: r.recruiter || "", weeklySpread: Math.round(r.weeklySpread || 0), startDate: r.startDate, type: r.type,
+  }));
+
+  const raffle = {
+    threshold: thr, batchSize: batch, programStart: rcfg.programStart,
+    qualifyingCount, drawingsEarned, towardNext, startsToNext, progressPct, nextDrawingAt,
+    totalTickets, onDeckCount, leaderboard, qualifyingList,
+  };
+
+  // ---------- OPEN REQ HEALTH ----------
+  const aging = { "<=14d": 0, "15-45d": 0, "46-90d": 0, ">90d": 0 };
+  for (const r of openReqRows) if (r.agingBucket in aging) aging[r.agingBucket]++;
+  const reqsNoFill = openReqRows.filter(r => (r.filled || 0) === 0).length;
+
+  const kpi = (actual, goal, fmt) => ({ actual, goal, pct: goal ? round((actual / goal) * 100) : null, onPace: goal ? actual >= goal : null, fmt });
+
+  return {
+    meta: {
+      asOf: asOfStr, quarterLabel: goals.quarterLabel,
+      baselineWeekStart: goals.baselineWeekStart, quarterStart: goals.quarterStart, quarterEnd: goals.quarterEnd, lookbackWeeks: lookback,
+    },
+    scorecard: {
+      weeklySpread: kpi(weeklySpread, g.weeklySpreadGoal, "usd"),
+      netNewStarts: kpi(qtrStarts, g.qtrStartsGoal, "int"),
+      avgStartSpread: kpi(avgStartSpread, g.avgStartGoal, "usd"),
+      pendingStarts: { count: pendingCount, avgSpread: pendingAvgSpread, totalSpread: pendingSpread,
+        avgGoal: g.pendingAvgGoal, avgPct: g.pendingAvgGoal ? round((pendingAvgSpread / g.pendingAvgGoal) * 100) : null,
+        avgOnPace: g.pendingAvgGoal ? pendingAvgSpread >= g.pendingAvgGoal : null },
+      weeklyLockUp: { count: lockupCount, spread: lockupSpread,
+        countGoal: g.weeklyLockupCountGoal, spreadGoal: g.weeklyLockupSpreadGoal,
+        countPct: g.weeklyLockupCountGoal ? round((lockupCount / g.weeklyLockupCountGoal) * 100) : null,
+        countOnPace: g.weeklyLockupCountGoal ? lockupCount >= g.weeklyLockupCountGoal : null,
+        spreadPct: g.weeklyLockupSpreadGoal ? round((lockupSpread / g.weeklyLockupSpreadGoal) * 100) : null,
+        spreadOnPace: g.weeklyLockupSpreadGoal ? lockupSpread >= g.weeklyLockupSpreadGoal : null,
+        weekStart: wkStart.toISOString().slice(0,10) },
+      dumpIn: { count: dumpInCount, spread: dumpInSpread },
+      activeConsultants: activeCount,
+      redeployed: kpi(redeployed, g.redeployedGoal, "int"),
+      availableBench,
+      forecast,
+    },
+    goalTracking: {
+      weeklySubAvg: kpi(weeklySubAvg, g.weeklySubGoal, "dec"),
+      qtrlyMeetingPace: kpi(meetingsQtr, g.qtrlyMeetingGoal, "int"),
+      fillRatio: kpi(fillRatio, g.fillRatioGoal, "pct"),
+      amMeetingAvg: amMeetingAvg.sort((a, b) => b.weeklyAvg - a.weeklyAvg),
+      recruiterSubAvg: recruiterSubAvg.sort((a, b) => b.weeklyAvg - a.weeklyAvg),
+      amFillRatio: amFillRatio.sort((a, b) => b.ratio - a.ratio),
+    },
+    raffle,
+    openReqHealth: { totalOpen: openReqRows.length, aging, reqsNoFill, totOpenings, totFilled },
+  };
+}
+
+function forecastByWeek(contracts, anchorStart, qEnd, asOf) {
+  if (!anchorStart || !qEnd) return [];
+  const weeks = [];
+  let cur = mondayOf(anchorStart);
+  let cum = 0;
+  while (cur <= qEnd) {
+    const wEnd = new Date(cur.getTime() + 7 * DAY - 1);
+    let inSpread = 0, outSpread = 0, inCount = 0, outCount = 0;
+    for (const c of contracts) {
+      // IN  = placements whose Start Date falls in this week.
+      // OUT = placements whose End Date falls in this week (ALL statuses, incl. Rolled Off),
+      //       so historical weeks reflect spread that left the book.
+      const sd = c.startDate ? new Date(c.startDate + "T00:00:00Z") : null;
+      const ed = c.endDate ? new Date(c.endDate + "T00:00:00Z") : null;
+      if (sd && sd >= cur && sd <= wEnd) { inSpread += c.weeklySpread || 0; inCount++; }
+      if (ed && ed >= cur && ed <= wEnd) { outSpread += c.weeklySpread || 0; outCount++; }
+    }
+    const net = inSpread - outSpread; cum += net;
+    weeks.push({
+      weekStart: cur.toISOString().slice(0, 10),
+      plannedIn: Math.round(inSpread), plannedOut: Math.round(outSpread),
+      inCount, outCount, net: Math.round(net), cumNet: Math.round(cum),
+      isPast: wEnd < asOf,
+    });
+    cur = new Date(cur.getTime() + 7 * DAY);
+  }
+  return weeks;
+}
+function mondayOf(dt) {
+  const t = new Date(dt.getTime());
+  const day = (t.getUTCDay() + 6) % 7; // Mon=0
+  t.setUTCDate(t.getUTCDate() - day); t.setUTCHours(0, 0, 0, 0);
+  return t;
+}
+function mapToRows(map, fn) { return [...map.entries()].map(([k, v]) => fn(k, v)); }
+function goalFor(section, name, key) {
+  if (!section) return null;
+  return (section[name] && section[name][key]) ?? (section._default && section._default[key]) ?? null;
+}
