@@ -1,0 +1,39 @@
+{
+  "_comment": "FALLBACK goals only. The live dashboard reads targets from the Notion 'Company Goals' database (Metric Key -> Value) for the current Period; these values are used only if that row is missing or the Goals DB is unreachable. Quarter dates live here because the Goals DB stores values, not the calendar.",
+  "_dates_comment": "EDIT THESE EACH QUARTER. baselineWeekStart = the Monday of the week we measure quarterly spread growth FROM (usually the week BEFORE the quarter). quarterStart/quarterEnd = the actual quarter window (Mon..Sun) used to count starts, pending, dump-in, meetings. The In/Out growth chart runs from baselineWeekStart through quarterEnd.",
+  "quarterLabel": "Q2 2026",
+  "baselineWeekStart": "2026-03-23",
+  "quarterStart": "2026-03-30",
+  "quarterEnd": "2026-06-28",
+  "lookbackWeeks": 13,
+  "company": {
+    "weeklySpreadGoal": 364000,
+    "qtrStartsGoal": 101,
+    "avgStartGoal": 1000,
+    "pendingAvgGoal": 1300,
+    "weeklyLockupCountGoal": 10,
+    "weeklyLockupSpreadGoal": 12000,
+    "weeklySubGoal": 40,
+    "qtrlyMeetingGoal": 260,
+    "fillRatioGoal": 0.35,
+    "redeployedGoal": 12,
+    "yearSpreadGoal": 500000
+  },
+  "perAM": {
+    "_default": {
+      "weeklyMeetingGoal": 5,
+      "fillRatioGoal": 0.35
+    }
+  },
+  "perRecruiter": {
+    "_default": {
+      "weeklySubGoal": 4
+    }
+  },
+  "raffle": {
+    "threshold": 1250,
+    "batchSize": 15,
+    "programStart": "2026-01-01",
+    "_comment": "Qualifying start = weekly spread >= threshold. Every batchSize qualifying STARTED placements triggers a drawing; AM + recruiter each earn 1 ticket per qualifying start (2 tickets/start)."
+  }
+}

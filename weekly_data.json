@@ -1,0 +1,382 @@
+{
+  "meta": {
+    "week_ending": "2026-06-01",
+    "label": "6/1/2026",
+    "generated": "2026-06-14T14:49:02",
+    "source": "Recruiting and Sales Power BI Dashboard Data.xlsx \u2014 'Stretch scorecard' sheet",
+    "quarter_label": "Q2 2026",
+    "baseline_week_start": "2026-03-23",
+    "quarter_start": "2026-03-30",
+    "quarter_end": "2026-06-28"
+  },
+  "company": {
+    "weekly_spread": 323781.28,
+    "qtr_start_spread": 330413.65,
+    "year_total": 6594349.07
+  },
+  "by_am": [
+    {
+      "name": "Mollie Ferguson",
+      "office": "Atlanta",
+      "weekly": 138677.34,
+      "qstart": 145556.48,
+      "cumulative": 3190570.44
+    },
+    {
+      "name": "Kelsie Laughlin",
+      "office": "Nashville",
+      "weekly": 38766.88,
+      "qstart": 43963.94,
+      "cumulative": 957801.09
+    },
+    {
+      "name": "Stephen Denzel",
+      "office": "Allentown",
+      "weekly": 25686.84,
+      "qstart": 24159.94,
+      "cumulative": 543267.0
+    },
+    {
+      "name": "Hannah Craig",
+      "office": "Atlanta",
+      "weekly": 23514.72,
+      "qstart": 29352.85,
+      "cumulative": 666366.52
+    },
+    {
+      "name": "Jon Pack",
+      "office": "Charlotte",
+      "weekly": 22529.69,
+      "qstart": 16526.55,
+      "cumulative": 392580.64
+    },
+    {
+      "name": "Riley Laverty",
+      "office": "Atlanta",
+      "weekly": 14762.8,
+      "qstart": 13711.45,
+      "cumulative": 310752.35
+    },
+    {
+      "name": "Brie Branting",
+      "office": "Atlanta",
+      "weekly": 10964.04,
+      "qstart": 2578.0,
+      "cumulative": 83294.91
+    },
+    {
+      "name": "Daniela Blesich",
+      "office": "Atlanta",
+      "weekly": 10485.85,
+      "qstart": 11710.85,
+      "cumulative": 282981.45
+    },
+    {
+      "name": "Mike Minnillo",
+      "office": "Columbus",
+      "weekly": 10185.56,
+      "qstart": 7172.81,
+      "cumulative": 166734.67
+    },
+    {
+      "name": "Jessica Evans",
+      "office": "Atlanta",
+      "weekly": 0.0,
+      "qstart": 0.0,
+      "cumulative": 0.0
+    },
+    {
+      "name": "Jesu Philip",
+      "office": "Allentown",
+      "weekly": 0.0,
+      "qstart": 0.0,
+      "cumulative": 0.0
+    },
+    {
+      "name": "Kollin Korell",
+      "office": "Atlanta",
+      "weekly": 0.0,
+      "qstart": 0.0,
+      "cumulative": 0.0
+    },
+    {
+      "name": "Rachel Huffman",
+      "office": "Atlanta",
+      "weekly": 0.0,
+      "qstart": 0.0,
+      "cumulative": 0.0
+    }
+  ],
+  "by_recruiter": [
+    {
+      "name": "Merrimon McCartney",
+      "office": "Atlanta",
+      "weekly": 45867.52,
+      "qstart": 39206.64,
+      "cumulative": 898437.14
+    },
+    {
+      "name": "Monika DuVarney",
+      "office": "Atlanta",
+      "weekly": 41684.84,
+      "qstart": 47407.13,
+      "cumulative": 1074173.51
+    },
+    {
+      "name": "Gloria Manley",
+      "office": "Atlanta",
+      "weekly": 34946.16,
+      "qstart": 34225.79,
+      "cumulative": 771676.06
+    },
+    {
+      "name": "Julia McDonald",
+      "office": "Atlanta",
+      "weekly": 30831.03,
+      "qstart": 34357.6,
+      "cumulative": 725245.27
+    },
+    {
+      "name": "Brandon Dowdell",
+      "office": "Atlanta",
+      "weekly": 25769.43,
+      "qstart": 33487.98,
+      "cumulative": 696833.98
+    },
+    {
+      "name": "Adam Williams",
+      "office": "Atlanta",
+      "weekly": 22314.72,
+      "qstart": 25835.62,
+      "cumulative": 514169.85
+    },
+    {
+      "name": "Chelsea Navarro",
+      "office": "Atlanta",
+      "weekly": 21086.63,
+      "qstart": 26922.62,
+      "cumulative": 570471.18
+    },
+    {
+      "name": "Jamie Houvig",
+      "office": "Allentown",
+      "weekly": 19751.14,
+      "qstart": 17285.61,
+      "cumulative": 401982.24
+    },
+    {
+      "name": "Luke Reineke",
+      "office": "Atlanta",
+      "weekly": 19486.97,
+      "qstart": 18044.23,
+      "cumulative": 415127.28
+    },
+    {
+      "name": "Brennan Lantz",
+      "office": "Atlanta",
+      "weekly": 14861.46,
+      "qstart": 10401.21,
+      "cumulative": 222173.48
+    },
+    {
+      "name": "Ben Dorsey",
+      "office": "Atlanta",
+      "weekly": 13253.23,
+      "qstart": 10202.1,
+      "cumulative": 226033.64
+    },
+    {
+      "name": "Mike Murphy",
+      "office": "Charlotte",
+      "weekly": 12395.16,
+      "qstart": 10591.76,
+      "cumulative": 245709.42
+    },
+    {
+      "name": "Jordan Foote",
+      "office": "Atlanta",
+      "weekly": 10936.12,
+      "qstart": 13960.7,
+      "cumulative": 291127.78
+    },
+    {
+      "name": "Dan Bostock",
+      "office": "Allentown",
+      "weekly": 9113.92,
+      "qstart": 7108.77,
+      "cumulative": 169226.18
+    },
+    {
+      "name": "Ryan Mickley",
+      "office": "Allentown",
+      "weekly": 3205.0,
+      "qstart": 1292.33,
+      "cumulative": 75967.02
+    }
+  ],
+  "offices": [
+    {
+      "office": "Atlanta",
+      "weekly": 210940.54
+    },
+    {
+      "office": "Nashville",
+      "weekly": 41272.73
+    },
+    {
+      "office": "Charlotte",
+      "weekly": 28994.01
+    },
+    {
+      "office": "Allentown",
+      "weekly": 26692.84
+    },
+    {
+      "office": "Columbus",
+      "weekly": 10185.56
+    }
+  ],
+  "divisions": [
+    {
+      "division": "Commercial",
+      "weekly": 300330.56
+    },
+    {
+      "division": "Federal",
+      "weekly": 23986.72
+    }
+  ],
+  "clients": [
+    {
+      "client": "Raytheon Technologies",
+      "weekly": 79648.33,
+      "qstart": 107810.05
+    },
+    {
+      "client": "Collins Aerospace",
+      "weekly": 42936.0,
+      "qstart": 35346.82
+    },
+    {
+      "client": "GE Aerospace",
+      "weekly": 39112.73,
+      "qstart": 42649.79
+    },
+    {
+      "client": "Pratt & Whitney",
+      "weekly": 34787.86,
+      "qstart": 22176.36
+    },
+    {
+      "client": "Leidos",
+      "weekly": 14155.07,
+      "qstart": 17912.36
+    },
+    {
+      "client": "UDC",
+      "weekly": 8740.85,
+      "qstart": 1000.85
+    },
+    {
+      "client": "Fulton Bank",
+      "weekly": 6508.78,
+      "qstart": 6155.74
+    },
+    {
+      "client": "BiBERK",
+      "weekly": 6303.85,
+      "qstart": 6303.85
+    },
+    {
+      "client": "GDIT",
+      "weekly": 6184.25,
+      "qstart": 3409.7
+    },
+    {
+      "client": "Penske Logistics",
+      "weekly": 6130.68,
+      "qstart": 2896.61
+    }
+  ],
+  "scorecard": {
+    "net_new_starts": 82,
+    "avg_start_spread": 1155,
+    "pending_count": 18,
+    "pending_avg_spread": 1114,
+    "pending_total_spread": 20056,
+    "lockup_count": null,
+    "lockup_spread": null,
+    "dumpin_count": 102,
+    "dumpin_spread": 118888,
+    "active_consultants": 279,
+    "redeployed": null,
+    "available_bench": null,
+    "forecast": [
+      {
+        "weekStart": "2026-03-30",
+        "plannedIn": 11158,
+        "plannedOut": 25316
+      },
+      {
+        "weekStart": "2026-04-06",
+        "plannedIn": 7073,
+        "plannedOut": 4415
+      },
+      {
+        "weekStart": "2026-04-13",
+        "plannedIn": 4076,
+        "plannedOut": 2599
+      },
+      {
+        "weekStart": "2026-04-20",
+        "plannedIn": 11499,
+        "plannedOut": 5353
+      },
+      {
+        "weekStart": "2026-04-27",
+        "plannedIn": 4993,
+        "plannedOut": 13754
+      },
+      {
+        "weekStart": "2026-05-04",
+        "plannedIn": 11328,
+        "plannedOut": 1253
+      },
+      {
+        "weekStart": "2026-05-11",
+        "plannedIn": 2711,
+        "plannedOut": 4981
+      },
+      {
+        "weekStart": "2026-05-18",
+        "plannedIn": 4726,
+        "plannedOut": 6726
+      },
+      {
+        "weekStart": "2026-05-25",
+        "plannedIn": 6160,
+        "plannedOut": 5896
+      },
+      {
+        "weekStart": "2026-06-01",
+        "plannedIn": 18670,
+        "plannedOut": 11063
+      },
+      {
+        "weekStart": "2026-06-08",
+        "plannedIn": 12028,
+        "plannedOut": 4104
+      },
+      {
+        "weekStart": "2026-06-15",
+        "plannedIn": 10518,
+        "plannedOut": 3437
+      },
+      {
+        "weekStart": "2026-06-22",
+        "plannedIn": 6470,
+        "plannedOut": 2337
+      }
+    ]
+  }
+}
