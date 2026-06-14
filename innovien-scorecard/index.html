@@ -139,9 +139,8 @@ function render(d){
     `<div class="goal">Total ${fmtUsd(p.totalSpread)}/wk${p.avgGoal?` · avg goal ${fmtUsd(p.avgGoal)}`:''}</div>`+
     (p.avgOnPace===null?'':paceLine((p.avgOnPace?'Avg ≥ goal':'Avg below goal')+(p.avgPct!=null?` · ${p.avgPct}%`:''),p.avgOnPace));
   const lockSub =
-    `<div class="goal">${lu.count.toLocaleString()} new ESF/PSF this week${lu.countGoal?` · goal ${lu.countGoal}`:''}</div>`+
-    `<div class="goal">Spread goal ${lu.spreadGoal?fmtUsd(lu.spreadGoal):'—'} · since ${lu.weekStart?.slice(5)}</div>`+
-    (lu.spreadOnPace===null?'':paceLine((lu.spreadOnPace?'Spread ≥ goal':'Spread below goal')+(lu.spreadPct!=null?` · ${lu.spreadPct}%`:''),lu.spreadOnPace));
+    `<div class="goal">Lock-up goal ${lu.spreadGoal?fmtUsd(lu.spreadGoal):'—'}</div>`+
+    (lu.spreadOnPace===null?'':paceLine((lu.spreadOnPace?'At / above goal':'Below goal')+(lu.spreadPct!=null?` · ${lu.spreadPct}%`:''),lu.spreadOnPace));
   const dumpSub =
     `<div class="goal">${di.count} dump-ins (started + pending, in quarter)</div>`;
   document.getElementById('kpi-scorecard').innerHTML =
@@ -149,7 +148,7 @@ function render(d){
     kpiCard('Net New Starts · Qtr',sc.netNewStarts)+
     kpiCard('Avg Weekly Spread / New Start',sc.avgStartSpread)+
     multiCard('Pending Start Avg Spread',fmtUsd(p.avgSpread)+wk,pendingSub)+
-    multiCard('Weekly Lock-Up Spread',fmtUsd(lu.spread)+wk,lockSub)+
+    multiCard('Weekly Lock-Up',fmtUsd(lu.spread)+wk,lockSub)+
     multiCard('Total Dump-In Spread',fmtUsd(di.spread),dumpSub);
 
   const gt=d.goalTracking;

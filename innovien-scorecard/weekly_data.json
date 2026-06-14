@@ -301,11 +301,11 @@
   "scorecard": {
     "net_new_starts": 82,
     "avg_start_spread": 1155,
-    "pending_count": null,
-    "pending_avg_spread": null,
-    "pending_total_spread": null,
+    "pending_count": 18,
+    "pending_avg_spread": 1114,
+    "pending_total_spread": 20056,
     "lockup_count": null,
-    "lockup_spread": null,
+    "lockup_spread": 0,
     "dumpin_count": 102,
     "dumpin_spread": 118888,
     "active_consultants": 279,
@@ -377,6 +377,7 @@
         "plannedIn": 6470,
         "plannedOut": 2337
       }
-    ]
+    ],
+    "lockup_spread_goal": 10893
   }
 }

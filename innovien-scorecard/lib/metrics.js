@@ -179,6 +179,8 @@ export function buildScorecard(data, goals, asOfStr, weekly) {
   const oPendTot      = ov(_wsc.pending_total_spread, pendingSpread);
   const oLockCount    = ov(_wsc.lockup_count, lockupCount);
   const oLockSpread   = ov(_wsc.lockup_spread, lockupSpread);
+  const oLockSpreadGoal = ov(_wsc.lockup_spread_goal, g.weeklyLockupSpreadGoal);
+  const oLockCountGoal  = ov(_wsc.lockup_count_goal, g.weeklyLockupCountGoal);
   const oDumpCount    = ov(_wsc.dumpin_count, dumpInCount);
   const oDumpSpread   = ov(_wsc.dumpin_spread, dumpInSpread);
   const oActive       = ov(_wsc.active_consultants, activeCount);
@@ -211,9 +213,9 @@ export function buildScorecard(data, goals, asOfStr, weekly) {
       pendingStarts: { count: oPendCount, avgSpread: oPendAvg, totalSpread: oPendTot,
         avgGoal: g.pendingAvgGoal, avgPct: pct(oPendAvg, g.pendingAvgGoal), avgOnPace: onp(oPendAvg, g.pendingAvgGoal) },
       weeklyLockUp: { count: oLockCount, spread: oLockSpread,
-        countGoal: g.weeklyLockupCountGoal, spreadGoal: g.weeklyLockupSpreadGoal,
-        countPct: pct(oLockCount, g.weeklyLockupCountGoal), countOnPace: onp(oLockCount, g.weeklyLockupCountGoal),
-        spreadPct: pct(oLockSpread, g.weeklyLockupSpreadGoal), spreadOnPace: onp(oLockSpread, g.weeklyLockupSpreadGoal),
+        countGoal: oLockCountGoal, spreadGoal: oLockSpreadGoal,
+        countPct: pct(oLockCount, oLockCountGoal), countOnPace: onp(oLockCount, oLockCountGoal),
+        spreadPct: pct(oLockSpread, oLockSpreadGoal), spreadOnPace: onp(oLockSpread, oLockSpreadGoal),
         weekStart: wkStart.toISOString().slice(0,10) },
       dumpIn: { count: oDumpCount, spread: oDumpSpread },
       activeConsultants: oActive,
