@@ -306,8 +306,8 @@
     "pending_total_spread": 20056,
     "lockup_count": null,
     "lockup_spread": 0,
-    "dumpin_count": 102,
-    "dumpin_spread": 118888,
+    "dumpin_count": 81,
+    "dumpin_spread": 94847,
     "active_consultants": 279,
     "redeployed": null,
     "available_bench": null,
@@ -379,5 +379,223 @@
       }
     ],
     "lockup_spread_goal": 10893
+  },
+  "raffle": {
+    "threshold": 1250,
+    "batch_size": 15,
+    "current_drawing_no": 1,
+    "current_members": [
+      {
+        "name": "Bartholomew Baptista",
+        "am": "Brie Branting",
+        "recruiter": "Dan Bostock",
+        "spread": 1423
+      },
+      {
+        "name": "Darren Baird",
+        "am": "Daniela Blesich",
+        "recruiter": "Ryan Mickley",
+        "spread": 1540
+      },
+      {
+        "name": "Shane Hayes",
+        "am": "Brie Branting",
+        "recruiter": "Brennan Lantz",
+        "spread": 1251
+      },
+      {
+        "name": "Ken Ptaszynski",
+        "am": "Jon Pack",
+        "recruiter": "Julia McDonald",
+        "spread": 1256
+      },
+      {
+        "name": "Ketan Patel",
+        "am": "Jon Pack",
+        "recruiter": "Julia McDonald",
+        "spread": 1384
+      },
+      {
+        "name": "Irina Belska",
+        "am": "Mollie Ferguson",
+        "recruiter": "Gloria Manley",
+        "spread": 1428
+      },
+      {
+        "name": "Adigun Palmer",
+        "am": "Mollie Ferguson",
+        "recruiter": "Jordan Foote",
+        "spread": 1384
+      },
+      {
+        "name": "Brian Childs",
+        "am": "Mollie Ferguson",
+        "recruiter": "Julia McDonald",
+        "spread": 1384
+      },
+      {
+        "name": "Paul Sheen",
+        "am": "Mollie Ferguson",
+        "recruiter": "Mike Murphy",
+        "spread": 1750
+      },
+      {
+        "name": "Andrew Elliott",
+        "am": "Mollie Ferguson",
+        "recruiter": "Brennan Lantz",
+        "spread": 1340
+      },
+      {
+        "name": "Mahesh Chukka",
+        "am": "Mollie Ferguson",
+        "recruiter": "Chelsea Navarro",
+        "spread": 1480
+      },
+      {
+        "name": "Lee Davis",
+        "am": "Mollie Ferguson",
+        "recruiter": "Mike Murphy",
+        "spread": 1250
+      },
+      {
+        "name": "Gabriel Sardinha de Oliveira",
+        "am": "Mike Minnillo",
+        "recruiter": "Mike Murphy",
+        "spread": 1392
+      },
+      {
+        "name": "Eduardo Alfonso",
+        "am": "Mike Minnillo",
+        "recruiter": "Mike Murphy",
+        "spread": 1350
+      },
+      {
+        "name": "Cortland Durham",
+        "am": "Jon Pack",
+        "recruiter": "Gloria Manley",
+        "spread": 1404
+      }
+    ],
+    "next_up": [
+      {
+        "name": "Abba-Joseph Awano",
+        "am": "Hannah Craig",
+        "recruiter": "Gloria Manley",
+        "spread": 1267
+      }
+    ]
+  },
+  "fill_ratio": {
+    "as_of": "2026-06-15",
+    "window_weeks": 13,
+    "company": {
+      "filled": 66,
+      "openings": 128,
+      "ratio": 0.5156
+    },
+    "by_am": [
+      {
+        "name": "Malia Graham",
+        "filled": 1,
+        "openings": 1,
+        "ratio": 1.0
+      },
+      {
+        "name": "Mollie Ferguson",
+        "filled": 23,
+        "openings": 23,
+        "ratio": 1.0
+      },
+      {
+        "name": "Victoria Bonilla",
+        "filled": 1,
+        "openings": 1,
+        "ratio": 1.0
+      },
+      {
+        "name": "Johnna Fusco",
+        "filled": 1,
+        "openings": 1,
+        "ratio": 1.0
+      },
+      {
+        "name": "Brie Branting",
+        "filled": 8,
+        "openings": 11,
+        "ratio": 0.7273
+      },
+      {
+        "name": "Jon Pack",
+        "filled": 10,
+        "openings": 15,
+        "ratio": 0.6667
+      },
+      {
+        "name": "Hannah Craig",
+        "filled": 6,
+        "openings": 10,
+        "ratio": 0.6
+      },
+      {
+        "name": "Mike Minnillo",
+        "filled": 9,
+        "openings": 17,
+        "ratio": 0.5294
+      },
+      {
+        "name": "Kelsie Laughlin",
+        "filled": 5,
+        "openings": 10,
+        "ratio": 0.5
+      },
+      {
+        "name": "Stephen Denzel",
+        "filled": 6,
+        "openings": 14,
+        "ratio": 0.4286
+      },
+      {
+        "name": "Daniela Blesich",
+        "filled": 1,
+        "openings": 5,
+        "ratio": 0.2
+      },
+      {
+        "name": "Cristina Murto",
+        "filled": 1,
+        "openings": 7,
+        "ratio": 0.1429
+      },
+      {
+        "name": "Riley Laverty",
+        "filled": 1,
+        "openings": 9,
+        "ratio": 0.1111
+      },
+      {
+        "name": "Jessica Evans",
+        "filled": 0,
+        "openings": 1,
+        "ratio": 0.0
+      },
+      {
+        "name": "Kollin Korell",
+        "filled": 0,
+        "openings": 24,
+        "ratio": 0.0
+      },
+      {
+        "name": "Josh Mastel",
+        "filled": 0,
+        "openings": 1,
+        "ratio": 0.0
+      },
+      {
+        "name": "Shannon Johnson",
+        "filled": 0,
+        "openings": 1,
+        "ratio": 0.0
+      }
+    ]
   }
 }

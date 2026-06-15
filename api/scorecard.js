@@ -41,6 +41,7 @@ export default async function handler(req, res) {
       weekly_lockup_count: ["company","weeklyLockupCountGoal"], weekly_lockup_spread: ["company","weeklyLockupSpreadGoal"],
       weekly_subs: ["company","weeklySubGoal"], qtrly_meetings: ["company","qtrlyMeetingGoal"],
       fill_ratio: ["company","fillRatioGoal"], redeployed: ["company","redeployedGoal"], year_spread: ["company","yearSpreadGoal"],
+      dumpin_spread: ["company","dumpinSpreadGoal"],
     };
     const qLabel = goals.quarterLabel;
     let goalsApplied = 0;

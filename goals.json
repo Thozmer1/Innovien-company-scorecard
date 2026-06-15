@@ -15,14 +15,15 @@
     "weeklyLockupSpreadGoal": 12000,
     "weeklySubGoal": 40,
     "qtrlyMeetingGoal": 260,
-    "fillRatioGoal": 0.35,
+    "fillRatioGoal": 0.6,
     "redeployedGoal": 12,
-    "yearSpreadGoal": 500000
+    "yearSpreadGoal": 500000,
+    "dumpinSpreadGoal": 95033
   },
   "perAM": {
     "_default": {
       "weeklyMeetingGoal": 5,
-      "fillRatioGoal": 0.35
+      "fillRatioGoal": 0.6
     }
   },
   "perRecruiter": {
