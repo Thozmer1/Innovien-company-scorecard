@@ -121,6 +121,18 @@ export function buildScorecard(data, goals, asOfStr, weekly) {
       goal: goalFor(goals.perAM, am, "fillRatioGoal") };
   });
 
+  // Fill ratio override from the PBI "Close Ratio Details" tab (via weekly_data.json fill_ratio).
+  // Tile = company QTD; AM table = trailing 13 weeks. Falls back to live Open Reqs when absent.
+  let fillRatioV = fillRatio, amFillRatioV = amFillRatio;
+  if (weekly && weekly.fill_ratio) {
+    const fr = weekly.fill_ratio;
+    if (fr.company && fr.company.ratio != null) fillRatioV = round(fr.company.ratio, 3);
+    if (Array.isArray(fr.by_am)) amFillRatioV = fr.by_am.map(a => ({
+      name: a.name, ratio: round(a.ratio, 3), filled: a.filled, openings: a.openings,
+      goal: goalFor(goals.perAM, a.name, "fillRatioGoal"),
+    }));
+  }
+
   // ---------- $1,250 RAFFLE (page 3) ----------
   const rcfg = goals.raffle || { threshold: 1250, batchSize: 15, programStart: goals.quarterStart };
   const progStart = d(rcfg.programStart);
@@ -226,10 +238,10 @@ export function buildScorecard(data, goals, asOfStr, weekly) {
     goalTracking: {
       weeklySubAvg: kpi(weeklySubAvg, g.weeklySubGoal, "dec"),
       qtrlyMeetingPace: kpi(meetingsQtr, g.qtrlyMeetingGoal, "int"),
-      fillRatio: kpi(fillRatio, g.fillRatioGoal, "pct"),
+      fillRatio: kpi(fillRatioV, g.fillRatioGoal, "pct"),
       amMeetingAvg: amMeetingAvg.sort((a, b) => b.weeklyAvg - a.weeklyAvg),
       recruiterSubAvg: recruiterSubAvg.sort((a, b) => b.weeklyAvg - a.weeklyAvg),
-      amFillRatio: amFillRatio.sort((a, b) => b.ratio - a.ratio),
+      amFillRatio: amFillRatioV.sort((a, b) => b.ratio - a.ratio),
     },
     raffle,
     openReqHealth: { totalOpen: openReqRows.length, aging, reqsNoFill, totOpenings, totFilled },
