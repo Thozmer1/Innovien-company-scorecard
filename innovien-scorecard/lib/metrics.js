@@ -172,6 +172,29 @@ export function buildScorecard(data, goals, asOfStr, weekly) {
     totalTickets, onDeckCount, leaderboard, qualifyingList,
   };
 
+  // Curated raffle (drawings anchored to an explicit member list in the canonical file)
+  let raffleOut = raffle;
+  if (weekly && weekly.raffle && Array.isArray(weekly.raffle.current_members)) {
+    const rf = weekly.raffle;
+    const bsz = rf.batch_size || 15;
+    const cur = rf.current_members || [];
+    const nxt = rf.next_up || [];
+    const tmap = new Map();
+    const bumpc = (n, role) => { if (!n || n === "Unassigned") return; const e = tmap.get(n) || { asAM: 0, asRecruiter: 0 }; e[role]++; tmap.set(n, e); };
+    cur.forEach(m => { bumpc(m.am, "asAM"); bumpc(m.recruiter, "asRecruiter"); });
+    const lb = [...tmap.entries()].map(([name, e]) => ({ name, tickets: e.asAM + e.asRecruiter, asAM: e.asAM, asRecruiter: e.asRecruiter })).sort((a, b) => b.tickets - a.tickets);
+    raffleOut = {
+      mode: "curated", threshold: rf.threshold || thr, batchSize: bsz,
+      currentDrawingNo: rf.current_drawing_no || 1,
+      currentCount: cur.length, currentReady: cur.length >= bsz,
+      totalTickets: lb.reduce((s2, x) => s2 + x.tickets, 0),
+      leaderboard: lb,
+      currentMembers: cur.map(m => ({ name: m.name, am: m.am || "Unassigned", recruiter: m.recruiter || "", spread: Math.round(m.spread || 0) })),
+      nextCount: nxt.length, startsToNextDrawing: Math.max(0, bsz - nxt.length),
+      nextUp: nxt.map(m => ({ name: m.name, am: m.am || "Unassigned", recruiter: m.recruiter || "", spread: Math.round(m.spread || 0) })),
+    };
+  }
+
   // ---------- OPEN REQ HEALTH ----------
   const aging = { "<=14d": 0, "15-45d": 0, "46-90d": 0, ">90d": 0 };
   for (const r of openReqRows) if (r.agingBucket in aging) aging[r.agingBucket]++;
@@ -243,7 +266,7 @@ export function buildScorecard(data, goals, asOfStr, weekly) {
       recruiterSubAvg: recruiterSubAvg.sort((a, b) => b.weeklyAvg - a.weeklyAvg),
       amFillRatio: amFillRatioV.sort((a, b) => b.ratio - a.ratio),
     },
-    raffle,
+    raffle: raffleOut,
     openReqHealth: { totalOpen: openReqRows.length, aging, reqsNoFill, totOpenings, totFilled },
   };
 }
