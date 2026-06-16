@@ -301,11 +301,11 @@
   "scorecard": {
     "net_new_starts": 82,
     "avg_start_spread": 1155,
-    "pending_count": 18,
-    "pending_avg_spread": 1114,
-    "pending_total_spread": 20056,
+    "pending_count": 16,
+    "pending_avg_spread": 1138,
+    "pending_total_spread": 18210,
     "lockup_count": null,
-    "lockup_spread": 0,
+    "lockup_spread": 3423,
     "dumpin_count": 81,
     "dumpin_spread": 94847,
     "active_consultants": 279,
@@ -486,7 +486,7 @@
     ]
   },
   "fill_ratio": {
-    "as_of": "2026-06-15",
+    "as_of": "2026-06-16",
     "window_weeks": 13,
     "company": {
       "filled": 66,
@@ -519,16 +519,16 @@
         "ratio": 1.0
       },
       {
-        "name": "Brie Branting",
-        "filled": 8,
-        "openings": 11,
-        "ratio": 0.7273
-      },
-      {
         "name": "Jon Pack",
         "filled": 10,
-        "openings": 15,
-        "ratio": 0.6667
+        "openings": 14,
+        "ratio": 0.7143
+      },
+      {
+        "name": "Brie Branting",
+        "filled": 7,
+        "openings": 10,
+        "ratio": 0.7
       },
       {
         "name": "Hannah Craig",
