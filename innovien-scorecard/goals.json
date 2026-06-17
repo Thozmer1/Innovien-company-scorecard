@@ -14,7 +14,7 @@
     "weeklyLockupCountGoal": 10,
     "weeklyLockupSpreadGoal": 12000,
     "weeklySubGoal": 40,
-    "qtrlyMeetingGoal": 260,
+    "qtrlyMeetingGoal": 1690,
     "fillRatioGoal": 0.6,
     "redeployedGoal": 12,
     "yearSpreadGoal": 500000,
@@ -22,13 +22,13 @@
   },
   "perAM": {
     "_default": {
-      "weeklyMeetingGoal": 5,
+      "weeklyMeetingGoal": 10,
       "fillRatioGoal": 0.6
     }
   },
   "perRecruiter": {
     "_default": {
-      "weeklySubGoal": 4
+      "weeklySubGoal": 3
     }
   },
   "raffle": {

@@ -317,10 +317,35 @@ export function buildScorecard(data, goals, asOfStr, weekly, roster) {
     if (recruiterSubFinal.length !== rec0) weeklySubAvgV = round(recruiterSubFinal.reduce((s, r) => s + (r.weeklyAvg || 0), 0), 1);
   }
 
+  // ---------- PACED QTD goals (meeting + sub tiles) ----------
+  // The goal grows each completed week of the quarter instead of sitting at the full-quarter
+  // total, so the tile always answers "are we on pace through week N?". Goal = per-person weekly
+  // rate × #active people on the tab × weeks elapsed; actual = the per-week run-rate (sum of the
+  // detail weekly averages) × weeks elapsed, keeping actual and goal on the same QTD basis.
+  const weeksInQuarter = Math.max(1, Math.round((qEnd - qStart) / (7 * DAY)));
+  const weeksElapsed = Math.max(1, Math.min(weeksInQuarter, Math.floor((asOf - qStart) / (7 * DAY))));
+  const perAMmtgRate = (goals.perAM && goals.perAM._default && goals.perAM._default.weeklyMeetingGoal) || 10;
+  const perRecSubRate = (goals.perRecruiter && goals.perRecruiter._default && goals.perRecruiter._default.weeklySubGoal) || 3;
+  const numAMs = amMeetingFinal.length;
+  const numRecs = recruiterSubFinal.length;
+  const mtgWeeklyRate = amMeetingFinal.reduce((s, r) => s + (r.weeklyAvg || 0), 0);
+  const subWeeklyRate = recruiterSubFinal.reduce((s, r) => s + (r.weeklyAvg || 0), 0);
+  const pacedKpi = (actual, goal, note) => ({
+    actual, goal, pct: goal ? round((actual / goal) * 100) : null,
+    onPace: goal ? actual >= goal : null, fmt: "int", note, weeksElapsed, weeksInQuarter,
+  });
+  const meetingPaceKpi = pacedKpi(
+    Math.round(mtgWeeklyRate * weeksElapsed), Math.round(perAMmtgRate * numAMs * weeksElapsed),
+    `${perAMmtgRate}/AM/wk · ${numAMs} AMs · wk ${weeksElapsed} of ${weeksInQuarter}`);
+  const subPaceKpi = pacedKpi(
+    Math.round(subWeeklyRate * weeksElapsed), Math.round(perRecSubRate * numRecs * weeksElapsed),
+    `${perRecSubRate}/recruiter/wk · ${numRecs} recruiters · wk ${weeksElapsed} of ${weeksInQuarter}`);
+
   return {
     meta: {
       asOf: asOfStr, quarterLabel: goals.quarterLabel,
-      baselineWeekStart: goals.baselineWeekStart, quarterStart: goals.quarterStart, quarterEnd: goals.quarterEnd, lookbackWeeks: lookback,
+      baselineWeekStart: goals.baselineWeekStart, quarterStart: goals.quarterStart, quarterEnd: goals.quarterEnd,
+      lookbackWeeks: lookback, weeksElapsed, weeksInQuarter,
     },
     scorecard: {
       weeklySpread: kpi(oWeeklySpread, g.weeklySpreadGoal, "usd"),
@@ -341,8 +366,8 @@ export function buildScorecard(data, goals, asOfStr, weekly, roster) {
       forecast: oForecast,
     },
     goalTracking: {
-      weeklySubAvg: kpi(weeklySubAvgV, g.weeklySubGoal, "dec"),
-      qtrlyMeetingPace: kpi(meetingsQtr, g.qtrlyMeetingGoal, "int"),
+      weeklySubAvg: subPaceKpi,
+      qtrlyMeetingPace: meetingPaceKpi,
       fillRatio: kpi(fillRatioV, g.fillRatioGoal, "pct"),
       amMeetingAvg: amMeetingFinal.sort((a, b) => b.weeklyAvg - a.weeklyAvg),
       recruiterSubAvg: recruiterSubFinal.sort((a, b) => b.weeklyAvg - a.weeklyAvg),
