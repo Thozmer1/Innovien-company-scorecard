@@ -34,7 +34,7 @@ function bucketSum(rows, keyFn, valFn) {
   return m;
 }
 
-export function buildScorecard(data, goals, asOfStr, weekly) {
+export function buildScorecard(data, goals, asOfStr, weekly, roster) {
   const asOf = d(asOfStr) || new Date();
   const qStart = d(goals.quarterStart);
   const qEnd = d(goals.quarterEnd);
@@ -256,6 +256,47 @@ export function buildScorecard(data, goals, asOfStr, weekly) {
   const pct = (a, go) => go ? round((a / go) * 100) : null;
   const onp = (a, go) => go ? a >= go : null;
 
+  // ---------- Q2 tab: restrict to ACTIVE AMs / Recruiters (Notion People DB) ----------
+  // Show only people currently tagged Active AND in an AM/Recruiter role. Recompute the
+  // Meeting-Pace and Weekly-Sub tiles from the filtered detail so tile = sum(detail) holds.
+  // Fail-open: missing roster set, or a filter that would blank a populated table (name
+  // mismatch), reverts to the unfiltered list rather than hiding everyone.
+  const _norm = s => (s || "").toString().trim().replace(/\s+/g, " ").toLowerCase();
+  let amMeetingFinal = (amMeetingAvgV || amMeetingAvg);
+  let recruiterSubFinal = (recruiterSubAvgV || recruiterSubAvg);
+  let amFillFinal = amFillRatioV;
+  const rosterInfo = { source: "Notion People DB", applied: false,
+    activeAMCount: 0, activeRecruiterCount: 0, excludedAMs: [], excludedRecruiters: [] };
+  if (roster) {
+    const amSet  = roster.activeAMs instanceof Set ? roster.activeAMs : new Set((roster.activeAMs || []).map(_norm));
+    const recSet = roster.activeRecruiters instanceof Set ? roster.activeRecruiters : new Set((roster.activeRecruiters || []).map(_norm));
+    rosterInfo.activeAMCount = amSet.size;
+    rosterInfo.activeRecruiterCount = recSet.size;
+    if (amSet.size) {
+      const keep = r => amSet.has(_norm(r.name));
+      const fm = amMeetingFinal.filter(keep), ff = amFillFinal.filter(keep);
+      // Only apply if at least one detail row matched (guards against a name-format mismatch).
+      if (fm.length || ff.length) {
+        rosterInfo.applied = true;
+        rosterInfo.excludedAMs = [...new Set([...amMeetingFinal, ...amFillFinal]
+          .filter(r => !keep(r)).map(r => r.name))];
+        amMeetingFinal = fm;
+        amFillFinal = ff;
+        if (fm.length) meetingsQtr = fm.reduce((s, r) => s + (r.total || 0), 0); // tile = sum(detail)
+      }
+    }
+    if (recSet.size) {
+      const keep = r => recSet.has(_norm(r.name));
+      const fr = recruiterSubFinal.filter(keep);
+      if (fr.length) {
+        rosterInfo.applied = true;
+        rosterInfo.excludedRecruiters = recruiterSubFinal.filter(r => !keep(r)).map(r => r.name);
+        recruiterSubFinal = fr;
+        weeklySubAvgV = round(fr.reduce((s, r) => s + (r.weeklyAvg || 0), 0), 1); // tile = sum(detail)
+      }
+    }
+  }
+
   return {
     meta: {
       asOf: asOfStr, quarterLabel: goals.quarterLabel,
@@ -283,9 +324,10 @@ export function buildScorecard(data, goals, asOfStr, weekly) {
       weeklySubAvg: kpi(weeklySubAvgV, g.weeklySubGoal, "dec"),
       qtrlyMeetingPace: kpi(meetingsQtr, g.qtrlyMeetingGoal, "int"),
       fillRatio: kpi(fillRatioV, g.fillRatioGoal, "pct"),
-      amMeetingAvg: (amMeetingAvgV || amMeetingAvg).sort((a, b) => b.weeklyAvg - a.weeklyAvg),
-      recruiterSubAvg: (recruiterSubAvgV || recruiterSubAvg).sort((a, b) => b.weeklyAvg - a.weeklyAvg),
-      amFillRatio: amFillRatioV.sort((a, b) => b.ratio - a.ratio),
+      amMeetingAvg: amMeetingFinal.sort((a, b) => b.weeklyAvg - a.weeklyAvg),
+      recruiterSubAvg: recruiterSubFinal.sort((a, b) => b.weeklyAvg - a.weeklyAvg),
+      amFillRatio: amFillFinal.sort((a, b) => b.ratio - a.ratio),
+      roster: rosterInfo,
     },
     raffle: raffleOut,
     openReqHealth: { totalOpen: openReqRows.length, aging, reqsNoFill, totOpenings, totFilled },

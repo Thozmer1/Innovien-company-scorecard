@@ -98,8 +98,44 @@ export default async function handler(req, res) {
       })),
     };
 
+    // ---- Active AM/Recruiter roster (People DB) -------------------------------
+    // The Q2 Goal Tracking tab should only show people currently tagged Active AND
+    // in an AM/Recruiter role. We read it live so the dashboard tracks Notion.
+    // Fail-open: any error here leaves roster null and metrics skips the filter.
+    let roster = null;
+    try {
+      const truthyActive = (v) => {
+        if (v === true) return true;
+        if (typeof v === "number") return v !== 0;
+        if (typeof v === "string") {
+          const s = v.trim().toLowerCase();
+          if (!s) return false;
+          if (["inactive", "no", "false", "n", "0"].includes(s)) return false;
+          if (["active", "yes", "true", "y", "1"].includes(s)) return true;
+          return s.includes("active") && !s.includes("inactive");
+        }
+        return false;
+      };
+      const AM_ROLES = new Set(["am", "account manager", "sr. account manager", "senior account manager"]);
+      const REC_ROLES = new Set(["recruiter", "recruiting lead", "sr. recruiter", "senior recruiter"]);
+      const norm = (s) => (s || "").toString().trim().replace(/\s+/g, " ").toLowerCase();
+      const ppl = await queryAll(notion, DB.people);
+      const activeAMs = new Set(), activeRecruiters = new Set();
+      for (const pg of ppl) {
+        const name = P.text(pg, "Full Name");
+        if (!name) continue;
+        if (!truthyActive(P.formula(pg, "Active"))) continue;
+        const role = norm(P.sel(pg, "Role"));
+        if (AM_ROLES.has(role)) activeAMs.add(norm(name));
+        else if (REC_ROLES.has(role)) activeRecruiters.add(norm(name));
+      }
+      roster = { activeAMs, activeRecruiters, peopleRows: ppl.length };
+    } catch (e) {
+      roster = null; // People DB unreachable → show all (current behavior)
+    }
+
     const asOf = new Date().toISOString().slice(0, 10);
-    const result = buildScorecard(data, goals, asOf, weekly);
+    const result = buildScorecard(data, goals, asOf, weekly, roster);
     result.rowCounts = {
       activeContracts: ac.length, recruiterDaily: rd.length, amWeekly: am.length,
       openReqs: or_.length, placementEvents: pe.length, innovienNext: inx.length,

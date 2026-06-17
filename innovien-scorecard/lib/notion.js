@@ -18,6 +18,8 @@ export const DB = {
   esfPipeline:     process.env.DB_ESF_PIPELINE     || "6981fee2-c458-4e09-99ed-a29fe9e4633d",
   psfPipeline:     process.env.DB_PSF_PIPELINE     || "08344154-4a4e-47a4-b7ae-f0e322caf834",
   companyGoals:    process.env.DB_COMPANY_GOALS    || "68691cd3-0222-4760-b2ed-8bd07ce528ae",
+  // People roster (Comtrak-fed). Used to keep the Q2 tab to ACTIVE AMs/Recruiters only.
+  people:          process.env.DB_PEOPLE          || "3600fa85-b8df-80d9-be56-d5f97893a7ab",
 };
 
 // Query every page in a database (handles pagination + an optional filter).
@@ -50,4 +52,14 @@ export const P = {
     return null;
   },
   formulaNum: (pg, name) => pg.properties?.[name]?.formula?.number ?? null,
+  // Resolved formula value regardless of result type (boolean / string / number / date).
+  formula: (pg, name) => {
+    const f = pg.properties?.[name]?.formula;
+    if (!f) return null;
+    if ("boolean" in f && f.boolean !== null && f.boolean !== undefined) return f.boolean;
+    if ("string" in f && f.string != null) return f.string;
+    if ("number" in f && f.number != null) return f.number;
+    if ("date" in f && f.date) return f.date.start ?? null;
+    return null;
+  },
 };
