@@ -297,6 +297,25 @@ export function buildScorecard(data, goals, asOfStr, weekly, roster) {
     }
   }
 
+  // Hard exclude: never show on the Q2 tab regardless of People-DB Active flag.
+  // For people who have role-transitioned but are still tagged active in Notion.
+  // Applies even when the live roster filter is skipped (fail-open), and recomputes
+  // the Meeting-Pace / Weekly-Sub tiles so tile = sum(detail) still holds.
+  const Q2_EXCLUDE = new Set(["johnna fusco"]);
+  if (Q2_EXCLUDE.size) {
+    const drop = r => Q2_EXCLUDE.has(_norm(r.name));
+    const exAM = [...new Set([...amMeetingFinal, ...amFillFinal].filter(drop).map(r => r.name))];
+    const exRec = recruiterSubFinal.filter(drop).map(r => r.name);
+    if (exAM.length) rosterInfo.excludedAMs = [...new Set([...rosterInfo.excludedAMs, ...exAM])];
+    if (exRec.length) rosterInfo.excludedRecruiters = [...new Set([...rosterInfo.excludedRecruiters, ...exRec])];
+    const am0 = amMeetingFinal.length, rec0 = recruiterSubFinal.length;
+    amMeetingFinal = amMeetingFinal.filter(r => !drop(r));
+    amFillFinal = amFillFinal.filter(r => !drop(r));
+    recruiterSubFinal = recruiterSubFinal.filter(r => !drop(r));
+    if (amMeetingFinal.length !== am0) meetingsQtr = amMeetingFinal.reduce((s, r) => s + (r.total || 0), 0);
+    if (recruiterSubFinal.length !== rec0) weeklySubAvgV = round(recruiterSubFinal.reduce((s, r) => s + (r.weeklyAvg || 0), 0), 1);
+  }
+
   return {
     meta: {
       asOf: asOfStr, quarterLabel: goals.quarterLabel,
