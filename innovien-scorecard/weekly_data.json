@@ -483,7 +483,10 @@
         "recruiter": "Gloria Manley",
         "spread": 1267
       }
-    ]
+    ],
+    "accrual_start_date": "2026-06-09",
+    "drawn_members": [],
+    "advance_drawing": false
   },
   "fill_ratio": {
     "as_of": "2026-06-17",
