@@ -301,7 +301,8 @@ export function buildScorecard(data, goals, asOfStr, weekly, roster) {
   // For people who have role-transitioned but are still tagged active in Notion.
   // Applies even when the live roster filter is skipped (fail-open), and recomputes
   // the Meeting-Pace / Weekly-Sub tiles so tile = sum(detail) still holds.
-  const Q2_EXCLUDE = new Set(["johnna fusco"]);
+  // Leaders over the AM / intern-TA teams (not individual-target carriers) + role-transitioned.
+  const Q2_EXCLUDE = new Set(["johnna fusco", "josh mastel", "shannon johnson"]);
   if (Q2_EXCLUDE.size) {
     const drop = r => Q2_EXCLUDE.has(_norm(r.name));
     const exAM = [...new Set([...amMeetingFinal, ...amFillFinal].filter(drop).map(r => r.name))];
