@@ -104,8 +104,28 @@ export function buildScorecard(data, goals, asOfStr, weekly) {
 
   const totalSubs13 = subs13.reduce((s, r) => s + (r.subs || 0), 0);
   const weeklySubAvg = round(totalSubs13 / lookback, 1);
+  // Subs override from the PBI "Recruiter Activity" tab (via weekly_data.json subs).
+  let recruiterSubAvgV = null, weeklySubAvgV = weeklySubAvg;
+  if (weekly && weekly.subs) {
+    const sb = weekly.subs;
+    if (typeof sb.weekly_avg === "number") weeklySubAvgV = sb.weekly_avg;
+    if (Array.isArray(sb.by_recruiter)) recruiterSubAvgV = sb.by_recruiter.map(a => ({
+      name: a.name, weeklyAvg: a.weekly_avg, total: a.count,
+      goal: goalFor(goals.perRecruiter, a.name, "weeklySubGoal"),
+    }));
+  }
 
-  const meetingsQtr = amWeekly.filter(a => a.activityType === "Meeting" && within(a.date, qStart, qEnd)).length;
+  let meetingsQtr = amWeekly.filter(a => a.activityType === "Meeting" && within(a.date, qStart, qEnd)).length;
+  let amMeetingAvgV = null;  // set below from PBI Contact Activity if present
+  // Meetings override from the PBI "Contact Activity" tab (via weekly_data.json meetings).
+  if (weekly && weekly.meetings) {
+    const mt = weekly.meetings;
+    if (typeof mt.quarterly_pace === "number") meetingsQtr = mt.quarterly_pace;
+    if (Array.isArray(mt.by_am)) amMeetingAvgV = mt.by_am.map(a => ({
+      name: a.name, weeklyAvg: a.weekly_avg, total: a.count,
+      goal: goalFor(goals.perAM, a.name, "weeklyMeetingGoal"),
+    }));
+  }
 
   // Fill ratio = filled / openings on open reqs
   const openReqRows = openReqs.filter(r => r.status === "Open");
@@ -260,11 +280,11 @@ export function buildScorecard(data, goals, asOfStr, weekly) {
       forecast: oForecast,
     },
     goalTracking: {
-      weeklySubAvg: kpi(weeklySubAvg, g.weeklySubGoal, "dec"),
+      weeklySubAvg: kpi(weeklySubAvgV, g.weeklySubGoal, "dec"),
       qtrlyMeetingPace: kpi(meetingsQtr, g.qtrlyMeetingGoal, "int"),
       fillRatio: kpi(fillRatioV, g.fillRatioGoal, "pct"),
-      amMeetingAvg: amMeetingAvg.sort((a, b) => b.weeklyAvg - a.weeklyAvg),
-      recruiterSubAvg: recruiterSubAvg.sort((a, b) => b.weeklyAvg - a.weeklyAvg),
+      amMeetingAvg: (amMeetingAvgV || amMeetingAvg).sort((a, b) => b.weeklyAvg - a.weeklyAvg),
+      recruiterSubAvg: (recruiterSubAvgV || recruiterSubAvg).sort((a, b) => b.weeklyAvg - a.weeklyAvg),
       amFillRatio: amFillRatioV.sort((a, b) => b.ratio - a.ratio),
     },
     raffle: raffleOut,
@@ -302,7 +322,7 @@ function forecastByWeek(contracts, anchorStart, qEnd, asOf) {
 }
 function mondayOf(dt) {
   const t = new Date(dt.getTime());
-  const day = (t.getUTCDay() + 6) % 7; // Mon=0
+  const day = (t.getUTCDay() + 6) % 7; // Mon = 0
   t.setUTCDate(t.getUTCDate() - day); t.setUTCHours(0, 0, 0, 0);
   return t;
 }
