@@ -383,100 +383,8 @@
   "raffle": {
     "threshold": 1250,
     "batch_size": 15,
-    "current_drawing_no": 1,
+    "current_drawing_no": 2,
     "current_members": [
-      {
-        "name": "Bartholomew Baptista",
-        "am": "Brie Branting",
-        "recruiter": "Dan Bostock",
-        "spread": 1423
-      },
-      {
-        "name": "Darren Baird",
-        "am": "Daniela Blesich",
-        "recruiter": "Ryan Mickley",
-        "spread": 1540
-      },
-      {
-        "name": "Shane Hayes",
-        "am": "Brie Branting",
-        "recruiter": "Brennan Lantz",
-        "spread": 1251
-      },
-      {
-        "name": "Ken Ptaszynski",
-        "am": "Jon Pack",
-        "recruiter": "Julia McDonald",
-        "spread": 1256
-      },
-      {
-        "name": "Ketan Patel",
-        "am": "Jon Pack",
-        "recruiter": "Julia McDonald",
-        "spread": 1384
-      },
-      {
-        "name": "Irina Belska",
-        "am": "Mollie Ferguson",
-        "recruiter": "Gloria Manley",
-        "spread": 1428
-      },
-      {
-        "name": "Adigun Palmer",
-        "am": "Mollie Ferguson",
-        "recruiter": "Jordan Foote",
-        "spread": 1384
-      },
-      {
-        "name": "Brian Childs",
-        "am": "Mollie Ferguson",
-        "recruiter": "Julia McDonald",
-        "spread": 1384
-      },
-      {
-        "name": "Paul Sheen",
-        "am": "Mollie Ferguson",
-        "recruiter": "Mike Murphy",
-        "spread": 1750
-      },
-      {
-        "name": "Andrew Elliott",
-        "am": "Mollie Ferguson",
-        "recruiter": "Brennan Lantz",
-        "spread": 1340
-      },
-      {
-        "name": "Mahesh Chukka",
-        "am": "Mollie Ferguson",
-        "recruiter": "Chelsea Navarro",
-        "spread": 1480
-      },
-      {
-        "name": "Lee Davis",
-        "am": "Mollie Ferguson",
-        "recruiter": "Mike Murphy",
-        "spread": 1250
-      },
-      {
-        "name": "Gabriel Sardinha de Oliveira",
-        "am": "Mike Minnillo",
-        "recruiter": "Mike Murphy",
-        "spread": 1392
-      },
-      {
-        "name": "Eduardo Alfonso",
-        "am": "Mike Minnillo",
-        "recruiter": "Mike Murphy",
-        "spread": 1350
-      },
-      {
-        "name": "Cortland Durham",
-        "am": "Jon Pack",
-        "recruiter": "Gloria Manley",
-        "spread": 1404
-      }
-    ],
-    "next_up": [
       {
         "name": "Abba-Joseph Awano",
         "am": "Hannah Craig",
@@ -484,8 +392,25 @@
         "spread": 1267
       }
     ],
+    "next_up": [],
     "accrual_start_date": "2026-06-09",
-    "drawn_members": [],
+    "drawn_members": [
+      "Bartholomew Baptista",
+      "Darren Baird",
+      "Shane Hayes",
+      "Ken Ptaszynski",
+      "Ketan Patel",
+      "Irina Belska",
+      "Adigun Palmer",
+      "Brian Childs",
+      "Paul Sheen",
+      "Andrew Elliott",
+      "Mahesh Chukka",
+      "Lee Davis",
+      "Gabriel Sardinha de Oliveira",
+      "Eduardo Alfonso",
+      "Cortland Durham"
+    ],
     "advance_drawing": false
   },
   "fill_ratio": {

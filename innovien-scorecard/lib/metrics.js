@@ -206,7 +206,7 @@ export function buildScorecard(data, goals, asOfStr, weekly, roster) {
     raffleOut = {
       mode: "curated", threshold: rf.threshold || thr, batchSize: bsz,
       currentDrawingNo: rf.current_drawing_no || 1,
-      currentCount: cur.length, currentReady: cur.length >= bsz,
+      currentCount: cur.length, currentReady: cur.length >= bsz, startsToCurrentDrawing: Math.max(0, bsz - cur.length),
       totalTickets: lb.reduce((s2, x) => s2 + x.tickets, 0),
       leaderboard: lb,
       currentMembers: cur.map(m => ({ name: m.name, am: m.am || "Unassigned", recruiter: m.recruiter || "", spread: Math.round(m.spread || 0) })),
