@@ -314,12 +314,12 @@
     "forecast": [
       {
         "weekStart": "2026-03-30",
-        "plannedIn": 11158,
+        "plannedIn": 11438,
         "plannedOut": 25316
       },
       {
         "weekStart": "2026-04-06",
-        "plannedIn": 7073,
+        "plannedIn": 7473,
         "plannedOut": 4415
       },
       {
@@ -329,32 +329,32 @@
       },
       {
         "weekStart": "2026-04-20",
-        "plannedIn": 11499,
+        "plannedIn": 11099,
         "plannedOut": 5353
       },
       {
         "weekStart": "2026-04-27",
-        "plannedIn": 4993,
+        "plannedIn": 8621,
         "plannedOut": 13754
       },
       {
         "weekStart": "2026-05-04",
-        "plannedIn": 11328,
+        "plannedIn": 11488,
         "plannedOut": 1253
       },
       {
         "weekStart": "2026-05-11",
-        "plannedIn": 2711,
+        "plannedIn": 2919,
         "plannedOut": 4981
       },
       {
         "weekStart": "2026-05-18",
-        "plannedIn": 4726,
+        "plannedIn": 4810,
         "plannedOut": 6726
       },
       {
         "weekStart": "2026-05-25",
-        "plannedIn": 6160,
+        "plannedIn": 6210,
         "plannedOut": 5896
       },
       {
@@ -364,21 +364,21 @@
       },
       {
         "weekStart": "2026-06-08",
-        "plannedIn": 12028,
+        "plannedIn": 12228,
         "plannedOut": 4104
       },
       {
         "weekStart": "2026-06-15",
-        "plannedIn": 10518,
+        "plannedIn": 2285,
         "plannedOut": 3437
       },
       {
         "weekStart": "2026-06-22",
-        "plannedIn": 6470,
+        "plannedIn": 16220,
         "plannedOut": 2337
       }
     ],
-    "lockup_spread_goal": 10893
+    "lockup_spread_goal": 9500
   },
   "raffle": {
     "threshold": 1250,
