@@ -299,15 +299,15 @@
     }
   ],
   "scorecard": {
-    "net_new_starts": 93,
-    "avg_start_spread": 1179,
-    "pending_count": 7,
-    "pending_avg_spread": 1166,
-    "pending_total_spread": 8160,
+    "net_new_starts": 96,
+    "avg_start_spread": 1173,
+    "pending_count": 3,
+    "pending_avg_spread": 1343,
+    "pending_total_spread": 4030,
     "lockup_count": null,
-    "lockup_spread": 5408,
-    "dumpin_count": 80,
-    "dumpin_spread": 94921,
+    "lockup_spread": 12765,
+    "dumpin_count": 79,
+    "dumpin_spread": 93761,
     "active_consultants": 279,
     "redeployed": null,
     "available_bench": null,
@@ -374,7 +374,7 @@
       },
       {
         "weekStart": "2026-06-22",
-        "plannedIn": 16518,
+        "plannedIn": 15358,
         "plannedOut": 2337
       }
     ],
@@ -408,6 +408,12 @@
         "am": "Jon Pack",
         "recruiter": "Merrimon McCartney",
         "spread": 2584
+      },
+      {
+        "name": "Syed Abbas",
+        "am": "Brie Branting",
+        "recruiter": "Ben Dorsey",
+        "spread": 1346
       }
     ],
     "next_up": [],
@@ -432,7 +438,7 @@
     "advance_drawing": false
   },
   "fill_ratio": {
-    "as_of": "2026-06-23",
+    "as_of": "2026-06-25",
     "window_weeks": 13,
     "company": {
       "filled": 67,
@@ -478,9 +484,9 @@
       },
       {
         "name": "Mike Minnillo",
-        "filled": 9,
-        "openings": 16,
-        "ratio": 0.5625
+        "filled": 8,
+        "openings": 15,
+        "ratio": 0.5333
       },
       {
         "name": "Kelsie Laughlin",
@@ -489,16 +495,22 @@
         "ratio": 0.4545
       },
       {
-        "name": "Stephen Denzel",
-        "filled": 4,
-        "openings": 11,
-        "ratio": 0.3636
-      },
-      {
         "name": "Malia Graham",
         "filled": 1,
         "openings": 3,
         "ratio": 0.3333
+      },
+      {
+        "name": "Stephen Denzel",
+        "filled": 3,
+        "openings": 9,
+        "ratio": 0.3333
+      },
+      {
+        "name": "Cristina Murto",
+        "filled": 1,
+        "openings": 4,
+        "ratio": 0.25
       },
       {
         "name": "Riley Laverty",
@@ -513,12 +525,6 @@
         "ratio": 0.2
       },
       {
-        "name": "Cristina Murto",
-        "filled": 1,
-        "openings": 5,
-        "ratio": 0.2
-      },
-      {
         "name": "Kollin Korell",
         "filled": 0,
         "openings": 24,
@@ -527,77 +533,77 @@
     ]
   },
   "meetings": {
-    "quarterly_pace": 1693,
+    "quarterly_pace": 1620,
     "by_am": [
       {
         "name": "Mollie Ferguson",
-        "count": 214,
-        "weekly_avg": 16.5
-      },
-      {
-        "name": "Kelsie Laughlin",
-        "count": 155,
-        "weekly_avg": 11.9
+        "count": 195,
+        "weekly_avg": 15.0
       },
       {
         "name": "Kollin Korell",
-        "count": 152,
-        "weekly_avg": 11.7
-      },
-      {
-        "name": "Mike Minnillo",
-        "count": 149,
+        "count": 150,
         "weekly_avg": 11.5
       },
       {
-        "name": "Hannah Craig",
-        "count": 148,
-        "weekly_avg": 11.4
-      },
-      {
-        "name": "Brie Branting",
+        "name": "Kelsie Laughlin",
         "count": 147,
         "weekly_avg": 11.3
       },
       {
+        "name": "Hannah Craig",
+        "count": 145,
+        "weekly_avg": 11.2
+      },
+      {
+        "name": "Brie Branting",
+        "count": 146,
+        "weekly_avg": 11.2
+      },
+      {
+        "name": "Mike Minnillo",
+        "count": 143,
+        "weekly_avg": 11.0
+      },
+      {
         "name": "Riley Laverty",
-        "count": 142,
-        "weekly_avg": 10.9
+        "count": 138,
+        "weekly_avg": 10.6
       },
       {
         "name": "Stephen Denzel",
-        "count": 132,
-        "weekly_avg": 10.2
+        "count": 128,
+        "weekly_avg": 9.8
       },
       {
         "name": "Jon Pack",
-        "count": 117,
-        "weekly_avg": 9.0
+        "count": 113,
+        "weekly_avg": 8.7
       },
       {
         "name": "Daniela Blesich",
-        "count": 114,
-        "weekly_avg": 8.8
+        "count": 107,
+        "weekly_avg": 8.2
       },
       {
         "name": "Jessica Evans",
-        "count": 85,
-        "weekly_avg": 6.5
-      },
-      {
-        "name": "Johnna Fusco",
         "count": 82,
         "weekly_avg": 6.3
       },
       {
+        "name": "Johnna Fusco",
+        "count": 75,
+        "weekly_avg": 5.8
+      },
+      {
         "name": "Cristina Murto",
-        "count": 26,
-        "weekly_avg": 2.0
+        "count": 22,
+        "weekly_avg": 1.7
       },
       {
         "name": "Craig Coates",
-        "count": 22,
-        "weekly_avg": 1.7
+        "count": 21,
+        "weekly_avg": 1.6
       },
       {
         "name": "Jesu Philip",
@@ -613,22 +619,22 @@
     "lookback_weeks": 13
   },
   "subs": {
-    "weekly_avg": 51.6,
+    "weekly_avg": 53.3,
     "by_recruiter": [
       {
-        "name": "Gloria Manley",
-        "count": 62,
-        "weekly_avg": 4.8
+        "name": "Jamie Houvig",
+        "count": 65,
+        "weekly_avg": 5.0
       },
       {
-        "name": "Jamie Houvig",
-        "count": 62,
-        "weekly_avg": 4.8
+        "name": "Gloria Manley",
+        "count": 64,
+        "weekly_avg": 4.9
       },
       {
         "name": "Merrimon McCartney",
-        "count": 55,
-        "weekly_avg": 4.2
+        "count": 57,
+        "weekly_avg": 4.4
       },
       {
         "name": "Dan Bostock",
@@ -637,26 +643,31 @@
       },
       {
         "name": "Jordan Foote",
-        "count": 46,
-        "weekly_avg": 3.5
+        "count": 47,
+        "weekly_avg": 3.6
       },
       {
         "name": "Julia McDonald",
-        "count": 45,
-        "weekly_avg": 3.5
+        "count": 47,
+        "weekly_avg": 3.6
       },
       {
         "name": "Luke Reineke",
+        "count": 47,
+        "weekly_avg": 3.6
+      },
+      {
+        "name": "Brandon Dowdell",
         "count": 46,
         "weekly_avg": 3.5
       },
       {
-        "name": "Brandon Dowdell",
-        "count": 43,
-        "weekly_avg": 3.3
+        "name": "Brennan Lantz",
+        "count": 46,
+        "weekly_avg": 3.5
       },
       {
-        "name": "Brennan Lantz",
+        "name": "Mike Murphy",
         "count": 43,
         "weekly_avg": 3.3
       },
@@ -666,24 +677,19 @@
         "weekly_avg": 3.2
       },
       {
-        "name": "Mike Murphy",
-        "count": 42,
-        "weekly_avg": 3.2
-      },
-      {
         "name": "Monika DuVarney",
-        "count": 39,
-        "weekly_avg": 3.0
+        "count": 40,
+        "weekly_avg": 3.1
       },
       {
         "name": "Ryan Mickley",
-        "count": 39,
-        "weekly_avg": 3.0
+        "count": 40,
+        "weekly_avg": 3.1
       },
       {
         "name": "Adam Williams",
-        "count": 37,
-        "weekly_avg": 2.8
+        "count": 39,
+        "weekly_avg": 3.0
       },
       {
         "name": "Chelsea Navarro",
