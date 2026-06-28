@@ -1,10 +1,10 @@
 {
   "_comment": "FALLBACK goals only. The live dashboard reads targets from the Notion 'Company Goals' database (Metric Key -> Value) for the current Period; these values are used only if that row is missing or the Goals DB is unreachable. Quarter dates live here because the Goals DB stores values, not the calendar.",
   "_dates_comment": "EDIT THESE EACH QUARTER. baselineWeekStart = the Monday of the week we measure quarterly spread growth FROM (usually the week BEFORE the quarter). quarterStart/quarterEnd = the actual quarter window (Mon..Sun) used to count starts, pending, dump-in, meetings. The In/Out growth chart runs from baselineWeekStart through quarterEnd.",
-  "quarterLabel": "Q2 2026",
-  "baselineWeekStart": "2026-03-23",
-  "quarterStart": "2026-03-30",
-  "quarterEnd": "2026-06-28",
+  "quarterLabel": "Q3 2026",
+  "baselineWeekStart": "2026-06-22",
+  "quarterStart": "2026-06-29",
+  "quarterEnd": "2026-09-27",
   "lookbackWeeks": 13,
   "company": {
     "weeklySpreadGoal": 364000,
@@ -18,7 +18,7 @@
     "fillRatioGoal": 0.6,
     "redeployedGoal": 12,
     "yearSpreadGoal": 500000,
-    "dumpinSpreadGoal": 95033
+    "dumpinSpreadGoal": 93926
   },
   "perAM": {
     "_default": {
