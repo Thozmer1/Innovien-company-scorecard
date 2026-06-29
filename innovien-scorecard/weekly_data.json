@@ -305,7 +305,7 @@
     "pending_avg_spread": 1142,
     "pending_total_spread": 39966,
     "lockup_count": null,
-    "lockup_spread": 20265,
+    "lockup_spread": 0,
     "dumpin_count": 0,
     "dumpin_spread": 0,
     "active_consultants": 279,
@@ -438,7 +438,7 @@
     "advance_drawing": false
   },
   "fill_ratio": {
-    "as_of": "2026-06-28",
+    "as_of": "2026-06-29",
     "window_weeks": 13,
     "company": {
       "filled": 0,
@@ -533,37 +533,37 @@
     ]
   },
   "meetings": {
-    "quarterly_pace": 1604,
+    "quarterly_pace": 1640,
     "by_am": [
       {
         "name": "Mollie Ferguson",
-        "count": 201,
+        "count": 202,
         "weekly_avg": 15.5
       },
       {
-        "name": "Brie Branting",
-        "count": 151,
-        "weekly_avg": 11.6
+        "name": "Kollin Korell",
+        "count": 158,
+        "weekly_avg": 12.2
       },
       {
-        "name": "Kollin Korell",
-        "count": 146,
-        "weekly_avg": 11.2
+        "name": "Brie Branting",
+        "count": 153,
+        "weekly_avg": 11.8
       },
       {
         "name": "Hannah Craig",
-        "count": 145,
-        "weekly_avg": 11.2
-      },
-      {
-        "name": "Mike Minnillo",
-        "count": 142,
-        "weekly_avg": 10.9
+        "count": 147,
+        "weekly_avg": 11.3
       },
       {
         "name": "Kelsie Laughlin",
-        "count": 139,
-        "weekly_avg": 10.7
+        "count": 147,
+        "weekly_avg": 11.3
+      },
+      {
+        "name": "Mike Minnillo",
+        "count": 143,
+        "weekly_avg": 11.0
       },
       {
         "name": "Riley Laverty",
@@ -577,8 +577,8 @@
       },
       {
         "name": "Jon Pack",
-        "count": 111,
-        "weekly_avg": 8.5
+        "count": 115,
+        "weekly_avg": 8.8
       },
       {
         "name": "Daniela Blesich",
@@ -587,8 +587,8 @@
       },
       {
         "name": "Jessica Evans",
-        "count": 81,
-        "weekly_avg": 6.2
+        "count": 87,
+        "weekly_avg": 6.7
       },
       {
         "name": "Johnna Fusco",
