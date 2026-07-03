@@ -317,6 +317,14 @@ export function buildScorecard(data, goals, asOfStr, weekly, roster) {
     if (recruiterSubFinal.length !== rec0) weeklySubAvgV = round(recruiterSubFinal.reduce((s, r) => s + (r.weeklyAvg || 0), 0), 1);
   }
 
+  // Fill Ratio tile now reflects the trailing-13-week aggregate of the shown active AMs
+  // (matches the AM Fill Ratio (13 Wk) table window) instead of company QTD.
+  {
+    const _ff = amFillFinal.reduce((s, r) => s + (r.filled || 0), 0);
+    const _fo = amFillFinal.reduce((s, r) => s + (r.openings || 0), 0);
+    if (_fo > 0) fillRatioV = round(_ff / _fo, 3);
+  }
+
   // ---------- PACED QTD goals (meeting + sub tiles) ----------
   // The goal grows each completed week of the quarter instead of sitting at the full-quarter
   // total, so the tile always answers "are we on pace through week N?". Goal = per-person weekly
