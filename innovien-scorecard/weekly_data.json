@@ -299,32 +299,32 @@
     }
   ],
   "scorecard": {
-    "net_new_starts": 13,
-    "avg_start_spread": 1192,
+    "net_new_starts": 18,
+    "avg_start_spread": 1206,
     "pending_count": 25,
-    "pending_avg_spread": 1229,
-    "pending_total_spread": 30731,
+    "pending_avg_spread": 1224,
+    "pending_total_spread": 30602,
     "lockup_count": null,
-    "lockup_spread": 0,
-    "dumpin_count": 4,
-    "dumpin_spread": 5038,
+    "lockup_spread": 3863,
+    "dumpin_count": 7,
+    "dumpin_spread": 8902,
     "active_consultants": 279,
     "redeployed": null,
     "available_bench": null,
     "forecast": [
       {
         "weekStart": "2026-06-29",
-        "plannedIn": 17709,
+        "plannedIn": 15501,
         "plannedOut": 56985
       },
       {
         "weekStart": "2026-07-06",
-        "plannedIn": 12003,
+        "plannedIn": 12247,
         "plannedOut": 2313
       },
       {
         "weekStart": "2026-07-13",
-        "plannedIn": 9825,
+        "plannedIn": 13397,
         "plannedOut": 672
       },
       {
@@ -339,12 +339,12 @@
       },
       {
         "weekStart": "2026-08-03",
-        "plannedIn": 920,
+        "plannedIn": 2160,
         "plannedOut": 4018
       },
       {
         "weekStart": "2026-08-10",
-        "plannedIn": 0,
+        "plannedIn": 1015,
         "plannedOut": 2154
       },
       {
@@ -456,6 +456,24 @@
         "am": "Kelsie Laughlin",
         "recruiter": "Chelsea Navarro",
         "spread": 1296
+      },
+      {
+        "name": "Arthur Larson",
+        "am": "Stephen Denzel",
+        "recruiter": "Brandon Dowdell",
+        "spread": 1664
+      },
+      {
+        "name": "JAVED RAZA",
+        "am": "Jon Pack",
+        "recruiter": "Mike Murphy",
+        "spread": 1376
+      },
+      {
+        "name": "Christopher Star",
+        "am": "Mike Minnillo",
+        "recruiter": "Jamie Houvig",
+        "spread": 1716
       }
     ],
     "next_up": [],
@@ -575,12 +593,17 @@
     ]
   },
   "meetings": {
-    "quarterly_pace": 1548,
+    "quarterly_pace": 1582,
     "by_am": [
       {
         "name": "Mollie Ferguson",
-        "count": 192,
+        "count": 193,
         "weekly_avg": 14.8
+      },
+      {
+        "name": "Brie Branting",
+        "count": 156,
+        "weekly_avg": 12.0
       },
       {
         "name": "Kollin Korell",
@@ -588,24 +611,19 @@
         "weekly_avg": 11.9
       },
       {
-        "name": "Brie Branting",
-        "count": 148,
-        "weekly_avg": 11.4
-      },
-      {
         "name": "Hannah Craig",
         "count": 143,
         "weekly_avg": 11.0
       },
       {
+        "name": "Kelsie Laughlin",
+        "count": 140,
+        "weekly_avg": 10.8
+      },
+      {
         "name": "Riley Laverty",
         "count": 138,
         "weekly_avg": 10.6
-      },
-      {
-        "name": "Kelsie Laughlin",
-        "count": 135,
-        "weekly_avg": 10.4
       },
       {
         "name": "Mike Minnillo",
@@ -619,18 +637,18 @@
       },
       {
         "name": "Jon Pack",
-        "count": 108,
-        "weekly_avg": 8.3
+        "count": 113,
+        "weekly_avg": 8.7
+      },
+      {
+        "name": "Jessica Evans",
+        "count": 100,
+        "weekly_avg": 7.7
       },
       {
         "name": "Daniela Blesich",
         "count": 92,
         "weekly_avg": 7.1
-      },
-      {
-        "name": "Jessica Evans",
-        "count": 85,
-        "weekly_avg": 6.5
       },
       {
         "name": "Johnna Fusco",
