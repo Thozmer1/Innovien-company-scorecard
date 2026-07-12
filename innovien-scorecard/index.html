@@ -140,6 +140,7 @@ function render(d){
     (p.avgOnPace===null?'':paceLine((p.avgOnPace?'Avg ≥ goal':'Avg below goal')+(p.avgPct!=null?` · ${p.avgPct}%`:''),p.avgOnPace));
   const lockSub =
     `<div class="goal">Lock-up goal ${lu.spreadGoal?fmtUsd(lu.spreadGoal):'—'}</div>`+
+    (lu.targetNote?`<div class="goal" style="opacity:.7;font-size:.82em">${lu.targetNote}</div>`:'')+
     (lu.spreadOnPace===null?'':paceLine((lu.spreadOnPace?'At / above goal':'Below goal')+(lu.spreadPct!=null?` · ${lu.spreadPct}%`:''),lu.spreadOnPace));
   const dumpSub =
     `<div class="goal">${di.count} dump-ins · created this qtr, start by qtr end</div>`+

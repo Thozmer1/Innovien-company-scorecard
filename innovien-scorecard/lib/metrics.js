@@ -365,7 +365,7 @@ export function buildScorecard(data, goals, asOfStr, weekly, roster) {
         countGoal: oLockCountGoal, spreadGoal: oLockSpreadGoal,
         countPct: pct(oLockCount, oLockCountGoal), countOnPace: onp(oLockCount, oLockCountGoal),
         spreadPct: pct(oLockSpread, oLockSpreadGoal), spreadOnPace: onp(oLockSpread, oLockSpreadGoal),
-        weekStart: wkStart.toISOString().slice(0,10) },
+        weekStart: wkStart.toISOString().slice(0,10), targetNote: _wsc.lockup_target_note ?? null },
       dumpIn: { count: oDumpCount, spread: oDumpSpread, spreadGoal: g.dumpinSpreadGoal,
         spreadPct: pct(oDumpSpread, g.dumpinSpreadGoal), spreadOnPace: onp(oDumpSpread, g.dumpinSpreadGoal) },
       activeConsultants: oActive,
