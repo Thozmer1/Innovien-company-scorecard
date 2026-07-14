@@ -299,15 +299,15 @@
     }
   ],
   "scorecard": {
-    "net_new_starts": 20,
-    "avg_start_spread": 1237,
-    "pending_count": 30,
-    "pending_avg_spread": 1174,
-    "pending_total_spread": 35213,
+    "net_new_starts": 25,
+    "avg_start_spread": 1213,
+    "pending_count": 26,
+    "pending_avg_spread": 1130,
+    "pending_total_spread": 29380,
     "lockup_count": null,
-    "lockup_spread": 0,
-    "dumpin_count": 14,
-    "dumpin_spread": 16550,
+    "lockup_spread": 1842,
+    "dumpin_count": 16,
+    "dumpin_spread": 18430,
     "active_consultants": 279,
     "redeployed": null,
     "available_bench": null,
@@ -324,17 +324,17 @@
       },
       {
         "weekStart": "2026-07-13",
-        "plannedIn": 16407,
+        "plannedIn": 12059,
         "plannedOut": 672
       },
       {
         "weekStart": "2026-07-20",
-        "plannedIn": 7990,
+        "plannedIn": 9038,
         "plannedOut": 1639
       },
       {
         "weekStart": "2026-07-27",
-        "plannedIn": 5188,
+        "plannedIn": 8240,
         "plannedOut": 9319
       },
       {
@@ -378,8 +378,8 @@
         "plannedOut": 1767
       }
     ],
-    "lockup_spread_goal": 9103,
-    "lockup_target_note": "$77,376 to dump-in goal / 8.5 wks left (auto-paced)"
+    "lockup_spread_goal": 9099,
+    "lockup_target_note": "$77,339 to dump-in goal / 8.5 wks left (auto-paced)"
   },
   "raffle": {
     "threshold": 1250,
@@ -483,6 +483,18 @@
         "am": "Hannah Craig",
         "recruiter": "Gloria Manley",
         "spread": 1877
+      },
+      {
+        "name": "Breanna Harabalya",
+        "am": "Jon Pack",
+        "recruiter": "Monika DuVarney",
+        "spread": 1360
+      },
+      {
+        "name": "Nicole Casas",
+        "am": "Riley Laverty",
+        "recruiter": "Brandon Dowdell",
+        "spread": 1520
       }
     ],
     "accrual_start_date": "2026-06-09",
@@ -595,12 +607,22 @@
     ]
   },
   "meetings": {
-    "quarterly_pace": 1497,
+    "quarterly_pace": 1559,
     "by_am": [
       {
         "name": "Mollie Ferguson",
-        "count": 189,
-        "weekly_avg": 14.5
+        "count": 194,
+        "weekly_avg": 14.9
+      },
+      {
+        "name": "Kollin Korell",
+        "count": 155,
+        "weekly_avg": 11.9
+      },
+      {
+        "name": "Brie Branting",
+        "count": 153,
+        "weekly_avg": 11.8
       },
       {
         "name": "Hannah Craig",
@@ -608,44 +630,34 @@
         "weekly_avg": 11.4
       },
       {
-        "name": "Brie Branting",
-        "count": 147,
-        "weekly_avg": 11.3
-      },
-      {
-        "name": "Kollin Korell",
-        "count": 140,
+        "name": "Kelsie Laughlin",
+        "count": 141,
         "weekly_avg": 10.8
       },
       {
-        "name": "Mike Minnillo",
-        "count": 132,
-        "weekly_avg": 10.2
-      },
-      {
-        "name": "Kelsie Laughlin",
-        "count": 132,
-        "weekly_avg": 10.2
-      },
-      {
         "name": "Riley Laverty",
+        "count": 139,
+        "weekly_avg": 10.7
+      },
+      {
+        "name": "Mike Minnillo",
+        "count": 136,
+        "weekly_avg": 10.5
+      },
+      {
+        "name": "Stephen Denzel",
         "count": 129,
         "weekly_avg": 9.9
       },
       {
-        "name": "Stephen Denzel",
-        "count": 125,
-        "weekly_avg": 9.6
-      },
-      {
         "name": "Jon Pack",
-        "count": 109,
-        "weekly_avg": 8.4
+        "count": 110,
+        "weekly_avg": 8.5
       },
       {
         "name": "Jessica Evans",
-        "count": 95,
-        "weekly_avg": 7.3
+        "count": 102,
+        "weekly_avg": 7.8
       },
       {
         "name": "Daniela Blesich",
@@ -659,8 +671,8 @@
       },
       {
         "name": "Jesu Philip",
-        "count": 9,
-        "weekly_avg": 0.7
+        "count": 10,
+        "weekly_avg": 0.8
       },
       {
         "name": "Craig Coates",
