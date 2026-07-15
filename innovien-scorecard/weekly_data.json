@@ -301,13 +301,13 @@
   "scorecard": {
     "net_new_starts": 26,
     "avg_start_spread": 1230,
-    "pending_count": 30,
-    "pending_avg_spread": 1108,
-    "pending_total_spread": 33254,
+    "pending_count": 29,
+    "pending_avg_spread": 1106,
+    "pending_total_spread": 32060,
     "lockup_count": null,
     "lockup_spread": 7366,
-    "dumpin_count": 21,
-    "dumpin_spread": 23954,
+    "dumpin_count": 20,
+    "dumpin_spread": 22760,
     "active_consultants": 279,
     "redeployed": null,
     "available_bench": null,
@@ -324,12 +324,12 @@
       },
       {
         "weekStart": "2026-07-13",
-        "plannedIn": 10899,
+        "plannedIn": 8843,
         "plannedOut": 672
       },
       {
         "weekStart": "2026-07-20",
-        "plannedIn": 10245,
+        "plannedIn": 11107,
         "plannedOut": 1639
       },
       {
@@ -378,106 +378,14 @@
         "plannedOut": 1767
       }
     ],
-    "lockup_spread_goal": 9099,
-    "lockup_target_note": "$77,339 to dump-in goal / 8.5 wks left (auto-paced)"
+    "lockup_spread_goal": 9239,
+    "lockup_target_note": "$78,533 to dump-in goal / 8.5 wks left (auto-paced)"
   },
   "raffle": {
     "threshold": 1250,
     "batch_size": 15,
-    "current_drawing_no": 2,
+    "current_drawing_no": 3,
     "current_members": [
-      {
-        "name": "Abba-Joseph Awano",
-        "am": "Hannah Craig",
-        "recruiter": "Gloria Manley",
-        "spread": 1267
-      },
-      {
-        "name": "April Fronk",
-        "am": "Stephen Denzel",
-        "recruiter": "Brandon Dowdell",
-        "spread": 1526
-      },
-      {
-        "name": "Brent Embrey",
-        "am": "Mike Minnillo",
-        "recruiter": "Brandon Dowdell",
-        "spread": 1448
-      },
-      {
-        "name": "Brian Richardson",
-        "am": "Jon Pack",
-        "recruiter": "Merrimon McCartney",
-        "spread": 2584
-      },
-      {
-        "name": "Syed Abbas",
-        "am": "Brie Branting",
-        "recruiter": "Ben Dorsey",
-        "spread": 1346
-      },
-      {
-        "name": "Keith Martin",
-        "am": "Jon Pack",
-        "recruiter": "Luke Reineke",
-        "spread": 1656
-      },
-      {
-        "name": "Christopher Bohardt",
-        "am": "Kelsie Laughlin",
-        "recruiter": "Chelsea Navarro",
-        "spread": 1262
-      },
-      {
-        "name": "Benjamin Baker",
-        "am": "Kelsie Laughlin",
-        "recruiter": "Adam Williams",
-        "spread": 1250
-      },
-      {
-        "name": "Chris Hohman",
-        "am": "Kelsie Laughlin",
-        "recruiter": "Adam Williams",
-        "spread": 1400
-      },
-      {
-        "name": "Chris Hammond",
-        "am": "Kelsie Laughlin",
-        "recruiter": "Gloria Manley",
-        "spread": 1400
-      },
-      {
-        "name": "Pamela Bishop",
-        "am": "Mollie Ferguson",
-        "recruiter": "Julia McDonald",
-        "spread": 1308
-      },
-      {
-        "name": "Justin Gillis",
-        "am": "Kelsie Laughlin",
-        "recruiter": "Chelsea Navarro",
-        "spread": 1296
-      },
-      {
-        "name": "Arthur Larson",
-        "am": "Stephen Denzel",
-        "recruiter": "Brandon Dowdell",
-        "spread": 1664
-      },
-      {
-        "name": "JAVED RAZA",
-        "am": "Jon Pack",
-        "recruiter": "Mike Murphy",
-        "spread": 1376
-      },
-      {
-        "name": "Christopher Star",
-        "am": "Mike Minnillo",
-        "recruiter": "Jamie Houvig",
-        "spread": 1716
-      }
-    ],
-    "next_up": [
       {
         "name": "TIMOTHY HARRISON",
         "am": "Hannah Craig",
@@ -503,6 +411,7 @@
         "spread": 1650
       }
     ],
+    "next_up": [],
     "accrual_start_date": "2026-06-09",
     "drawn_members": [
       "Bartholomew Baptista",
@@ -519,7 +428,22 @@
       "Lee Davis",
       "Gabriel Sardinha de Oliveira",
       "Eduardo Alfonso",
-      "Cortland Durham"
+      "Cortland Durham",
+      "Abba-Joseph Awano",
+      "April Fronk",
+      "Brent Embrey",
+      "Brian Richardson",
+      "Syed Abbas",
+      "Keith Martin",
+      "Christopher Bohardt",
+      "Benjamin Baker",
+      "Chris Hohman",
+      "Chris Hammond",
+      "Pamela Bishop",
+      "Justin Gillis",
+      "Arthur Larson",
+      "JAVED RAZA",
+      "Christopher Star"
     ],
     "advance_drawing": false
   },
@@ -613,12 +537,12 @@
     ]
   },
   "meetings": {
-    "quarterly_pace": 1541,
+    "quarterly_pace": 1558,
     "by_am": [
       {
         "name": "Mollie Ferguson",
-        "count": 191,
-        "weekly_avg": 14.7
+        "count": 198,
+        "weekly_avg": 15.2
       },
       {
         "name": "Kollin Korell",
@@ -626,14 +550,14 @@
         "weekly_avg": 11.8
       },
       {
+        "name": "Hannah Craig",
+        "count": 152,
+        "weekly_avg": 11.7
+      },
+      {
         "name": "Brie Branting",
         "count": 151,
         "weekly_avg": 11.6
-      },
-      {
-        "name": "Hannah Craig",
-        "count": 147,
-        "weekly_avg": 11.3
       },
       {
         "name": "Kelsie Laughlin",
@@ -642,13 +566,13 @@
       },
       {
         "name": "Riley Laverty",
-        "count": 138,
-        "weekly_avg": 10.6
+        "count": 141,
+        "weekly_avg": 10.8
       },
       {
         "name": "Mike Minnillo",
-        "count": 135,
-        "weekly_avg": 10.4
+        "count": 137,
+        "weekly_avg": 10.5
       },
       {
         "name": "Stephen Denzel",
