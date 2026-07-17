@@ -299,15 +299,15 @@
     }
   ],
   "scorecard": {
-    "net_new_starts": 26,
-    "avg_start_spread": 1230,
+    "net_new_starts": 27,
+    "avg_start_spread": 1244,
     "pending_count": 29,
-    "pending_avg_spread": 1106,
-    "pending_total_spread": 32060,
+    "pending_avg_spread": 1096,
+    "pending_total_spread": 31792,
     "lockup_count": null,
-    "lockup_spread": 7366,
-    "dumpin_count": 20,
-    "dumpin_spread": 22760,
+    "lockup_spread": 8706,
+    "dumpin_count": 21,
+    "dumpin_spread": 24100,
     "active_consultants": 279,
     "redeployed": null,
     "available_bench": null,
@@ -329,17 +329,17 @@
       },
       {
         "weekStart": "2026-07-20",
-        "plannedIn": 11107,
+        "plannedIn": 10345,
         "plannedOut": 1639
       },
       {
         "weekStart": "2026-07-27",
-        "plannedIn": 12488,
+        "plannedIn": 13250,
         "plannedOut": 9319
       },
       {
         "weekStart": "2026-08-03",
-        "plannedIn": 4842,
+        "plannedIn": 6182,
         "plannedOut": 4018
       },
       {
@@ -409,6 +409,12 @@
         "am": "Mollie Ferguson",
         "recruiter": "Adam Williams",
         "spread": 1650
+      },
+      {
+        "name": "Hussam Jawed",
+        "am": "Jon Pack",
+        "recruiter": "Luke Reineke",
+        "spread": 1608
       }
     ],
     "next_up": [],
@@ -448,7 +454,7 @@
     "advance_drawing": false
   },
   "fill_ratio": {
-    "as_of": "2026-07-15",
+    "as_of": "2026-07-17",
     "window_weeks": 13,
     "company": {
       "filled": 18,
@@ -481,16 +487,16 @@
         "ratio": 0.7222
       },
       {
+        "name": "Hannah Craig",
+        "filled": 7,
+        "openings": 10,
+        "ratio": 0.7
+      },
+      {
         "name": "Brie Branting",
         "filled": 8,
         "openings": 12,
         "ratio": 0.6667
-      },
-      {
-        "name": "Hannah Craig",
-        "filled": 7,
-        "openings": 11,
-        "ratio": 0.6364
       },
       {
         "name": "Mike Minnillo",
@@ -537,67 +543,67 @@
     ]
   },
   "meetings": {
-    "quarterly_pace": 1558,
+    "quarterly_pace": 1491,
     "by_am": [
       {
         "name": "Mollie Ferguson",
-        "count": 198,
-        "weekly_avg": 15.2
-      },
-      {
-        "name": "Kollin Korell",
-        "count": 153,
-        "weekly_avg": 11.8
+        "count": 192,
+        "weekly_avg": 14.8
       },
       {
         "name": "Hannah Craig",
-        "count": 152,
-        "weekly_avg": 11.7
+        "count": 147,
+        "weekly_avg": 11.3
       },
       {
         "name": "Brie Branting",
-        "count": 151,
-        "weekly_avg": 11.6
+        "count": 147,
+        "weekly_avg": 11.3
+      },
+      {
+        "name": "Kollin Korell",
+        "count": 146,
+        "weekly_avg": 11.2
       },
       {
         "name": "Kelsie Laughlin",
-        "count": 140,
-        "weekly_avg": 10.8
-      },
-      {
-        "name": "Riley Laverty",
-        "count": 141,
-        "weekly_avg": 10.8
+        "count": 135,
+        "weekly_avg": 10.4
       },
       {
         "name": "Mike Minnillo",
-        "count": 137,
-        "weekly_avg": 10.5
+        "count": 133,
+        "weekly_avg": 10.2
+      },
+      {
+        "name": "Riley Laverty",
+        "count": 130,
+        "weekly_avg": 10.0
       },
       {
         "name": "Stephen Denzel",
-        "count": 129,
-        "weekly_avg": 9.9
+        "count": 126,
+        "weekly_avg": 9.7
       },
       {
         "name": "Jon Pack",
-        "count": 108,
-        "weekly_avg": 8.3
+        "count": 106,
+        "weekly_avg": 8.2
       },
       {
         "name": "Jessica Evans",
-        "count": 102,
-        "weekly_avg": 7.8
+        "count": 98,
+        "weekly_avg": 7.5
       },
       {
         "name": "Daniela Blesich",
-        "count": 70,
-        "weekly_avg": 5.4
+        "count": 66,
+        "weekly_avg": 5.1
       },
       {
         "name": "Johnna Fusco",
-        "count": 59,
-        "weekly_avg": 4.5
+        "count": 52,
+        "weekly_avg": 4.0
       },
       {
         "name": "Jesu Philip",
@@ -606,11 +612,6 @@
       },
       {
         "name": "Craig Coates",
-        "count": 5,
-        "weekly_avg": 0.4
-      },
-      {
-        "name": "Cristina Murto",
         "count": 3,
         "weekly_avg": 0.2
       }
