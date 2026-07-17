@@ -301,13 +301,13 @@
   "scorecard": {
     "net_new_starts": 27,
     "avg_start_spread": 1244,
-    "pending_count": 29,
-    "pending_avg_spread": 1096,
-    "pending_total_spread": 31792,
+    "pending_count": 32,
+    "pending_avg_spread": 1093,
+    "pending_total_spread": 34970,
     "lockup_count": null,
-    "lockup_spread": 8706,
-    "dumpin_count": 21,
-    "dumpin_spread": 24100,
+    "lockup_spread": 11884,
+    "dumpin_count": 24,
+    "dumpin_spread": 27277,
     "active_consultants": 279,
     "redeployed": null,
     "available_bench": null,
@@ -329,17 +329,17 @@
       },
       {
         "weekStart": "2026-07-20",
-        "plannedIn": 10345,
+        "plannedIn": 9297,
         "plannedOut": 1639
       },
       {
         "weekStart": "2026-07-27",
-        "plannedIn": 13250,
+        "plannedIn": 14298,
         "plannedOut": 9319
       },
       {
         "weekStart": "2026-08-03",
-        "plannedIn": 6182,
+        "plannedIn": 9359,
         "plannedOut": 4018
       },
       {
@@ -543,17 +543,17 @@
     ]
   },
   "meetings": {
-    "quarterly_pace": 1491,
+    "quarterly_pace": 1517,
     "by_am": [
       {
         "name": "Mollie Ferguson",
-        "count": 192,
-        "weekly_avg": 14.8
+        "count": 197,
+        "weekly_avg": 15.2
       },
       {
         "name": "Hannah Craig",
-        "count": 147,
-        "weekly_avg": 11.3
+        "count": 153,
+        "weekly_avg": 11.8
       },
       {
         "name": "Brie Branting",
@@ -566,24 +566,24 @@
         "weekly_avg": 11.2
       },
       {
+        "name": "Mike Minnillo",
+        "count": 139,
+        "weekly_avg": 10.7
+      },
+      {
         "name": "Kelsie Laughlin",
         "count": 135,
         "weekly_avg": 10.4
       },
       {
-        "name": "Mike Minnillo",
-        "count": 133,
+        "name": "Stephen Denzel",
+        "count": 132,
         "weekly_avg": 10.2
       },
       {
         "name": "Riley Laverty",
-        "count": 130,
-        "weekly_avg": 10.0
-      },
-      {
-        "name": "Stephen Denzel",
-        "count": 126,
-        "weekly_avg": 9.7
+        "count": 132,
+        "weekly_avg": 10.2
       },
       {
         "name": "Jon Pack",
@@ -607,7 +607,7 @@
       },
       {
         "name": "Jesu Philip",
-        "count": 10,
+        "count": 11,
         "weekly_avg": 0.8
       },
       {
