@@ -305,7 +305,7 @@
     "pending_avg_spread": 1108,
     "pending_total_spread": 42110,
     "lockup_count": null,
-    "lockup_spread": 9929,
+    "lockup_spread": 0,
     "dumpin_count": 35,
     "dumpin_spread": 39816,
     "active_consultants": 279,
@@ -378,8 +378,8 @@
         "plannedOut": 1767
       }
     ],
-    "lockup_spread_goal": 8539,
-    "lockup_target_note": "$64,039 to dump-in goal / 7.5 wks left (auto-paced)"
+    "lockup_spread_goal": 8325,
+    "lockup_target_note": "$54,110 to dump-in goal / 6.5 wks left (auto-paced)"
   },
   "raffle": {
     "threshold": 1250,
@@ -454,7 +454,7 @@
     "advance_drawing": false
   },
   "fill_ratio": {
-    "as_of": "2026-07-26",
+    "as_of": "2026-07-27",
     "window_weeks": 13,
     "company": {
       "filled": 29,
@@ -549,7 +549,7 @@
     ]
   },
   "meetings": {
-    "quarterly_pace": 1433,
+    "quarterly_pace": 1451,
     "by_am": [
       {
         "name": "Mollie Ferguson",
@@ -572,6 +572,11 @@
         "weekly_avg": 10.4
       },
       {
+        "name": "Brie Branting",
+        "count": 135,
+        "weekly_avg": 10.4
+      },
+      {
         "name": "Riley Laverty",
         "count": 132,
         "weekly_avg": 10.2
@@ -582,24 +587,19 @@
         "weekly_avg": 10.0
       },
       {
-        "name": "Brie Branting",
-        "count": 129,
-        "weekly_avg": 9.9
-      },
-      {
         "name": "Stephen Denzel",
         "count": 122,
         "weekly_avg": 9.4
       },
       {
         "name": "Jon Pack",
-        "count": 97,
-        "weekly_avg": 7.5
+        "count": 103,
+        "weekly_avg": 7.9
       },
       {
         "name": "Jessica Evans",
-        "count": 96,
-        "weekly_avg": 7.4
+        "count": 102,
+        "weekly_avg": 7.8
       },
       {
         "name": "Daniela Blesich",
