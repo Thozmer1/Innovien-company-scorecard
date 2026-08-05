@@ -299,15 +299,15 @@
     }
   ],
   "scorecard": {
-    "net_new_starts": 48,
-    "avg_start_spread": 1186,
-    "pending_count": 28,
-    "pending_avg_spread": 1141,
-    "pending_total_spread": 31946,
+    "net_new_starts": 50,
+    "avg_start_spread": 1181,
+    "pending_count": 27,
+    "pending_avg_spread": 1189,
+    "pending_total_spread": 32115,
     "lockup_count": null,
-    "lockup_spread": 2658,
-    "dumpin_count": 43,
-    "dumpin_spread": 49655,
+    "lockup_spread": 4921,
+    "dumpin_count": 44,
+    "dumpin_spread": 51918,
     "active_consultants": 279,
     "redeployed": null,
     "available_bench": null,
@@ -349,12 +349,12 @@
       },
       {
         "weekStart": "2026-08-17",
-        "plannedIn": 8139,
+        "plannedIn": 9479,
         "plannedOut": 1727
       },
       {
         "weekStart": "2026-08-24",
-        "plannedIn": 6000,
+        "plannedIn": 6923,
         "plannedOut": 1192
       },
       {
@@ -561,7 +561,7 @@
     ]
   },
   "meetings": {
-    "quarterly_pace": 1398,
+    "quarterly_pace": 1404,
     "by_am": [
       {
         "name": "Mollie Ferguson",
@@ -570,8 +570,8 @@
       },
       {
         "name": "Hannah Craig",
-        "count": 148,
-        "weekly_avg": 11.4
+        "count": 151,
+        "weekly_avg": 11.6
       },
       {
         "name": "Kollin Korell",
@@ -584,14 +584,14 @@
         "weekly_avg": 10.2
       },
       {
+        "name": "Mike Minnillo",
+        "count": 131,
+        "weekly_avg": 10.1
+      },
+      {
         "name": "Brie Branting",
         "count": 130,
         "weekly_avg": 10.0
-      },
-      {
-        "name": "Mike Minnillo",
-        "count": 129,
-        "weekly_avg": 9.9
       },
       {
         "name": "Kelsie Laughlin",
@@ -600,8 +600,8 @@
       },
       {
         "name": "Stephen Denzel",
-        "count": 116,
-        "weekly_avg": 8.9
+        "count": 117,
+        "weekly_avg": 9.0
       },
       {
         "name": "Jessica Evans",
