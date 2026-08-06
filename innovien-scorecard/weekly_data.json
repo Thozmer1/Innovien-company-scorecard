@@ -299,15 +299,15 @@
     }
   ],
   "scorecard": {
-    "net_new_starts": 50,
-    "avg_start_spread": 1181,
-    "pending_count": 30,
-    "pending_avg_spread": 1160,
-    "pending_total_spread": 34815,
+    "net_new_starts": 51,
+    "avg_start_spread": 1177,
+    "pending_count": 29,
+    "pending_avg_spread": 1225,
+    "pending_total_spread": 35522,
     "lockup_count": null,
-    "lockup_spread": 7621,
+    "lockup_spread": 9307,
     "dumpin_count": 47,
-    "dumpin_spread": 54618,
+    "dumpin_spread": 56305,
     "active_consultants": 279,
     "redeployed": null,
     "available_bench": null,
@@ -339,12 +339,12 @@
       },
       {
         "weekStart": "2026-08-03",
-        "plannedIn": 14237,
+        "plannedIn": 12997,
         "plannedOut": 4018
       },
       {
         "weekStart": "2026-08-10",
-        "plannedIn": 12559,
+        "plannedIn": 13799,
         "plannedOut": 2154
       },
       {
@@ -354,7 +354,7 @@
       },
       {
         "weekStart": "2026-08-24",
-        "plannedIn": 8553,
+        "plannedIn": 10239,
         "plannedOut": 1192
       },
       {
