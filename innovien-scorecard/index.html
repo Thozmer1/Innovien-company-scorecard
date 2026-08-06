@@ -237,10 +237,18 @@ function drawHoursChart(hu){
   const labels=hu.byWeek.map(w=>w.week.slice(5));
   const vals=hu.byWeek.map(w=>w.avg);
   const colors=vals.map(v=>v>=base?'#B0DD66':'#747777');
-  chart2=new Chart(ctx,{data:{labels,datasets:[
+  // inline plugin: value label on each bar + a small "YTD" tag on the baseline line
+  const hoursValueLabels={id:'hoursValueLabels',afterDatasetsDraw(chart){const{ctx}=chart;ctx.save();
+    ctx.font='700 11px Calibri, sans-serif';ctx.fillStyle='#3a3a3a';ctx.textAlign='center';ctx.textBaseline='bottom';
+    chart.getDatasetMeta(0).data.forEach((el,i)=>{const raw=chart.data.datasets[0].data[i]; if(raw==null)return; ctx.fillText((+raw).toFixed(1), el.x, el.y-3);});
+    const y=chart.scales.y.getPixelForValue(base);
+    ctx.font='700 9px Calibri, sans-serif';ctx.fillStyle='#3a5a10';ctx.textAlign='right';ctx.textBaseline='bottom';
+    ctx.fillText('YTD '+base, chart.chartArea.right-2, y-2);
+    ctx.restore();}};
+  chart2=new Chart(ctx,{plugins:[hoursValueLabels],data:{labels,datasets:[
     {type:'bar',label:'Avg hrs / consultant',data:vals,backgroundColor:colors,order:2},
     {type:'line',label:'YTD 2026 avg ('+base+')',data:labels.map(()=>base),borderColor:'#3a5a10',borderDash:[6,4],borderWidth:2,pointRadius:0,fill:false,order:1}
-  ]},options:{responsive:true,plugins:{legend:{position:'bottom'},
+  ]},options:{responsive:true,layout:{padding:{top:14}},plugins:{legend:{display:false},
     tooltip:{callbacks:{label:c=>c.dataset.label+': '+(+c.raw).toFixed(1)+' hrs'}}},
     scales:{y:{suggestedMin:0,title:{display:true,text:'Avg hrs / wk / consultant'}}}}});
 }
