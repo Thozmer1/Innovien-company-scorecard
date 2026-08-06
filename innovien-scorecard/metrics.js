@@ -332,6 +332,7 @@ export function buildScorecard(data, goals, asOfStr, weekly, roster) {
     hoursUtil = { actual: hu.current, goal: hu.baseline,
       pct: hu.baseline ? round((hu.current / hu.baseline) * 100) : null,
       onPace: hu.baseline ? hu.current >= hu.baseline : null, fmt: "dec",
+      byWeek: Array.isArray(hu.by_week) ? hu.by_week : [],
       note: `${hu.current_label || "current"} vs ${hu.baseline_label || "baseline"} ${hu.baseline}` };
   }
 
