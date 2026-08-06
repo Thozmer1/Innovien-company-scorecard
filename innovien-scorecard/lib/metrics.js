@@ -325,6 +325,16 @@ export function buildScorecard(data, goals, asOfStr, weekly, roster) {
     if (_fo > 0) fillRatioV = round(_ff / _fo, 3);
   }
 
+  // Hours Utilization (Q3-to-date vs YTD-2026 baseline) — from weekly.hours_util.
+  let hoursUtil = null;
+  if (weekly && weekly.hours_util && typeof weekly.hours_util.current === "number") {
+    const hu = weekly.hours_util;
+    hoursUtil = { actual: hu.current, goal: hu.baseline,
+      pct: hu.baseline ? round((hu.current / hu.baseline) * 100) : null,
+      onPace: hu.baseline ? hu.current >= hu.baseline : null, fmt: "dec",
+      note: `${hu.current_label || "current"} vs ${hu.baseline_label || "baseline"} ${hu.baseline}` };
+  }
+
   // ---------- PACED QTD goals (meeting + sub tiles) ----------
   // The goal grows each completed week of the quarter instead of sitting at the full-quarter
   // total, so the tile always answers "are we on pace through week N?". Goal = per-person weekly
@@ -381,6 +391,7 @@ export function buildScorecard(data, goals, asOfStr, weekly, roster) {
       recruiterSubAvg: recruiterSubFinal.sort((a, b) => b.weeklyAvg - a.weeklyAvg),
       amFillRatio: amFillFinal.sort((a, b) => b.ratio - a.ratio),
       roster: rosterInfo,
+      hoursUtil,
     },
     raffle: raffleOut,
     openReqHealth: { totalOpen: openReqRows.length, aging, reqsNoFill, totOpenings, totFilled },
