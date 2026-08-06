@@ -724,6 +724,33 @@
     "baseline_label": "YTD 2026",
     "current_consultant_weeks": 1310,
     "current_weeks": 5,
-    "baseline_weeks": 30
+    "baseline_weeks": 30,
+    "by_week": [
+      {
+        "week": "2026-06-29",
+        "avg": 30.4,
+        "consultants": 283
+      },
+      {
+        "week": "2026-07-06",
+        "avg": 31.3,
+        "consultants": 287
+      },
+      {
+        "week": "2026-07-13",
+        "avg": 36.9,
+        "consultants": 246
+      },
+      {
+        "week": "2026-07-20",
+        "avg": 37.3,
+        "consultants": 246
+      },
+      {
+        "week": "2026-07-27",
+        "avg": 36.9,
+        "consultants": 248
+      }
+    ]
   }
 }

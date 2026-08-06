@@ -73,7 +73,10 @@
   </section>
   <section class="page" data-page="goals">
     <h2 class="sec">Consultant Hours Utilization</h2>
-    <div id="kpi-hours" style="max-width:360px;margin-top:6px"></div>
+    <div style="display:flex;gap:16px;align-items:stretch;flex-wrap:wrap;margin-top:6px">
+      <div id="kpi-hours" style="flex:0 0 320px;max-width:360px"></div>
+      <div class="card" style="flex:1 1 440px;min-width:300px"><canvas id="hoursChart" height="120"></canvas></div>
+    </div>
     <h2 class="sec" style="margin-top:16px">Company Pace &amp; Detail</h2>
     <div class="grid three" id="goals-tables" style="margin-top:6px">
       <div><div id="kpi-mtg"></div><h2 class="sec">AM Meeting Avg (13 Wk)</h2><div id="tbl-ammtg"></div></div>
@@ -105,6 +108,7 @@ const PAGES=[["scorecard","Stretch Scorecard"],["goals","Q3 Goal Tracking"],["ra
 const fmtUsd=n=>"$"+Math.round(n).toLocaleString();
 const fmt={usd:fmtUsd,int:n=>Math.round(n).toLocaleString(),dec:n=>(+n).toFixed(1),pct:n=>(n*100).toFixed(1)+"%"};
 let chart1;
+let chart2;
 
 function nav(){const n=document.getElementById('nav');n.innerHTML='';PAGES.forEach(([id,label],i)=>{const b=document.createElement('button');b.textContent=label;b.className=i===0?'active':'';b.onclick=()=>{document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.dataset.page===id));};n.appendChild(b);});}
 
@@ -161,6 +165,7 @@ function render(d){
   document.getElementById('kpi-sub').innerHTML = kpiCard('Sub Pace · QTD',gt.weeklySubAvg);
   document.getElementById('kpi-fill').innerHTML = kpiCard('Fill Ratio · 13 Wk',gt.fillRatio);
   document.getElementById('kpi-hours').innerHTML = kpiCard('Avg Hrs / Wk / Consultant · Q3-to-date',gt.hoursUtil);
+  drawHoursChart(gt.hoursUtil);
   document.getElementById('tbl-ammtg').innerHTML = table(gt.amMeetingAvg,[
     {h:'Account Manager',f:r=>r.name},{h:'Wkly Avg',r:1,f:r=>r.weeklyAvg.toFixed(1)},
     {h:'Goal',r:1,f:r=>r.goal??'—'},{h:'',r:1,f:r=>`<span class="chip ${r.goal&&r.weeklyAvg>=r.goal?'':'gray'}">${r.goal&&r.weeklyAvg>=r.goal?'✓':'·'}</span>`}]);
@@ -223,6 +228,21 @@ function render(d){
   }
 
   drawForecast(sc.forecast);
+}
+function drawHoursChart(hu){
+  const ctx=document.getElementById('hoursChart'); if(!ctx) return;
+  if(chart2){chart2.destroy(); chart2=null;}
+  if(!hu||!Array.isArray(hu.byWeek)||!hu.byWeek.length) return;
+  const base=hu.goal;
+  const labels=hu.byWeek.map(w=>w.week.slice(5));
+  const vals=hu.byWeek.map(w=>w.avg);
+  const colors=vals.map(v=>v>=base?'#B0DD66':'#747777');
+  chart2=new Chart(ctx,{data:{labels,datasets:[
+    {type:'bar',label:'Avg hrs / consultant',data:vals,backgroundColor:colors,order:2},
+    {type:'line',label:'YTD 2026 avg ('+base+')',data:labels.map(()=>base),borderColor:'#3a5a10',borderDash:[6,4],borderWidth:2,pointRadius:0,fill:false,order:1}
+  ]},options:{responsive:true,plugins:{legend:{position:'bottom'},
+    tooltip:{callbacks:{label:c=>c.dataset.label+': '+(+c.raw).toFixed(1)+' hrs'}}},
+    scales:{y:{suggestedMin:0,title:{display:true,text:'Avg hrs / wk / consultant'}}}}});
 }
 function drawForecast(weeks){
   const ctx=document.getElementById('forecastChart'); if(chart1)chart1.destroy();
