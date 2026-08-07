@@ -10,7 +10,7 @@
     "quarter_end": "2026-06-28"
   },
   "company": {
-    "weekly_spread": 292408.0,
+    "weekly_spread": 294360.0,
     "qtr_start_spread": 330413.65,
     "year_total": 6594349.07
   },
@@ -494,9 +494,9 @@
     "as_of": "2026-08-07",
     "window_weeks": 13,
     "company": {
-      "filled": 38,
-      "openings": 65,
-      "ratio": 0.5846
+      "filled": 46,
+      "openings": 77,
+      "ratio": 0.5974
     },
     "by_am": [
       {
@@ -506,16 +506,16 @@
         "ratio": 1.0
       },
       {
-        "name": "Jessica Evans",
-        "filled": 1,
-        "openings": 1,
-        "ratio": 1.0
+        "name": "Mollie Ferguson",
+        "filled": 19,
+        "openings": 20,
+        "ratio": 0.95
       },
       {
-        "name": "Mollie Ferguson",
-        "filled": 15,
-        "openings": 16,
-        "ratio": 0.9375
+        "name": "Hannah Craig",
+        "filled": 7,
+        "openings": 9,
+        "ratio": 0.7778
       },
       {
         "name": "Jon Pack",
@@ -524,9 +524,9 @@
         "ratio": 0.7619
       },
       {
-        "name": "Hannah Craig",
-        "filled": 6,
-        "openings": 8,
+        "name": "Riley Laverty",
+        "filled": 3,
+        "openings": 4,
         "ratio": 0.75
       },
       {
@@ -537,18 +537,18 @@
       },
       {
         "name": "Mike Minnillo",
-        "filled": 8,
-        "openings": 12,
-        "ratio": 0.6667
+        "filled": 7,
+        "openings": 11,
+        "ratio": 0.6364
       },
       {
         "name": "Stephen Denzel",
-        "filled": 9,
-        "openings": 17,
-        "ratio": 0.5294
+        "filled": 10,
+        "openings": 18,
+        "ratio": 0.5556
       },
       {
-        "name": "Riley Laverty",
+        "name": "Jessica Evans",
         "filled": 1,
         "openings": 2,
         "ratio": 0.5
@@ -570,11 +570,17 @@
         "filled": 0,
         "openings": 3,
         "ratio": 0.0
+      },
+      {
+        "name": "Shannon Johnson",
+        "filled": 0,
+        "openings": 2,
+        "ratio": 0.0
       }
     ]
   },
   "meetings": {
-    "quarterly_pace": 1343,
+    "quarterly_pace": 1358,
     "by_am": [
       {
         "name": "Mollie Ferguson",
@@ -583,8 +589,8 @@
       },
       {
         "name": "Hannah Craig",
-        "count": 146,
-        "weekly_avg": 11.2
+        "count": 149,
+        "weekly_avg": 11.5
       },
       {
         "name": "Kollin Korell",
@@ -592,14 +598,14 @@
         "weekly_avg": 10.7
       },
       {
-        "name": "Mike Minnillo",
-        "count": 128,
-        "weekly_avg": 9.8
+        "name": "Riley Laverty",
+        "count": 134,
+        "weekly_avg": 10.3
       },
       {
-        "name": "Riley Laverty",
-        "count": 128,
-        "weekly_avg": 9.8
+        "name": "Mike Minnillo",
+        "count": 130,
+        "weekly_avg": 10.0
       },
       {
         "name": "Brie Branting",
@@ -613,8 +619,8 @@
       },
       {
         "name": "Stephen Denzel",
-        "count": 116,
-        "weekly_avg": 8.9
+        "count": 119,
+        "weekly_avg": 9.2
       },
       {
         "name": "Jessica Evans",
@@ -638,8 +644,8 @@
       },
       {
         "name": "Jesu Philip",
-        "count": 17,
-        "weekly_avg": 1.3
+        "count": 18,
+        "weekly_avg": 1.4
       },
       {
         "name": "Rachel Huffman",
