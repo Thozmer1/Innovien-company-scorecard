@@ -134,6 +134,21 @@ export default async function handler(req, res) {
       roster = null; // People DB unreachable → show all (current behavior)
     }
 
+    // ---- Hit List reqs (live from Comtrak Raw - Req Details) --------------------
+    // Open reqs sitting in the board's Hit List column. Count + total openings; metrics turns
+    // openings into "potential spread" using the current company avg start spread. Fail-open.
+    try {
+      const hlRows = await queryAll(notion, DB.reqDetails, { and: [
+        { property: "REQ Priority", rich_text: { equals: "Hitlist" } },
+        { property: "Job Status", rich_text: { equals: "Open" } },
+      ]});
+      let hlOpenings = 0;
+      for (const pg of hlRows) hlOpenings += (P.num(pg, "Openings") || 0);
+      data.hitList = { reqs: hlRows.length, openings: hlOpenings };
+    } catch (e) {
+      data.hitList = null; // DB not shared / unreachable -> tile just omits the hit-list line
+    }
+
     const asOf = new Date().toISOString().slice(0, 10);
     const result = buildScorecard(data, goals, asOf, weekly, roster);
     result.rowCounts = {
