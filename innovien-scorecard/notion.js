@@ -20,6 +20,8 @@ export const DB = {
   companyGoals:    process.env.DB_COMPANY_GOALS    || "68691cd3-0222-4760-b2ed-8bd07ce528ae",
   // People roster (Comtrak-fed). Used to keep the Q2 tab to ACTIVE AMs/Recruiters only.
   people:          process.env.DB_PEOPLE          || "3600fa85-b8df-80d9-be56-d5f97893a7ab",
+  // Comtrak Raw - Req Details (live). Used for the Hit List count + potential spread on the Lock-Up tile.
+  reqDetails:      process.env.DB_REQ_DETAILS      || "1ff4d93e-1b69-4b9f-8ef0-362f0d03e325",
 };
 
 // Query every page in a database (handles pagination + an optional filter).
