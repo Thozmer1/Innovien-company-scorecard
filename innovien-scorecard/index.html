@@ -264,8 +264,10 @@ function drawForecast(weeks){
     [0,1].forEach(di=>{const meta=chart.getDatasetMeta(di); if(meta.hidden)return;
       meta.data.forEach((el,i)=>{const raw=chart.data.datasets[di].data[i]; if(!raw)return;
         ctx.fillStyle = di===0 ? '#3a5a10' : '#5a5c5c';
-        if(raw>=0){ctx.textBaseline='bottom'; ctx.fillText(kfmt(raw), el.x, el.y-2);}
-        else {ctx.textBaseline='top'; ctx.fillText(kfmt(raw), el.x, el.y+2);}
+        let txt=kfmt(raw);
+        if(di===0){const ct=weeks[i]&&weeks[i].inCount; if(ct!=null) txt+=' ('+ct+')';}
+        if(raw>=0){ctx.textBaseline='bottom'; ctx.fillText(txt, el.x, el.y-2);}
+        else {ctx.textBaseline='top'; ctx.fillText(txt, el.x, el.y+2);}
       });});
     ctx.restore();}};
   chart1=new Chart(ctx,{plugins:[barValueLabels],data:{labels,datasets:[

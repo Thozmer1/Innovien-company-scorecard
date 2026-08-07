@@ -315,66 +315,79 @@
       {
         "weekStart": "2026-06-29",
         "plannedIn": 15501,
+        "inCount": 13,
         "plannedOut": 56985
       },
       {
         "weekStart": "2026-07-06",
         "plannedIn": 9237,
+        "inCount": 7,
         "plannedOut": 2313
       },
       {
         "weekStart": "2026-07-13",
         "plannedIn": 8843,
+        "inCount": 7,
         "plannedOut": 672
       },
       {
         "weekStart": "2026-07-20",
         "plannedIn": 3352,
+        "inCount": 3,
         "plannedOut": 1639
       },
       {
         "weekStart": "2026-07-27",
         "plannedIn": 10080,
+        "inCount": 10,
         "plannedOut": 9319
       },
       {
         "weekStart": "2026-08-03",
         "plannedIn": 12997,
+        "inCount": 11,
         "plannedOut": 4018
       },
       {
         "weekStart": "2026-08-10",
         "plannedIn": 13799,
+        "inCount": 12,
         "plannedOut": 2154
       },
       {
         "weekStart": "2026-08-17",
         "plannedIn": 8850,
+        "inCount": 7,
         "plannedOut": 1727
       },
       {
         "weekStart": "2026-08-24",
         "plannedIn": 10239,
+        "inCount": 8,
         "plannedOut": 1192
       },
       {
         "weekStart": "2026-08-31",
         "plannedIn": 2635,
+        "inCount": 2,
         "plannedOut": 13887
       },
       {
         "weekStart": "2026-09-07",
         "plannedIn": 0,
+        "inCount": 0,
         "plannedOut": 3298
       },
       {
         "weekStart": "2026-09-14",
         "plannedIn": 0,
+        "inCount": 0,
         "plannedOut": 1862
       },
       {
         "weekStart": "2026-09-21",
         "plannedIn": 0,
+        "inCount": 0,
         "plannedOut": 1767
       }
     ],
@@ -478,7 +491,7 @@
     "advance_drawing": false
   },
   "fill_ratio": {
-    "as_of": "2026-08-06",
+    "as_of": "2026-08-07",
     "window_weeks": 13,
     "company": {
       "filled": 38,
@@ -561,52 +574,52 @@
     ]
   },
   "meetings": {
-    "quarterly_pace": 1367,
+    "quarterly_pace": 1343,
     "by_am": [
       {
         "name": "Mollie Ferguson",
-        "count": 172,
-        "weekly_avg": 13.2
+        "count": 169,
+        "weekly_avg": 13.0
       },
       {
         "name": "Hannah Craig",
-        "count": 149,
-        "weekly_avg": 11.5
+        "count": 146,
+        "weekly_avg": 11.2
       },
       {
         "name": "Kollin Korell",
-        "count": 140,
-        "weekly_avg": 10.8
+        "count": 139,
+        "weekly_avg": 10.7
       },
       {
         "name": "Mike Minnillo",
-        "count": 130,
-        "weekly_avg": 10.0
+        "count": 128,
+        "weekly_avg": 9.8
       },
       {
         "name": "Riley Laverty",
-        "count": 129,
-        "weekly_avg": 9.9
+        "count": 128,
+        "weekly_avg": 9.8
       },
       {
         "name": "Brie Branting",
-        "count": 125,
-        "weekly_avg": 9.6
+        "count": 123,
+        "weekly_avg": 9.5
       },
       {
         "name": "Kelsie Laughlin",
-        "count": 121,
-        "weekly_avg": 9.3
-      },
-      {
-        "name": "Stephen Denzel",
-        "count": 120,
+        "count": 119,
         "weekly_avg": 9.2
       },
       {
+        "name": "Stephen Denzel",
+        "count": 116,
+        "weekly_avg": 8.9
+      },
+      {
         "name": "Jessica Evans",
-        "count": 97,
-        "weekly_avg": 7.5
+        "count": 96,
+        "weekly_avg": 7.4
       },
       {
         "name": "Jon Pack",
@@ -620,8 +633,8 @@
       },
       {
         "name": "Johnna Fusco",
-        "count": 36,
-        "weekly_avg": 2.8
+        "count": 31,
+        "weekly_avg": 2.4
       },
       {
         "name": "Jesu Philip",
