@@ -147,6 +147,7 @@ function render(d){
   const lockSub =
     `<div class="goal">Lock-up goal ${lu.spreadGoal?fmtUsd(lu.spreadGoal):'—'}</div>`+
     (lu.targetNote?`<div class="goal" style="opacity:.7;font-size:.82em">${lu.targetNote}</div>`:'')+
+    (lu.hitList?`<div class="goal" style="margin-top:3px">Hit list: <b>${lu.hitList.reqs}</b> req${lu.hitList.reqs===1?'':'s'} · ~${fmtUsd(lu.hitList.potentialSpread)} potential (${lu.hitList.openings} opening${lu.hitList.openings===1?'':'s'})</div>`:'')+
     (lu.spreadOnPace===null?'':paceLine((lu.spreadOnPace?'At / above goal':'Below goal')+(lu.spreadPct!=null?` · ${lu.spreadPct}%`:''),lu.spreadOnPace));
   const dumpSub =
     `<div class="goal">${di.count} dump-ins · created this qtr, start by qtr end</div>`+
