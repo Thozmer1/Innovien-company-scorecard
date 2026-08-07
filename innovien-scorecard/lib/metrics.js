@@ -250,6 +250,7 @@ export function buildScorecard(data, goals, asOfStr, weekly, roster) {
       const pin = w.plannedIn || 0, pout = w.plannedOut || 0, net = pin - pout; _cum += net;
       const wd = d(w.weekStart);
       return { weekStart: w.weekStart, plannedIn: Math.round(pin), plannedOut: Math.round(pout),
+               inCount: (w.inCount ?? null),
                net: Math.round(net), cumNet: Math.round(_cum), isPast: wd ? wd < asOf : false };
     });
   }
