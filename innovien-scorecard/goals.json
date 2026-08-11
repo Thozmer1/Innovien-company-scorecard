@@ -18,7 +18,8 @@
     "fillRatioGoal": 0.6,
     "redeployedGoal": 12,
     "yearSpreadGoal": 500000,
-    "dumpinSpreadGoal": 93926
+    "dumpinSpreadGoal": 93926,
+    "hoursUtilGoal": 37.5
   },
   "perAM": {
     "_default": {
