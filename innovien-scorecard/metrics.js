@@ -330,11 +330,12 @@ export function buildScorecard(data, goals, asOfStr, weekly, roster) {
   let hoursUtil = null;
   if (weekly && weekly.hours_util && typeof weekly.hours_util.current === "number") {
     const hu = weekly.hours_util;
-    hoursUtil = { actual: hu.current, goal: hu.baseline,
-      pct: hu.baseline ? round((hu.current / hu.baseline) * 100) : null,
-      onPace: hu.baseline ? hu.current >= hu.baseline : null, fmt: "dec",
+    const huGoal = (goals.company && typeof goals.company.hoursUtilGoal === "number") ? goals.company.hoursUtilGoal : hu.baseline;
+    hoursUtil = { actual: hu.current, goal: huGoal, baseline: hu.baseline,
+      pct: huGoal ? round((hu.current / huGoal) * 100) : null,
+      onPace: huGoal ? hu.current >= huGoal : null, fmt: "dec",
       byWeek: Array.isArray(hu.by_week) ? hu.by_week : [],
-      note: `${hu.current_label || "current"} vs ${hu.baseline_label || "baseline"} ${hu.baseline}` };
+      note: `${hu.current_label || "current"} vs goal ${huGoal} · YTD ${hu.baseline}` };
   }
 
   // ---------- PACED QTD goals (meeting + sub tiles) ----------
