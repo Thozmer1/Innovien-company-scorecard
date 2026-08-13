@@ -301,9 +301,9 @@
   "scorecard": {
     "net_new_starts": 60,
     "avg_start_spread": 1160,
-    "pending_count": 23,
-    "pending_avg_spread": 1284,
-    "pending_total_spread": 29532,
+    "pending_count": 21,
+    "pending_avg_spread": 1265,
+    "pending_total_spread": 26572,
     "lockup_count": null,
     "lockup_spread": 1360,
     "dumpin_count": 50,
@@ -497,7 +497,7 @@
     "advance_drawing": false
   },
   "fill_ratio": {
-    "as_of": "2026-08-11",
+    "as_of": "2026-08-13",
     "window_weeks": 13,
     "company": {
       "filled": 52,
@@ -513,9 +513,9 @@
       },
       {
         "name": "Jon Pack",
-        "filled": 16,
-        "openings": 20,
-        "ratio": 0.8
+        "filled": 14,
+        "openings": 17,
+        "ratio": 0.8235
       },
       {
         "name": "Hannah Craig",
@@ -580,67 +580,67 @@
     ]
   },
   "meetings": {
-    "quarterly_pace": 1362,
+    "quarterly_pace": 1304,
     "by_am": [
       {
         "name": "Mollie Ferguson",
-        "count": 167,
-        "weekly_avg": 12.8
+        "count": 164,
+        "weekly_avg": 12.6
       },
       {
         "name": "Hannah Craig",
-        "count": 151,
-        "weekly_avg": 11.6
+        "count": 149,
+        "weekly_avg": 11.5
       },
       {
         "name": "Riley Laverty",
-        "count": 140,
-        "weekly_avg": 10.8
+        "count": 139,
+        "weekly_avg": 10.7
       },
       {
         "name": "Kollin Korell",
-        "count": 136,
-        "weekly_avg": 10.5
-      },
-      {
-        "name": "Kelsie Laughlin",
-        "count": 130,
-        "weekly_avg": 10.0
+        "count": 132,
+        "weekly_avg": 10.2
       },
       {
         "name": "Stephen Denzel",
-        "count": 127,
-        "weekly_avg": 9.8
+        "count": 126,
+        "weekly_avg": 9.7
       },
       {
         "name": "Mike Minnillo",
-        "count": 127,
-        "weekly_avg": 9.8
+        "count": 125,
+        "weekly_avg": 9.6
       },
       {
         "name": "Brie Branting",
-        "count": 118,
-        "weekly_avg": 9.1
+        "count": 114,
+        "weekly_avg": 8.8
+      },
+      {
+        "name": "Kelsie Laughlin",
+        "count": 108,
+        "weekly_avg": 8.3
       },
       {
         "name": "Jon Pack",
-        "count": 96,
-        "weekly_avg": 7.4
+        "count": 91,
+        "weekly_avg": 7.0
       },
       {
         "name": "Jessica Evans",
-        "count": 95,
-        "weekly_avg": 7.3
+        "count": 89,
+        "weekly_avg": 6.8
       },
       {
         "name": "Daniela Blesich",
-        "count": 32,
-        "weekly_avg": 2.5
+        "count": 28,
+        "weekly_avg": 2.2
       },
       {
         "name": "Johnna Fusco",
-        "count": 24,
-        "weekly_avg": 1.8
+        "count": 20,
+        "weekly_avg": 1.5
       },
       {
         "name": "Jesu Philip",
@@ -741,7 +741,7 @@
     "baseline": 36.3,
     "current_label": "Q3-to-date",
     "baseline_label": "YTD 2026",
-    "current_consultant_weeks": 1526,
+    "current_consultant_weeks": 1544,
     "current_weeks": 6,
     "baseline_weeks": 31,
     "by_week": [
@@ -773,7 +773,7 @@
       {
         "week": "2026-08-03",
         "avg": 37.1,
-        "consultants": 225
+        "consultants": 243
       }
     ]
   }
