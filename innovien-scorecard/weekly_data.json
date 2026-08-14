@@ -301,13 +301,13 @@
   "scorecard": {
     "net_new_starts": 60,
     "avg_start_spread": 1160,
-    "pending_count": 21,
-    "pending_avg_spread": 1265,
-    "pending_total_spread": 26572,
+    "pending_count": 24,
+    "pending_avg_spread": 1274,
+    "pending_total_spread": 30588,
     "lockup_count": null,
-    "lockup_spread": 1360,
-    "dumpin_count": 50,
-    "dumpin_spread": 59913,
+    "lockup_spread": 2416,
+    "dumpin_count": 51,
+    "dumpin_spread": 60969,
     "active_consultants": 279,
     "redeployed": null,
     "available_bench": null,
@@ -350,14 +350,14 @@
       },
       {
         "weekStart": "2026-08-10",
-        "plannedIn": 12559,
-        "inCount": 11,
+        "plannedIn": 9599,
+        "inCount": 9,
         "plannedOut": 2154
       },
       {
         "weekStart": "2026-08-17",
-        "plannedIn": 7850,
-        "inCount": 6,
+        "plannedIn": 10810,
+        "inCount": 8,
         "plannedOut": 1727
       },
       {
@@ -368,8 +368,8 @@
       },
       {
         "weekStart": "2026-08-31",
-        "plannedIn": 2635,
-        "inCount": 2,
+        "plannedIn": 3691,
+        "inCount": 3,
         "plannedOut": 13887
       },
       {
@@ -497,12 +497,12 @@
     "advance_drawing": false
   },
   "fill_ratio": {
-    "as_of": "2026-08-13",
+    "as_of": "2026-08-14",
     "window_weeks": 13,
     "company": {
       "filled": 52,
-      "openings": 83,
-      "ratio": 0.6265
+      "openings": 85,
+      "ratio": 0.6118
     },
     "by_am": [
       {
@@ -572,6 +572,12 @@
         "ratio": 0.0
       },
       {
+        "name": "Jesu Philip",
+        "filled": 0,
+        "openings": 1,
+        "ratio": 0.0
+      },
+      {
         "name": "Shannon Johnson",
         "filled": 0,
         "openings": 2,
@@ -580,27 +586,32 @@
     ]
   },
   "meetings": {
-    "quarterly_pace": 1304,
+    "quarterly_pace": 1297,
     "by_am": [
       {
         "name": "Mollie Ferguson",
-        "count": 164,
-        "weekly_avg": 12.6
+        "count": 165,
+        "weekly_avg": 12.7
       },
       {
         "name": "Hannah Craig",
-        "count": 149,
-        "weekly_avg": 11.5
+        "count": 154,
+        "weekly_avg": 11.8
       },
       {
         "name": "Riley Laverty",
-        "count": 139,
-        "weekly_avg": 10.7
+        "count": 142,
+        "weekly_avg": 10.9
       },
       {
         "name": "Kollin Korell",
-        "count": 132,
-        "weekly_avg": 10.2
+        "count": 130,
+        "weekly_avg": 10.0
+      },
+      {
+        "name": "Mike Minnillo",
+        "count": 126,
+        "weekly_avg": 9.7
       },
       {
         "name": "Stephen Denzel",
@@ -608,19 +619,14 @@
         "weekly_avg": 9.7
       },
       {
-        "name": "Mike Minnillo",
-        "count": 125,
-        "weekly_avg": 9.6
-      },
-      {
         "name": "Brie Branting",
-        "count": 114,
-        "weekly_avg": 8.8
+        "count": 112,
+        "weekly_avg": 8.6
       },
       {
         "name": "Kelsie Laughlin",
-        "count": 108,
-        "weekly_avg": 8.3
+        "count": 106,
+        "weekly_avg": 8.2
       },
       {
         "name": "Jon Pack",
@@ -629,23 +635,23 @@
       },
       {
         "name": "Jessica Evans",
-        "count": 89,
-        "weekly_avg": 6.8
+        "count": 86,
+        "weekly_avg": 6.6
       },
       {
         "name": "Daniela Blesich",
-        "count": 28,
-        "weekly_avg": 2.2
-      },
-      {
-        "name": "Johnna Fusco",
-        "count": 20,
-        "weekly_avg": 1.5
+        "count": 26,
+        "weekly_avg": 2.0
       },
       {
         "name": "Jesu Philip",
         "count": 18,
         "weekly_avg": 1.4
+      },
+      {
+        "name": "Johnna Fusco",
+        "count": 14,
+        "weekly_avg": 1.1
       },
       {
         "name": "Rachel Huffman",
@@ -741,7 +747,7 @@
     "baseline": 36.3,
     "current_label": "Q3-to-date",
     "baseline_label": "YTD 2026",
-    "current_consultant_weeks": 1544,
+    "current_consultant_weeks": 1550,
     "current_weeks": 6,
     "baseline_weeks": 31,
     "by_week": [
@@ -773,7 +779,7 @@
       {
         "week": "2026-08-03",
         "avg": 37.1,
-        "consultants": 243
+        "consultants": 249
       }
     ]
   }
