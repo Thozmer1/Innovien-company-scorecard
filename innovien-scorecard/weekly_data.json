@@ -301,13 +301,13 @@
   "scorecard": {
     "net_new_starts": 60,
     "avg_start_spread": 1160,
-    "pending_count": 24,
-    "pending_avg_spread": 1274,
-    "pending_total_spread": 30588,
+    "pending_count": 25,
+    "pending_avg_spread": 1256,
+    "pending_total_spread": 31406,
     "lockup_count": null,
-    "lockup_spread": 2416,
-    "dumpin_count": 51,
-    "dumpin_spread": 60969,
+    "lockup_spread": 3234,
+    "dumpin_count": 52,
+    "dumpin_spread": 61787,
     "active_consultants": 279,
     "redeployed": null,
     "available_bench": null,
@@ -362,8 +362,8 @@
       },
       {
         "weekStart": "2026-08-24",
-        "plannedIn": 16087,
-        "inCount": 13,
+        "plannedIn": 16905,
+        "inCount": 14,
         "plannedOut": 1192
       },
       {
