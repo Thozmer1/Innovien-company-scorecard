@@ -10,7 +10,7 @@
     "quarter_end": "2026-06-28"
   },
   "company": {
-    "weekly_spread": 294360.0,
+    "weekly_spread": 298202.0,
     "qtr_start_spread": 330413.65,
     "year_total": 6594349.07
   },
@@ -305,7 +305,7 @@
     "pending_avg_spread": 1256,
     "pending_total_spread": 31406,
     "lockup_count": null,
-    "lockup_spread": 3234,
+    "lockup_spread": 0,
     "dumpin_count": 52,
     "dumpin_spread": 61787,
     "active_consultants": 279,
@@ -391,8 +391,8 @@
         "plannedOut": 1767
       }
     ],
-    "lockup_spread_goal": 7861,
-    "lockup_target_note": "$35,373 to dump-in goal / 4.5 wks left (auto-paced)"
+    "lockup_spread_goal": 9183,
+    "lockup_target_note": "$32,139 to dump-in goal / 3.5 wks left (auto-paced)"
   },
   "raffle": {
     "threshold": 1250,
@@ -497,12 +497,12 @@
     "advance_drawing": false
   },
   "fill_ratio": {
-    "as_of": "2026-08-14",
+    "as_of": "2026-08-17",
     "window_weeks": 13,
     "company": {
       "filled": 52,
-      "openings": 85,
-      "ratio": 0.6118
+      "openings": 86,
+      "ratio": 0.6047
     },
     "by_am": [
       {
@@ -572,21 +572,21 @@
         "ratio": 0.0
       },
       {
-        "name": "Jesu Philip",
+        "name": "Shannon Johnson",
         "filled": 0,
-        "openings": 1,
+        "openings": 3,
         "ratio": 0.0
       },
       {
-        "name": "Shannon Johnson",
+        "name": "Jesu Philip",
         "filled": 0,
-        "openings": 2,
+        "openings": 1,
         "ratio": 0.0
       }
     ]
   },
   "meetings": {
-    "quarterly_pace": 1297,
+    "quarterly_pace": 1331,
     "by_am": [
       {
         "name": "Mollie Ferguson",
@@ -600,11 +600,16 @@
       },
       {
         "name": "Riley Laverty",
-        "count": 142,
-        "weekly_avg": 10.9
+        "count": 139,
+        "weekly_avg": 10.7
       },
       {
         "name": "Kollin Korell",
+        "count": 134,
+        "weekly_avg": 10.3
+      },
+      {
+        "name": "Brie Branting",
         "count": 130,
         "weekly_avg": 10.0
       },
@@ -619,39 +624,34 @@
         "weekly_avg": 9.7
       },
       {
-        "name": "Brie Branting",
-        "count": 112,
-        "weekly_avg": 8.6
-      },
-      {
         "name": "Kelsie Laughlin",
-        "count": 106,
-        "weekly_avg": 8.2
+        "count": 115,
+        "weekly_avg": 8.8
       },
       {
         "name": "Jon Pack",
-        "count": 91,
-        "weekly_avg": 7.0
+        "count": 96,
+        "weekly_avg": 7.4
       },
       {
         "name": "Jessica Evans",
-        "count": 86,
-        "weekly_avg": 6.6
-      },
-      {
-        "name": "Daniela Blesich",
-        "count": 26,
-        "weekly_avg": 2.0
+        "count": 84,
+        "weekly_avg": 6.5
       },
       {
         "name": "Jesu Philip",
-        "count": 18,
-        "weekly_avg": 1.4
+        "count": 25,
+        "weekly_avg": 1.9
+      },
+      {
+        "name": "Daniela Blesich",
+        "count": 23,
+        "weekly_avg": 1.8
       },
       {
         "name": "Johnna Fusco",
-        "count": 14,
-        "weekly_avg": 1.1
+        "count": 13,
+        "weekly_avg": 1.0
       },
       {
         "name": "Rachel Huffman",
@@ -662,67 +662,67 @@
     "lookback_weeks": 13
   },
   "subs": {
-    "weekly_avg": 47.7,
+    "weekly_avg": 50.8,
     "by_recruiter": [
       {
         "name": "Gloria Manley",
-        "count": 59,
-        "weekly_avg": 4.5
+        "count": 64,
+        "weekly_avg": 4.9
       },
       {
         "name": "Jamie Houvig",
+        "count": 56,
+        "weekly_avg": 4.3
+      },
+      {
+        "name": "Julia McDonald",
+        "count": 53,
+        "weekly_avg": 4.1
+      },
+      {
+        "name": "Brandon Dowdell",
         "count": 52,
         "weekly_avg": 4.0
       },
       {
-        "name": "Brandon Dowdell",
-        "count": 50,
-        "weekly_avg": 3.8
-      },
-      {
-        "name": "Julia McDonald",
+        "name": "Ben Dorsey",
         "count": 49,
         "weekly_avg": 3.8
       },
       {
-        "name": "Ben Dorsey",
-        "count": 46,
-        "weekly_avg": 3.5
+        "name": "Brennan Lantz",
+        "count": 49,
+        "weekly_avg": 3.8
       },
       {
-        "name": "Brennan Lantz",
+        "name": "Luke Reineke",
+        "count": 49,
+        "weekly_avg": 3.8
+      },
+      {
+        "name": "Jordan Foote",
         "count": 45,
         "weekly_avg": 3.5
       },
       {
-        "name": "Luke Reineke",
-        "count": 44,
-        "weekly_avg": 3.4
-      },
-      {
         "name": "Merrimon McCartney",
-        "count": 44,
-        "weekly_avg": 3.4
+        "count": 46,
+        "weekly_avg": 3.5
       },
       {
         "name": "Adam Williams",
-        "count": 43,
-        "weekly_avg": 3.3
-      },
-      {
-        "name": "Jordan Foote",
-        "count": 43,
-        "weekly_avg": 3.3
+        "count": 44,
+        "weekly_avg": 3.4
       },
       {
         "name": "Mike Murphy",
-        "count": 41,
-        "weekly_avg": 3.2
+        "count": 44,
+        "weekly_avg": 3.4
       },
       {
         "name": "Ryan Mickley",
-        "count": 32,
-        "weekly_avg": 2.5
+        "count": 35,
+        "weekly_avg": 2.7
       },
       {
         "name": "Monika DuVarney",
@@ -731,8 +731,8 @@
       },
       {
         "name": "Chelsea Navarro",
-        "count": 25,
-        "weekly_avg": 1.9
+        "count": 26,
+        "weekly_avg": 2.0
       },
       {
         "name": "Dan Bostock",
@@ -743,13 +743,13 @@
     "lookback_weeks": 13
   },
   "hours_util": {
-    "current": 34.8,
+    "current": 34.9,
     "baseline": 36.3,
     "current_label": "Q3-to-date",
     "baseline_label": "YTD 2026",
-    "current_consultant_weeks": 1550,
-    "current_weeks": 6,
-    "baseline_weeks": 31,
+    "current_consultant_weeks": 1583,
+    "current_weeks": 7,
+    "baseline_weeks": 32,
     "by_week": [
       {
         "week": "2026-06-29",
@@ -779,7 +779,12 @@
       {
         "week": "2026-08-03",
         "avg": 37.1,
-        "consultants": 249
+        "consultants": 250
+      },
+      {
+        "week": "2026-08-10",
+        "avg": 37.2,
+        "consultants": 32
       }
     ]
   }
