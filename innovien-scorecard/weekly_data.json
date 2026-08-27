@@ -473,11 +473,90 @@
     "as_of": "2026-08-27",
     "window_weeks": 13,
     "company": {
-      "filled": 0,
-      "openings": 0,
-      "ratio": 0
+      "filled": 69,
+      "openings": 117,
+      "ratio": 0.5897
     },
-    "by_am": []
+    "by_am": [
+      {
+        "name": "Mollie Ferguson",
+        "filled": 23,
+        "openings": 27,
+        "ratio": 0.8519
+      },
+      {
+        "name": "Jon Pack",
+        "filled": 15,
+        "openings": 18,
+        "ratio": 0.8333
+      },
+      {
+        "name": "Hannah Craig",
+        "filled": 5,
+        "openings": 7,
+        "ratio": 0.7143
+      },
+      {
+        "name": "Mike Minnillo",
+        "filled": 7,
+        "openings": 10,
+        "ratio": 0.7
+      },
+      {
+        "name": "Kelsie Laughlin",
+        "filled": 16,
+        "openings": 25,
+        "ratio": 0.64
+      },
+      {
+        "name": "Riley Laverty",
+        "filled": 3,
+        "openings": 5,
+        "ratio": 0.6
+      },
+      {
+        "name": "Stephen Denzel",
+        "filled": 12,
+        "openings": 23,
+        "ratio": 0.5217
+      },
+      {
+        "name": "Jessica Evans",
+        "filled": 1,
+        "openings": 2,
+        "ratio": 0.5
+      },
+      {
+        "name": "Brie Branting",
+        "filled": 14,
+        "openings": 29,
+        "ratio": 0.4828
+      },
+      {
+        "name": "Malia Graham",
+        "filled": 0,
+        "openings": 2,
+        "ratio": 0.0
+      },
+      {
+        "name": "Kollin Korell",
+        "filled": 0,
+        "openings": 3,
+        "ratio": 0.0
+      },
+      {
+        "name": "Shannon Johnson",
+        "filled": 0,
+        "openings": 3,
+        "ratio": 0.0
+      },
+      {
+        "name": "Jesu Philip",
+        "filled": 0,
+        "openings": 1,
+        "ratio": 0.0
+      }
+    ]
   },
   "meetings": {
     "quarterly_pace": 1276,
