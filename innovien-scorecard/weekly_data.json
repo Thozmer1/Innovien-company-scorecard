@@ -10,7 +10,7 @@
     "quarter_end": "2026-06-28"
   },
   "company": {
-    "weekly_spread": 306690.0,
+    "weekly_spread": 307565.0,
     "qtr_start_spread": 330413.65,
     "year_total": 6594349.07
   },
@@ -301,13 +301,13 @@
   "scorecard": {
     "net_new_starts": 72,
     "avg_start_spread": 1191,
-    "pending_count": 29,
-    "pending_avg_spread": 1169,
-    "pending_total_spread": 33887,
+    "pending_count": 26,
+    "pending_avg_spread": 1171,
+    "pending_total_spread": 30442,
     "lockup_count": null,
     "lockup_spread": 2610,
-    "dumpin_count": 68,
-    "dumpin_spread": 80419,
+    "dumpin_count": 66,
+    "dumpin_spread": 78336,
     "active_consultants": 279,
     "redeployed": null,
     "available_bench": null,
@@ -368,8 +368,8 @@
       },
       {
         "weekStart": "2026-08-31",
-        "plannedIn": 23875,
-        "inCount": 19,
+        "plannedIn": 19037,
+        "inCount": 15,
         "plannedOut": 13887
       },
       {
@@ -386,13 +386,13 @@
       },
       {
         "weekStart": "2026-09-21",
-        "plannedIn": 0,
-        "inCount": 0,
+        "plannedIn": 1392,
+        "inCount": 1,
         "plannedOut": 1767
       }
     ],
-    "lockup_spread_goal": 6446,
-    "lockup_target_note": "$16,116 to dump-in goal / 2.5 wks left (auto-paced)"
+    "lockup_spread_goal": 7280,
+    "lockup_target_note": "$18,199 to dump-in goal / 2.5 wks left (auto-paced)"
   },
   "raffle": {
     "threshold": 1250,
@@ -470,7 +470,7 @@
     "advance_drawing": false
   },
   "fill_ratio": {
-    "as_of": "2026-08-27",
+    "as_of": "2026-08-28",
     "window_weeks": 13,
     "company": {
       "filled": 69,
@@ -559,42 +559,42 @@
     ]
   },
   "meetings": {
-    "quarterly_pace": 1276,
+    "quarterly_pace": 1275,
     "by_am": [
       {
         "name": "Mollie Ferguson",
-        "count": 161,
-        "weekly_avg": 12.4
+        "count": 163,
+        "weekly_avg": 12.5
       },
       {
         "name": "Hannah Craig",
-        "count": 158,
-        "weekly_avg": 12.2
+        "count": 156,
+        "weekly_avg": 12.0
       },
       {
         "name": "Riley Laverty",
-        "count": 139,
-        "weekly_avg": 10.7
+        "count": 135,
+        "weekly_avg": 10.4
       },
       {
-        "name": "Kollin Korell",
+        "name": "Stephen Denzel",
         "count": 134,
         "weekly_avg": 10.3
       },
       {
-        "name": "Stephen Denzel",
-        "count": 127,
-        "weekly_avg": 9.8
+        "name": "Kollin Korell",
+        "count": 133,
+        "weekly_avg": 10.2
       },
       {
         "name": "Brie Branting",
-        "count": 124,
+        "count": 123,
         "weekly_avg": 9.5
       },
       {
         "name": "Mike Minnillo",
-        "count": 116,
-        "weekly_avg": 8.9
+        "count": 119,
+        "weekly_avg": 9.2
       },
       {
         "name": "Kelsie Laughlin",
@@ -603,26 +603,26 @@
       },
       {
         "name": "Jon Pack",
-        "count": 89,
-        "weekly_avg": 6.8
+        "count": 90,
+        "weekly_avg": 6.9
       },
       {
         "name": "Jessica Evans",
-        "count": 78,
-        "weekly_avg": 6.0
+        "count": 77,
+        "weekly_avg": 5.9
       },
       {
         "name": "Jesu Philip",
-        "count": 24,
+        "count": 23,
         "weekly_avg": 1.8
       },
       {
         "name": "Daniela Blesich",
-        "count": 9,
-        "weekly_avg": 0.7
+        "count": 7,
+        "weekly_avg": 0.5
       },
       {
-        "name": "Johnna Fusco",
+        "name": "Gwen Martin",
         "count": 3,
         "weekly_avg": 0.2
       },
@@ -632,22 +632,17 @@
         "weekly_avg": 0.2
       },
       {
-        "name": "Gwen Martin",
-        "count": 2,
-        "weekly_avg": 0.2
-      },
-      {
         "name": "Rachel Huffman",
         "count": 1,
         "weekly_avg": 0.1
       },
       {
-        "name": "Daley Bell",
+        "name": "Riley Caines",
         "count": 1,
         "weekly_avg": 0.1
       },
       {
-        "name": "Riley Caines",
+        "name": "Daley Bell",
         "count": 1,
         "weekly_avg": 0.1
       }
@@ -736,11 +731,11 @@
     "lookback_weeks": 13
   },
   "hours_util": {
-    "current": 35.5,
-    "baseline": 36.4,
+    "current": 35.4,
+    "baseline": 36.3,
     "current_label": "Q3-to-date",
     "baseline_label": "YTD 2026",
-    "current_consultant_weeks": 2065,
+    "current_consultant_weeks": 2067,
     "current_weeks": 8,
     "baseline_weeks": 33,
     "by_week": [
@@ -781,8 +776,8 @@
       },
       {
         "week": "2026-08-17",
-        "avg": 37.5,
-        "consultants": 254
+        "avg": 37.3,
+        "consultants": 256
       }
     ]
   }
