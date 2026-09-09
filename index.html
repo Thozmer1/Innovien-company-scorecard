@@ -72,12 +72,16 @@
     <div class="card"><canvas id="forecastChart" height="110"></canvas></div>
   </section>
   <section class="page" data-page="goals">
-    <h2 class="sec">Company Pace</h2>
-    <div class="grid kpis" id="kpi-goals"></div>
-    <div class="grid three" id="goals-tables" style="margin-top:14px">
-      <div><h2 class="sec">AM Meeting Avg (13 Wk)</h2><div id="tbl-ammtg"></div></div>
-      <div><h2 class="sec">Recruiter Sub Avg (13 Wk)</h2><div id="tbl-recsub"></div></div>
-      <div><h2 class="sec">AM Fill Ratio (13 Wk)</h2><div id="tbl-amfill"></div></div>
+    <h2 class="sec">Consultant Hours Utilization</h2>
+    <div style="display:flex;gap:16px;align-items:stretch;flex-wrap:wrap;margin-top:6px">
+      <div id="kpi-hours" style="flex:0 0 320px;max-width:360px"></div>
+      <div class="card" style="flex:1 1 440px;min-width:300px"><canvas id="hoursChart" height="120"></canvas></div>
+    </div>
+    <h2 class="sec" style="margin-top:16px">Company Pace &amp; Detail</h2>
+    <div class="grid three" id="goals-tables" style="margin-top:6px">
+      <div><div id="kpi-mtg"></div><h2 class="sec">AM Meeting Avg (13 Wk)</h2><div id="tbl-ammtg"></div></div>
+      <div><div id="kpi-sub"></div><h2 class="sec">Recruiter Sub Avg (13 Wk)</h2><div id="tbl-recsub"></div></div>
+      <div><div id="kpi-fill"></div><h2 class="sec">AM Close Ratio (13 Wk)</h2><div id="tbl-amfill"></div></div>
     </div>
   </section>
   <section class="page" data-page="raffle">
@@ -99,11 +103,12 @@
 </footer>
 
 <script>
-const SAMPLE = {"meta":{"asOf":"2026-06-15","quarterLabel":"Q2 2026","baselineWeekStart":"2026-03-23","quarterStart":"2026-03-30","quarterEnd":"2026-06-28","lookbackWeeks":13},"scorecard":{"weeklySpread":{"actual":323781.28,"goal":364000,"pct":89,"onPace":false,"fmt":"usd"},"netNewStarts":{"actual":82,"goal":101,"pct":81,"onPace":false,"fmt":"int"},"avgStartSpread":{"actual":1155,"goal":1000,"pct":116,"onPace":true,"fmt":"usd"},"pendingStarts":{"count":18,"avgSpread":1114,"totalSpread":20056,"avgGoal":1300,"avgPct":86,"avgOnPace":false},"weeklyLockUp":{"count":0,"spread":0,"countGoal":10,"spreadGoal":10893,"countPct":0,"countOnPace":false,"spreadPct":0,"spreadOnPace":false,"weekStart":"2026-06-15"},"dumpIn":{"count":81,"spread":94847,"spreadGoal":95033,"spreadPct":100,"spreadOnPace":false},"activeConsultants":279,"redeployed":{"actual":11,"goal":12,"pct":92,"onPace":false,"fmt":"int"},"availableBench":11,"forecast":[{"weekStart":"2026-03-30","plannedIn":11158,"plannedOut":25316,"net":-14158,"cumNet":-14158,"isPast":true},{"weekStart":"2026-04-06","plannedIn":7073,"plannedOut":4415,"net":2658,"cumNet":-11500,"isPast":true},{"weekStart":"2026-04-13","plannedIn":4076,"plannedOut":2599,"net":1477,"cumNet":-10023,"isPast":true},{"weekStart":"2026-04-20","plannedIn":11499,"plannedOut":5353,"net":6146,"cumNet":-3877,"isPast":true},{"weekStart":"2026-04-27","plannedIn":4993,"plannedOut":13754,"net":-8761,"cumNet":-12638,"isPast":true},{"weekStart":"2026-05-04","plannedIn":11328,"plannedOut":1253,"net":10075,"cumNet":-2563,"isPast":true},{"weekStart":"2026-05-11","plannedIn":2711,"plannedOut":4981,"net":-2270,"cumNet":-4833,"isPast":true},{"weekStart":"2026-05-18","plannedIn":4726,"plannedOut":6726,"net":-2000,"cumNet":-6833,"isPast":true},{"weekStart":"2026-05-25","plannedIn":6160,"plannedOut":5896,"net":264,"cumNet":-6569,"isPast":true},{"weekStart":"2026-06-01","plannedIn":18670,"plannedOut":11063,"net":7607,"cumNet":1038,"isPast":true},{"weekStart":"2026-06-08","plannedIn":12028,"plannedOut":4104,"net":7924,"cumNet":8962,"isPast":true},{"weekStart":"2026-06-15","plannedIn":10518,"plannedOut":3437,"net":7081,"cumNet":16043,"isPast":false},{"weekStart":"2026-06-22","plannedIn":6470,"plannedOut":2337,"net":4133,"cumNet":20176,"isPast":false}]},"goalTracking":{"weeklySubAvg":{"actual":19.6,"goal":40,"pct":49,"onPace":false,"fmt":"dec"},"qtrlyMeetingPace":{"actual":224,"goal":260,"pct":86,"onPace":false,"fmt":"int"},"fillRatio":{"actual":0.516,"goal":0.6,"pct":86,"onPace":false,"fmt":"pct"},"amMeetingAvg":[{"name":"Kollin Korell","weeklyAvg":3.6,"total":47,"goal":5},{"name":"Stephen Denzel","weeklyAvg":3,"total":39,"goal":5},{"name":"Mollie Ferguson","weeklyAvg":2.9,"total":38,"goal":5},{"name":"Riley Laverty","weeklyAvg":2.8,"total":37,"goal":5},{"name":"Hannah Craig","weeklyAvg":2.2,"total":28,"goal":5},{"name":"Jon Pack","weeklyAvg":2.1,"total":27,"goal":5},{"name":"Brie Branting","weeklyAvg":1.9,"total":25,"goal":5},{"name":"Daniela Blesich","weeklyAvg":1.2,"total":16,"goal":5}],"recruiterSubAvg":[{"name":"Julia McDonald","weeklyAvg":3.5,"total":46,"goal":4},{"name":"Gloria Manley","weeklyAvg":3.3,"total":43,"goal":4},{"name":"Chelsea Navarro","weeklyAvg":3.3,"total":43,"goal":4},{"name":"Ryan Mickley","weeklyAvg":3.3,"total":43,"goal":4},{"name":"Brennan Lantz","weeklyAvg":3.2,"total":41,"goal":4},{"name":"Mike Murphy","weeklyAvg":3,"total":39,"goal":4}],"amFillRatio":[{"name":"Malia Graham","ratio":1,"filled":1,"openings":1,"goal":0.6},{"name":"Mollie Ferguson","ratio":1,"filled":23,"openings":23,"goal":0.6},{"name":"Victoria Bonilla","ratio":1,"filled":1,"openings":1,"goal":0.6},{"name":"Johnna Fusco","ratio":1,"filled":1,"openings":1,"goal":0.6},{"name":"Brie Branting","ratio":0.727,"filled":8,"openings":11,"goal":0.6},{"name":"Jon Pack","ratio":0.667,"filled":10,"openings":15,"goal":0.6},{"name":"Hannah Craig","ratio":0.6,"filled":6,"openings":10,"goal":0.6},{"name":"Mike Minnillo","ratio":0.529,"filled":9,"openings":17,"goal":0.6},{"name":"Kelsie Laughlin","ratio":0.5,"filled":5,"openings":10,"goal":0.6},{"name":"Stephen Denzel","ratio":0.429,"filled":6,"openings":14,"goal":0.6},{"name":"Daniela Blesich","ratio":0.2,"filled":1,"openings":5,"goal":0.6},{"name":"Cristina Murto","ratio":0.143,"filled":1,"openings":7,"goal":0.6},{"name":"Riley Laverty","ratio":0.111,"filled":1,"openings":9,"goal":0.6},{"name":"Jessica Evans","ratio":0,"filled":0,"openings":1,"goal":0.6},{"name":"Kollin Korell","ratio":0,"filled":0,"openings":24,"goal":0.6},{"name":"Josh Mastel","ratio":0,"filled":0,"openings":1,"goal":0.6},{"name":"Shannon Johnson","ratio":0,"filled":0,"openings":1,"goal":0.6}]},"raffle":{"mode":"curated","threshold":1250,"batchSize":15,"currentDrawingNo":1,"currentCount":15,"currentReady":true,"totalTickets":30,"leaderboard":[{"name":"Mollie Ferguson","tickets":7,"asAM":7,"asRecruiter":0},{"name":"Mike Murphy","tickets":4,"asAM":0,"asRecruiter":4},{"name":"Jon Pack","tickets":3,"asAM":3,"asRecruiter":0},{"name":"Julia McDonald","tickets":3,"asAM":0,"asRecruiter":3},{"name":"Brie Branting","tickets":2,"asAM":2,"asRecruiter":0},{"name":"Brennan Lantz","tickets":2,"asAM":0,"asRecruiter":2},{"name":"Gloria Manley","tickets":2,"asAM":0,"asRecruiter":2},{"name":"Mike Minnillo","tickets":2,"asAM":2,"asRecruiter":0},{"name":"Dan Bostock","tickets":1,"asAM":0,"asRecruiter":1},{"name":"Daniela Blesich","tickets":1,"asAM":1,"asRecruiter":0},{"name":"Ryan Mickley","tickets":1,"asAM":0,"asRecruiter":1},{"name":"Jordan Foote","tickets":1,"asAM":0,"asRecruiter":1},{"name":"Chelsea Navarro","tickets":1,"asAM":0,"asRecruiter":1}],"currentMembers":[{"name":"Bartholomew Baptista","am":"Brie Branting","recruiter":"Dan Bostock","spread":1423},{"name":"Darren Baird","am":"Daniela Blesich","recruiter":"Ryan Mickley","spread":1540},{"name":"Shane Hayes","am":"Brie Branting","recruiter":"Brennan Lantz","spread":1251},{"name":"Ken Ptaszynski","am":"Jon Pack","recruiter":"Julia McDonald","spread":1256},{"name":"Ketan Patel","am":"Jon Pack","recruiter":"Julia McDonald","spread":1384},{"name":"Irina Belska","am":"Mollie Ferguson","recruiter":"Gloria Manley","spread":1428},{"name":"Adigun Palmer","am":"Mollie Ferguson","recruiter":"Jordan Foote","spread":1384},{"name":"Brian Childs","am":"Mollie Ferguson","recruiter":"Julia McDonald","spread":1384},{"name":"Paul Sheen","am":"Mollie Ferguson","recruiter":"Mike Murphy","spread":1750},{"name":"Andrew Elliott","am":"Mollie Ferguson","recruiter":"Brennan Lantz","spread":1340},{"name":"Mahesh Chukka","am":"Mollie Ferguson","recruiter":"Chelsea Navarro","spread":1480},{"name":"Lee Davis","am":"Mollie Ferguson","recruiter":"Mike Murphy","spread":1250},{"name":"Gabriel Sardinha de Oliveira","am":"Mike Minnillo","recruiter":"Mike Murphy","spread":1392},{"name":"Eduardo Alfonso","am":"Mike Minnillo","recruiter":"Mike Murphy","spread":1350},{"name":"Cortland Durham","am":"Jon Pack","recruiter":"Gloria Manley","spread":1404}],"nextCount":1,"startsToNextDrawing":14,"nextUp":[{"name":"Abba-Joseph Awano","am":"Hannah Craig","recruiter":"Gloria Manley","spread":1267}]},"openReqHealth":{"totalOpen":0,"aging":{"<=14d":0,"15-45d":0,"46-90d":0,">90d":0},"reqsNoFill":0,"totOpenings":0,"totFilled":0},"rowCounts":{"activeContracts":0,"recruiterDaily":78,"amWeekly":504,"openReqs":0,"placementEvents":0,"innovienNext":28,"esf":0,"psf":0,"goals":15},"goalsApplied":15,"weeklyDataWeekEnding":"2026-06-01","generatedAt":"2026-06-15T10:21:57.846Z","sample":true};
-const PAGES=[["scorecard","Stretch Scorecard"],["goals","Q2 Goal Tracking"],["raffle","$1,250 Raffle"]];
+const SAMPLE = {"meta":{"asOf":"2026-06-17","quarterLabel":"Q2 2026","baselineWeekStart":"2026-03-23","quarterStart":"2026-03-30","quarterEnd":"2026-06-28","lookbackWeeks":13},"scorecard":{"weeklySpread":{"actual":323781.28,"goal":364000,"pct":89,"onPace":false,"fmt":"usd"},"netNewStarts":{"actual":86,"goal":101,"pct":85,"onPace":false,"fmt":"int"},"avgStartSpread":{"actual":1167,"goal":1000,"pct":117,"onPace":true,"fmt":"usd"},"pendingStarts":{"count":15,"avgSpread":1162,"totalSpread":17428,"avgGoal":1300,"avgPct":89,"avgOnPace":false},"weeklyLockUp":{"count":0,"spread":6027,"countGoal":10,"spreadGoal":10893,"countPct":0,"countOnPace":false,"spreadPct":55,"spreadOnPace":false,"weekStart":"2026-06-15"},"dumpIn":{"count":81,"spread":94847,"spreadGoal":95033,"spreadPct":100,"spreadOnPace":false},"activeConsultants":279,"redeployed":{"actual":5,"goal":12,"pct":42,"onPace":false,"fmt":"int"},"availableBench":19,"forecast":[{"weekStart":"2026-03-30","plannedIn":11158,"plannedOut":25316,"net":-14158,"cumNet":-14158,"isPast":true},{"weekStart":"2026-04-06","plannedIn":7073,"plannedOut":4415,"net":2658,"cumNet":-11500,"isPast":true},{"weekStart":"2026-04-13","plannedIn":4076,"plannedOut":2599,"net":1477,"cumNet":-10023,"isPast":true},{"weekStart":"2026-04-20","plannedIn":11499,"plannedOut":5353,"net":6146,"cumNet":-3877,"isPast":true},{"weekStart":"2026-04-27","plannedIn":4993,"plannedOut":13754,"net":-8761,"cumNet":-12638,"isPast":true},{"weekStart":"2026-05-04","plannedIn":11328,"plannedOut":1253,"net":10075,"cumNet":-2563,"isPast":true},{"weekStart":"2026-05-11","plannedIn":2711,"plannedOut":4981,"net":-2270,"cumNet":-4833,"isPast":true},{"weekStart":"2026-05-18","plannedIn":4726,"plannedOut":6726,"net":-2000,"cumNet":-6833,"isPast":true},{"weekStart":"2026-05-25","plannedIn":6160,"plannedOut":5896,"net":264,"cumNet":-6569,"isPast":true},{"weekStart":"2026-06-01","plannedIn":18670,"plannedOut":11063,"net":7607,"cumNet":1038,"isPast":true},{"weekStart":"2026-06-08","plannedIn":12028,"plannedOut":4104,"net":7924,"cumNet":8962,"isPast":true},{"weekStart":"2026-06-15","plannedIn":10518,"plannedOut":3437,"net":7081,"cumNet":16043,"isPast":true},{"weekStart":"2026-06-22","plannedIn":6470,"plannedOut":2337,"net":4133,"cumNet":20176,"isPast":false}]},"goalTracking":{"weeklySubAvg":{"actual":580,"goal":495,"pct":117,"onPace":true,"fmt":"int","note":"3/recruiter/wk · 15 recruiters · wk 11 of 13","weeksElapsed":11,"weeksInQuarter":13},"qtrlyMeetingPace":{"actual":1285,"goal":1540,"pct":83,"onPace":false,"fmt":"int","note":"10/AM/wk · 14 AMs · wk 11 of 13","weeksElapsed":11,"weeksInQuarter":13},"fillRatio":{"actual":0.516,"goal":0.6,"pct":86,"onPace":false,"fmt":"pct"},"amMeetingAvg":[{"name":"Mollie Ferguson","weeklyAvg":16.5,"total":214,"goal":10},{"name":"Kollin Korell","weeklyAvg":11.5,"total":150,"goal":10},{"name":"Kelsie Laughlin","weeklyAvg":11.5,"total":150,"goal":10},{"name":"Hannah Craig","weeklyAvg":11.2,"total":146,"goal":10},{"name":"Brie Branting","weeklyAvg":10.8,"total":141,"goal":10},{"name":"Riley Laverty","weeklyAvg":10.7,"total":139,"goal":10},{"name":"Mike Minnillo","weeklyAvg":10.4,"total":135,"goal":10},{"name":"Stephen Denzel","weeklyAvg":9.5,"total":124,"goal":10},{"name":"Daniela Blesich","weeklyAvg":9.3,"total":121,"goal":10},{"name":"Jon Pack","weeklyAvg":8.4,"total":109,"goal":10},{"name":"Johnna Fusco","weeklyAvg":6.6,"total":86,"goal":10},{"name":"Jessica Evans","weeklyAvg":6.4,"total":83,"goal":10},{"name":"Cristina Murto","weeklyAvg":2.7,"total":35,"goal":10},{"name":"Craig Coates","weeklyAvg":2.1,"total":27,"goal":10},{"name":"Jesu Philip","weeklyAvg":0.5,"total":7,"goal":10},{"name":"Josh Mastel","weeklyAvg":0.1,"total":1,"goal":10}],"recruiterSubAvg":[{"name":"Gloria Manley","weeklyAvg":5,"total":65,"goal":4},{"name":"Jamie Houvig","weeklyAvg":4.5,"total":58,"goal":4},{"name":"Merrimon McCartney","weeklyAvg":4.3,"total":56,"goal":4},{"name":"Jordan Foote","weeklyAvg":3.8,"total":50,"goal":4},{"name":"Brandon Dowdell","weeklyAvg":3.7,"total":48,"goal":4},{"name":"Dan Bostock","weeklyAvg":3.6,"total":47,"goal":4},{"name":"Julia McDonald","weeklyAvg":3.6,"total":47,"goal":4},{"name":"Brennan Lantz","weeklyAvg":3.5,"total":45,"goal":4},{"name":"Luke Reineke","weeklyAvg":3.5,"total":45,"goal":4},{"name":"Monika DuVarney","weeklyAvg":3.3,"total":43,"goal":4},{"name":"Ben Dorsey","weeklyAvg":3.1,"total":40,"goal":4},{"name":"Mike Murphy","weeklyAvg":3.1,"total":40,"goal":4},{"name":"Ryan Mickley","weeklyAvg":3.1,"total":40,"goal":4},{"name":"Adam Williams","weeklyAvg":2.8,"total":36,"goal":4},{"name":"Chelsea Navarro","weeklyAvg":1.8,"total":23,"goal":4}],"amFillRatio":[{"name":"Malia Graham","ratio":1,"filled":1,"openings":1,"goal":0.6},{"name":"Mollie Ferguson","ratio":1,"filled":23,"openings":23,"goal":0.6},{"name":"Victoria Bonilla","ratio":1,"filled":1,"openings":1,"goal":0.6},{"name":"Johnna Fusco","ratio":1,"filled":1,"openings":1,"goal":0.6},{"name":"Jon Pack","ratio":0.714,"filled":10,"openings":14,"goal":0.6},{"name":"Brie Branting","ratio":0.7,"filled":7,"openings":10,"goal":0.6},{"name":"Hannah Craig","ratio":0.6,"filled":6,"openings":10,"goal":0.6},{"name":"Kelsie Laughlin","ratio":0.556,"filled":5,"openings":9,"goal":0.6},{"name":"Mike Minnillo","ratio":0.529,"filled":9,"openings":17,"goal":0.6},{"name":"Stephen Denzel","ratio":0.429,"filled":6,"openings":14,"goal":0.6},{"name":"Daniela Blesich","ratio":0.2,"filled":1,"openings":5,"goal":0.6},{"name":"Cristina Murto","ratio":0.2,"filled":1,"openings":5,"goal":0.6},{"name":"Riley Laverty","ratio":0.111,"filled":1,"openings":9,"goal":0.6},{"name":"Kollin Korell","ratio":0,"filled":0,"openings":24,"goal":0.6},{"name":"Josh Mastel","ratio":0,"filled":0,"openings":1,"goal":0.6},{"name":"Shannon Johnson","ratio":0,"filled":0,"openings":1,"goal":0.6}]},"raffle":{"mode":"curated","threshold":1250,"batchSize":15,"currentDrawingNo":2,"currentCount":1,"currentReady":false,"startsToCurrentDrawing":14,"totalTickets":2,"leaderboard":[{"name":"Hannah Craig","tickets":1,"asAM":1,"asRecruiter":0},{"name":"Gloria Manley","tickets":1,"asAM":0,"asRecruiter":1}],"currentMembers":[{"name":"Abba-Joseph Awano","am":"Hannah Craig","recruiter":"Gloria Manley","spread":1267}],"nextCount":0,"startsToNextDrawing":15,"nextUp":[]},"openReqHealth":{"totalOpen":0,"aging":{"<=14d":0,"15-45d":0,"46-90d":0,">90d":0},"reqsNoFill":0,"totOpenings":0,"totFilled":0},"rowCounts":{"activeContracts":0,"recruiterDaily":0,"amWeekly":0,"openReqs":0,"placementEvents":0,"innovienNext":28,"esf":0,"psf":0,"goals":15},"goalsApplied":15,"weeklyDataWeekEnding":"2026-06-01","generatedAt":"2026-06-17T10:21:31.675Z","sample":true};
+const PAGES=[["scorecard","Stretch Scorecard"],["goals","Q3 Goal Tracking"],["raffle","$1,250 Raffle"]];
 const fmtUsd=n=>"$"+Math.round(n).toLocaleString();
 const fmt={usd:fmtUsd,int:n=>Math.round(n).toLocaleString(),dec:n=>(+n).toFixed(1),pct:n=>(n*100).toFixed(1)+"%"};
 let chart1;
+let chart2;
 
 function nav(){const n=document.getElementById('nav');n.innerHTML='';PAGES.forEach(([id,label],i)=>{const b=document.createElement('button');b.textContent=label;b.className=i===0?'active':'';b.onclick=()=>{document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.dataset.page===id));};n.appendChild(b);});}
 
@@ -114,7 +119,8 @@ function kpiCard(label,k){
   const barpct = k.pct!=null?Math.min(100,k.pct):0;
   const bar = k.goal?`<div class="bar"><i style="width:${barpct}%"></i></div>`:'';
   const goal = k.goal!=null?`<div class="goal">Goal: ${f(k.goal)}</div>`:'';
-  return `<div class="card kpi"><div class="label">${label}</div><div class="val">${f(k.actual)}</div>${goal}${bar}${pace}</div>`;
+  const note = k.note?`<div class="goal" style="opacity:.7;font-size:.82em;margin-top:-2px">${k.note}</div>`:'';
+  return `<div class="card kpi"><div class="label">${label}</div><div class="val">${f(k.actual)}</div>${goal}${note}${bar}${pace}</div>`;
 }
 function plainCard(label,val,sub){return `<div class="card kpi"><div class="label">${label}</div><div class="val">${val}</div><div class="goal">${sub||''}</div></div>`;}
 function paceLine(text,onPace){const cls=onPace===null?'':(onPace?'on':'off');return `<span class="pace ${cls}" style="margin-top:6px">${text}</span>`;}
@@ -140,6 +146,8 @@ function render(d){
     (p.avgOnPace===null?'':paceLine((p.avgOnPace?'Avg ≥ goal':'Avg below goal')+(p.avgPct!=null?` · ${p.avgPct}%`:''),p.avgOnPace));
   const lockSub =
     `<div class="goal">Lock-up goal ${lu.spreadGoal?fmtUsd(lu.spreadGoal):'—'}</div>`+
+    (lu.targetNote?`<div class="goal" style="opacity:.7;font-size:.82em">${lu.targetNote}</div>`:'')+
+    (lu.hitList?`<div class="goal" style="margin-top:3px">Hit list: <b>${lu.hitList.reqs}</b> req${lu.hitList.reqs===1?'':'s'} · ~${fmtUsd(lu.hitList.potentialSpread)} potential (${lu.hitList.openings} opening${lu.hitList.openings===1?'':'s'})</div>`:'')+
     (lu.spreadOnPace===null?'':paceLine((lu.spreadOnPace?'At / above goal':'Below goal')+(lu.spreadPct!=null?` · ${lu.spreadPct}%`:''),lu.spreadOnPace));
   const dumpSub =
     `<div class="goal">${di.count} dump-ins · created this qtr, start by qtr end</div>`+
@@ -154,8 +162,11 @@ function render(d){
     multiCard('Total Dump-In Spread',fmtUsd(di.spread),dumpSub);
 
   const gt=d.goalTracking;
-  document.getElementById('kpi-goals').innerHTML =
-    kpiCard('Weekly Sub Avg',gt.weeklySubAvg)+kpiCard('Qtrly Meeting Pace',gt.qtrlyMeetingPace)+kpiCard('QTD Fill Ratio',gt.fillRatio);
+  document.getElementById('kpi-mtg').innerHTML = kpiCard('Meeting Pace · QTD',gt.qtrlyMeetingPace);
+  document.getElementById('kpi-sub').innerHTML = kpiCard('Sub Pace · QTD',gt.weeklySubAvg);
+  document.getElementById('kpi-fill').innerHTML = kpiCard('Close Ratio · 13 Wk',gt.fillRatio);
+  document.getElementById('kpi-hours').innerHTML = kpiCard('Avg Hrs / Wk / Consultant · Q3-to-date',gt.hoursUtil);
+  drawHoursChart(gt.hoursUtil);
   document.getElementById('tbl-ammtg').innerHTML = table(gt.amMeetingAvg,[
     {h:'Account Manager',f:r=>r.name},{h:'Wkly Avg',r:1,f:r=>r.weeklyAvg.toFixed(1)},
     {h:'Goal',r:1,f:r=>r.goal??'—'},{h:'',r:1,f:r=>`<span class="chip ${r.goal&&r.weeklyAvg>=r.goal?'':'gray'}">${r.goal&&r.weeklyAvg>=r.goal?'✓':'·'}</span>`}]);
@@ -163,8 +174,8 @@ function render(d){
     {h:'Recruiter',f:r=>r.name},{h:'Wkly Avg',r:1,f:r=>r.weeklyAvg.toFixed(1)},
     {h:'Goal',r:1,f:r=>r.goal??'—'},{h:'',r:1,f:r=>`<span class="chip ${r.goal&&r.weeklyAvg>=r.goal?'':'gray'}">${r.goal&&r.weeklyAvg>=r.goal?'✓':'·'}</span>`}]);
   document.getElementById('tbl-amfill').innerHTML = table(gt.amFillRatio,[
-    {h:'Account Manager',f:r=>r.name},{h:'Filled',r:1,f:r=>r.filled},{h:'Openings',r:1,f:r=>r.openings},
-    {h:'Fill Ratio',r:1,f:r=>(r.ratio*100).toFixed(0)+'%'},{h:'',r:1,f:r=>`<span class="chip ${r.goal&&r.ratio>=r.goal?'':'gray'}">${r.goal&&r.ratio>=r.goal?'✓':'·'}</span>`}]);
+    {h:'Account Manager',f:r=>r.name},{h:'Filled',r:1,f:r=>r.filled},{h:'Decided',r:1,f:r=>(r.decided!=null?r.decided:(r.filled||0)+(r.washed||0)+(r.lost||0))},
+    {h:'Close Ratio',r:1,f:r=>(r.ratio*100).toFixed(0)+'%'},{h:'',r:1,f:r=>`<span class="chip ${r.goal&&r.ratio>=r.goal?'':'gray'}">${r.goal&&r.ratio>=r.goal?'✓':'·'}</span>`}]);
 
   const rf=d.raffle;
   if(rf.mode==='curated'){
@@ -177,13 +188,14 @@ function render(d){
       plainCard('Tickets in Drawing', rf.totalTickets.toLocaleString(), 'AM + recruiter per start')+
       plainCard('Toward Next Drawing', rf.nextCount+' / '+rf.batchSize, `new $${rf.threshold.toLocaleString()} starts`)+
       plainCard('Next Up', nu?nu.name:'—', nu?(fmtUsd(nu.spread)+'/wk · '+nu.am):'awaiting first start');
-    const pctn=Math.round((rf.nextCount/rf.batchSize)*100);
+    const pctc=Math.round((rf.currentCount/rf.batchSize)*100);
+    const toGo=(rf.startsToCurrentDrawing!=null?rf.startsToCurrentDrawing:(rf.batchSize-rf.currentCount));
     document.getElementById('raffle-progress').innerHTML =
       `<div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px">`+
-      `<b style="font-size:16px">${rf.nextCount} / ${rf.batchSize} toward Drawing #${rf.currentDrawingNo+1}</b>`+
-      `<span class="muted">${rf.startsToNextDrawing} more qualifying start${rf.startsToNextDrawing===1?'':'s'} to trigger it</span></div>`+
-      `<div class="bar" style="height:18px;margin-top:10px"><i style="width:${pctn}%"></i></div>`+
-      (rf.nextUp.length?`<div class="muted" style="margin-top:6px">Next up: ${rf.nextUp.map(n=>n.name).join(', ')}</div>`:'');
+      `<b style="font-size:16px">${rf.currentCount} / ${rf.batchSize} ${ready?'— Drawing #'+rf.currentDrawingNo+' READY to draw':'toward Drawing #'+rf.currentDrawingNo}</b>`+
+      `<span class="muted">${ready?('all '+rf.batchSize+' qualifying starts in'):(toGo+' more qualifying start'+(toGo===1?'':'s')+' to complete it')}</span></div>`+
+      `<div class="bar" style="height:18px;margin-top:10px"><i style="width:${pctc}%"></i></div>`+
+      (rf.nextCount?`<div class="muted" style="margin-top:6px">${rf.nextCount} already qualified for the next drawing: ${rf.nextUp.map(n=>n.name).join(', ')}</div>`:'');
     const lb=rf.leaderboard.map((x,i)=>({...x,rank:i+1}));
     document.getElementById('tbl-tickets').innerHTML = table(lb,[
       {h:'#',f:r=>r.rank},{h:'Name',f:r=>r.name},{h:'Tickets',r:1,f:r=>`<b>${r.tickets}</b>`},
@@ -218,6 +230,29 @@ function render(d){
 
   drawForecast(sc.forecast);
 }
+function drawHoursChart(hu){
+  const ctx=document.getElementById('hoursChart'); if(!ctx) return;
+  if(chart2){chart2.destroy(); chart2=null;}
+  if(!hu||!Array.isArray(hu.byWeek)||!hu.byWeek.length) return;
+  const base=hu.goal;
+  const labels=hu.byWeek.map(w=>w.week.slice(5));
+  const vals=hu.byWeek.map(w=>w.avg);
+  const colors=vals.map(v=>v>=base?'#B0DD66':'#747777');
+  // inline plugin: value label on each bar + a small "YTD" tag on the baseline line
+  const hoursValueLabels={id:'hoursValueLabels',afterDatasetsDraw(chart){const{ctx}=chart;ctx.save();
+    ctx.font='700 11px Calibri, sans-serif';ctx.fillStyle='#3a3a3a';ctx.textAlign='center';ctx.textBaseline='bottom';
+    chart.getDatasetMeta(0).data.forEach((el,i)=>{const raw=chart.data.datasets[0].data[i]; if(raw==null)return; ctx.fillText((+raw).toFixed(1), el.x, el.y-3);});
+    const y=chart.scales.y.getPixelForValue(base);
+    ctx.font='700 9px Calibri, sans-serif';ctx.fillStyle='#3a5a10';ctx.textAlign='right';ctx.textBaseline='bottom';
+    ctx.fillText('Goal '+base, chart.chartArea.right-2, y-2);
+    ctx.restore();}};
+  chart2=new Chart(ctx,{plugins:[hoursValueLabels],data:{labels,datasets:[
+    {type:'bar',label:'Avg hrs / consultant',data:vals,backgroundColor:colors,order:2},
+    {type:'line',label:'YTD 2026 avg ('+base+')',data:labels.map(()=>base),borderColor:'#3a5a10',borderDash:[6,4],borderWidth:2,pointRadius:0,fill:false,order:1}
+  ]},options:{responsive:true,layout:{padding:{top:14}},plugins:{legend:{display:false},
+    tooltip:{callbacks:{label:c=>c.dataset.label+': '+(+c.raw).toFixed(1)+' hrs'}}},
+    scales:{y:{suggestedMin:0,title:{display:true,text:'Avg hrs / wk / consultant'}}}}});
+}
 function drawForecast(weeks){
   const ctx=document.getElementById('forecastChart'); if(chart1)chart1.destroy();
   const labels=weeks.map(w=>w.weekStart.slice(5));
@@ -230,8 +265,10 @@ function drawForecast(weeks){
     [0,1].forEach(di=>{const meta=chart.getDatasetMeta(di); if(meta.hidden)return;
       meta.data.forEach((el,i)=>{const raw=chart.data.datasets[di].data[i]; if(!raw)return;
         ctx.fillStyle = di===0 ? '#3a5a10' : '#5a5c5c';
-        if(raw>=0){ctx.textBaseline='bottom'; ctx.fillText(kfmt(raw), el.x, el.y-2);}
-        else {ctx.textBaseline='top'; ctx.fillText(kfmt(raw), el.x, el.y+2);}
+        let txt=kfmt(raw);
+        if(di===0){const ct=weeks[i]&&weeks[i].inCount; if(ct!=null) txt+=' ('+ct+')';}
+        if(raw>=0){ctx.textBaseline='bottom'; ctx.fillText(txt, el.x, el.y-2);}
+        else {ctx.textBaseline='top'; ctx.fillText(txt, el.x, el.y+2);}
       });});
     ctx.restore();}};
   chart1=new Chart(ctx,{plugins:[barValueLabels],data:{labels,datasets:[
