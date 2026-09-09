@@ -149,6 +149,8 @@ export function buildScorecard(data, goals, asOfStr, weekly, roster) {
     if (fr.company && fr.company.ratio != null) fillRatioV = round(fr.company.ratio, 3);
     if (Array.isArray(fr.by_am)) amFillRatioV = fr.by_am.map(a => ({
       name: a.name, ratio: round(a.ratio, 3), filled: a.filled, openings: a.openings,
+      washed: a.washed, lost: a.lost,
+      decided: (a.decided != null ? a.decided : (a.filled || 0) + (a.washed || 0) + (a.lost || 0)),
       goal: goalFor(goals.perAM, a.name, "fillRatioGoal"),
     }));
   }
@@ -318,12 +320,13 @@ export function buildScorecard(data, goals, asOfStr, weekly, roster) {
     if (recruiterSubFinal.length !== rec0) weeklySubAvgV = round(recruiterSubFinal.reduce((s, r) => s + (r.weeklyAvg || 0), 0), 1);
   }
 
-  // Fill Ratio tile now reflects the trailing-13-week aggregate of the shown active AMs
-  // (matches the AM Fill Ratio (13 Wk) table window) instead of company QTD.
+  // Close Ratio tile = trailing-13-week aggregate of the shown active AMs, computed as
+  // Filled / (Filled + Washed + Lost) to match the Power BI DLT close ratio (excludes reqs
+  // still open in the window). Denominator falls back to filled+washed+lost if `decided` absent.
   {
     const _ff = amFillFinal.reduce((s, r) => s + (r.filled || 0), 0);
-    const _fo = amFillFinal.reduce((s, r) => s + (r.openings || 0), 0);
-    if (_fo > 0) fillRatioV = round(_ff / _fo, 3);
+    const _fd = amFillFinal.reduce((s, r) => s + (r.decided != null ? r.decided : (r.filled || 0) + (r.washed || 0) + (r.lost || 0)), 0);
+    if (_fd > 0) fillRatioV = round(_ff / _fd, 3);
   }
 
   // Hours Utilization (Q3-to-date vs YTD-2026 baseline) — from weekly.hours_util.
