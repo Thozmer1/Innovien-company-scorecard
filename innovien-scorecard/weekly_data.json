@@ -7,7 +7,9 @@
     "quarter_label": "Q2 2026",
     "baseline_week_start": "2026-03-23",
     "quarter_start": "2026-03-30",
-    "quarter_end": "2026-06-28"
+    "quarter_end": "2026-06-28",
+    "rebuilt_at": "2026-09-09T11:39:48.693490+00:00",
+    "rebuild_source": "comtrak-notion-hybrid-sql"
   },
   "company": {
     "weekly_spread": 306970.0,
@@ -490,88 +492,122 @@
   "fill_ratio": {
     "as_of": "2026-09-09",
     "window_weeks": 13,
+    "basis": "filled/(filled+washed+lost)",
     "company": {
       "filled": 77,
+      "washed": 33,
+      "lost": 16,
       "openings": 133,
-      "ratio": 0.5789
+      "decided": 126,
+      "ratio": 0.6111
     },
     "by_am": [
       {
-        "name": "Jessica Evans",
-        "filled": 2,
-        "openings": 2,
+        "name": "Malia Graham",
+        "filled": 1,
+        "washed": 0,
+        "lost": 0,
+        "openings": 3,
+        "decided": 1,
         "ratio": 1.0
       },
       {
-        "name": "Jon Pack",
-        "filled": 14,
-        "openings": 15,
-        "ratio": 0.9333
-      },
-      {
-        "name": "Mollie Ferguson",
-        "filled": 15,
-        "openings": 18,
-        "ratio": 0.8333
+        "name": "Jessica Evans",
+        "filled": 2,
+        "washed": 0,
+        "lost": 0,
+        "openings": 2,
+        "decided": 2,
+        "ratio": 1.0
       },
       {
         "name": "Kelsie Laughlin",
         "filled": 16,
+        "washed": 1,
+        "lost": 1,
         "openings": 24,
-        "ratio": 0.6667
+        "decided": 18,
+        "ratio": 0.8889
+      },
+      {
+        "name": "Jon Pack",
+        "filled": 14,
+        "washed": 2,
+        "lost": 0,
+        "openings": 15,
+        "decided": 16,
+        "ratio": 0.875
+      },
+      {
+        "name": "Mollie Ferguson",
+        "filled": 15,
+        "washed": 3,
+        "lost": 0,
+        "openings": 18,
+        "decided": 18,
+        "ratio": 0.8333
       },
       {
         "name": "Riley Laverty",
         "filled": 4,
+        "washed": 0,
+        "lost": 2,
         "openings": 6,
+        "decided": 6,
         "ratio": 0.6667
       },
       {
         "name": "Stephen Denzel",
         "filled": 14,
+        "washed": 3,
+        "lost": 8,
         "openings": 25,
+        "decided": 25,
         "ratio": 0.56
-      },
-      {
-        "name": "Brie Branting",
-        "filled": 7,
-        "openings": 16,
-        "ratio": 0.4375
-      },
-      {
-        "name": "Malia Graham",
-        "filled": 1,
-        "openings": 3,
-        "ratio": 0.3333
-      },
-      {
-        "name": "Mike Minnillo",
-        "filled": 3,
-        "openings": 10,
-        "ratio": 0.3
       },
       {
         "name": "Shannon Johnson",
         "filled": 1,
+        "washed": 1,
+        "lost": 0,
         "openings": 4,
-        "ratio": 0.25
+        "decided": 2,
+        "ratio": 0.5
+      },
+      {
+        "name": "Brie Branting",
+        "filled": 7,
+        "washed": 8,
+        "lost": 0,
+        "openings": 16,
+        "decided": 15,
+        "ratio": 0.4667
+      },
+      {
+        "name": "Mike Minnillo",
+        "filled": 3,
+        "washed": 4,
+        "lost": 3,
+        "openings": 10,
+        "decided": 10,
+        "ratio": 0.3
       },
       {
         "name": "Hannah Craig",
         "filled": 5,
+        "washed": 11,
+        "lost": 4,
         "openings": 21,
-        "ratio": 0.2381
+        "decided": 20,
+        "ratio": 0.25
       },
       {
         "name": "Kollin Korell",
         "filled": 0,
+        "washed": 2,
+        "lost": 1,
         "openings": 3,
-        "ratio": 0.0
-      },
-      {
-        "name": "Jesu Philip",
-        "filled": 0,
-        "openings": 1,
+        "decided": 3,
         "ratio": 0.0
       }
     ]

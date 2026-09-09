@@ -81,7 +81,7 @@
     <div class="grid three" id="goals-tables" style="margin-top:6px">
       <div><div id="kpi-mtg"></div><h2 class="sec">AM Meeting Avg (13 Wk)</h2><div id="tbl-ammtg"></div></div>
       <div><div id="kpi-sub"></div><h2 class="sec">Recruiter Sub Avg (13 Wk)</h2><div id="tbl-recsub"></div></div>
-      <div><div id="kpi-fill"></div><h2 class="sec">AM Fill Ratio (13 Wk)</h2><div id="tbl-amfill"></div></div>
+      <div><div id="kpi-fill"></div><h2 class="sec">AM Close Ratio (13 Wk)</h2><div id="tbl-amfill"></div></div>
     </div>
   </section>
   <section class="page" data-page="raffle">
@@ -164,7 +164,7 @@ function render(d){
   const gt=d.goalTracking;
   document.getElementById('kpi-mtg').innerHTML = kpiCard('Meeting Pace · QTD',gt.qtrlyMeetingPace);
   document.getElementById('kpi-sub').innerHTML = kpiCard('Sub Pace · QTD',gt.weeklySubAvg);
-  document.getElementById('kpi-fill').innerHTML = kpiCard('Fill Ratio · 13 Wk',gt.fillRatio);
+  document.getElementById('kpi-fill').innerHTML = kpiCard('Close Ratio · 13 Wk',gt.fillRatio);
   document.getElementById('kpi-hours').innerHTML = kpiCard('Avg Hrs / Wk / Consultant · Q3-to-date',gt.hoursUtil);
   drawHoursChart(gt.hoursUtil);
   document.getElementById('tbl-ammtg').innerHTML = table(gt.amMeetingAvg,[
@@ -174,8 +174,8 @@ function render(d){
     {h:'Recruiter',f:r=>r.name},{h:'Wkly Avg',r:1,f:r=>r.weeklyAvg.toFixed(1)},
     {h:'Goal',r:1,f:r=>r.goal??'—'},{h:'',r:1,f:r=>`<span class="chip ${r.goal&&r.weeklyAvg>=r.goal?'':'gray'}">${r.goal&&r.weeklyAvg>=r.goal?'✓':'·'}</span>`}]);
   document.getElementById('tbl-amfill').innerHTML = table(gt.amFillRatio,[
-    {h:'Account Manager',f:r=>r.name},{h:'Filled',r:1,f:r=>r.filled},{h:'Openings',r:1,f:r=>r.openings},
-    {h:'Fill Ratio',r:1,f:r=>(r.ratio*100).toFixed(0)+'%'},{h:'',r:1,f:r=>`<span class="chip ${r.goal&&r.ratio>=r.goal?'':'gray'}">${r.goal&&r.ratio>=r.goal?'✓':'·'}</span>`}]);
+    {h:'Account Manager',f:r=>r.name},{h:'Filled',r:1,f:r=>r.filled},{h:'Decided',r:1,f:r=>(r.decided!=null?r.decided:(r.filled||0)+(r.washed||0)+(r.lost||0))},
+    {h:'Close Ratio',r:1,f:r=>(r.ratio*100).toFixed(0)+'%'},{h:'',r:1,f:r=>`<span class="chip ${r.goal&&r.ratio>=r.goal?'':'gray'}">${r.goal&&r.ratio>=r.goal?'✓':'·'}</span>`}]);
 
   const rf=d.raffle;
   if(rf.mode==='curated'){
