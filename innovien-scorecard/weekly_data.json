@@ -8,8 +8,9 @@
     "baseline_week_start": "2026-03-23",
     "quarter_start": "2026-03-30",
     "quarter_end": "2026-06-28",
-    "rebuilt_at": "2026-09-09T11:39:48.693490+00:00",
-    "rebuild_source": "comtrak-notion-hybrid-sql"
+    "rebuilt_at": "2026-09-10T20:09:47.684367+00:00",
+    "rebuild_source": "comtrak-notion-hybrid-sql (partial: ESF/PSF only)",
+    "partial_note": "2026-09-10 midday: Close Ratio / Contact Activity / Recruiter Activity / Hours tables read ~15-35% thinner than the 07:49 ET rebuild (mid-load), so close ratio, meetings, subs, hours and the current-week lock-up were carried forward from that run. Starts / pending / dump-in / forecast / raffle refreshed from ESF+PSF."
   },
   "company": {
     "weekly_spread": 306970.0,
@@ -301,15 +302,15 @@
     }
   ],
   "scorecard": {
-    "net_new_starts": 83,
-    "avg_start_spread": 1200,
-    "pending_count": 23,
-    "pending_avg_spread": 1034,
-    "pending_total_spread": 23793,
+    "net_new_starts": 84,
+    "avg_start_spread": 1188,
+    "pending_count": 22,
+    "pending_avg_spread": 908,
+    "pending_total_spread": 19986,
     "lockup_count": null,
-    "lockup_spread": 4362,
+    "lockup_spread": 5174,
     "dumpin_count": 75,
-    "dumpin_spread": 86589,
+    "dumpin_spread": 82973,
     "active_consultants": 279,
     "redeployed": null,
     "available_bench": null,
@@ -318,79 +319,79 @@
         "weekStart": "2026-06-29",
         "plannedIn": 15501,
         "inCount": 13,
-        "plannedOut": 56985
+        "plannedOut": 66201
       },
       {
         "weekStart": "2026-07-06",
         "plannedIn": 9237,
         "inCount": 7,
-        "plannedOut": 2313
+        "plannedOut": 4130
       },
       {
         "weekStart": "2026-07-13",
         "plannedIn": 8843,
         "inCount": 7,
-        "plannedOut": 672
+        "plannedOut": 2541
       },
       {
         "weekStart": "2026-07-20",
         "plannedIn": 3352,
         "inCount": 3,
-        "plannedOut": 1639
+        "plannedOut": 3500
       },
       {
         "weekStart": "2026-07-27",
         "plannedIn": 10080,
         "inCount": 10,
-        "plannedOut": 9319
+        "plannedOut": 6871
       },
       {
         "weekStart": "2026-08-03",
         "plannedIn": 12997,
         "inCount": 11,
-        "plannedOut": 4018
+        "plannedOut": 3739
       },
       {
         "weekStart": "2026-08-10",
         "plannedIn": 9599,
         "inCount": 9,
-        "plannedOut": 2154
+        "plannedOut": 5488
       },
       {
         "weekStart": "2026-08-17",
         "plannedIn": 10810,
         "inCount": 8,
-        "plannedOut": 1727
+        "plannedOut": 5821
       },
       {
         "weekStart": "2026-08-24",
         "plannedIn": 6391,
         "inCount": 5,
-        "plannedOut": 1192
+        "plannedOut": 4350
       },
       {
         "weekStart": "2026-08-31",
         "plannedIn": 9069,
         "inCount": 8,
-        "plannedOut": 13887
+        "plannedOut": 5560
       },
       {
         "weekStart": "2026-09-07",
-        "plannedIn": 9058,
-        "inCount": 5,
-        "plannedOut": 3298
+        "plannedIn": 3924,
+        "inCount": 3,
+        "plannedOut": 531
       },
       {
         "weekStart": "2026-09-14",
-        "plannedIn": 15917,
-        "inCount": 18,
-        "plannedOut": 1862
+        "plannedIn": 18594,
+        "inCount": 19,
+        "plannedOut": 2560
       },
       {
         "weekStart": "2026-09-21",
-        "plannedIn": 2552,
-        "inCount": 2,
-        "plannedOut": 1767
+        "plannedIn": 1392,
+        "inCount": 3,
+        "plannedOut": 3094
       }
     ],
     "lockup_spread_goal": 9373,
@@ -402,12 +403,6 @@
     "current_drawing_no": 4,
     "current_members": [
       {
-        "name": "Afolabi Olomo",
-        "am": "Hannah Craig",
-        "recruiter": "Merrimon McCartney",
-        "spread": 1629
-      },
-      {
         "name": "Omar Valadez",
         "am": "Mollie Ferguson",
         "recruiter": "Chelsea Navarro",
@@ -418,6 +413,12 @@
         "am": "Stephen Denzel",
         "recruiter": "Jamie Houvig",
         "spread": 1280
+      },
+      {
+        "name": "Afolabi Olomo",
+        "am": "Hannah Craig",
+        "recruiter": "Merrimon McCartney",
+        "spread": 1629
       },
       {
         "name": "Luke Marvin",
@@ -432,16 +433,16 @@
         "spread": 1300
       },
       {
-        "name": "Lukus Anderson",
-        "am": "Kelsie Laughlin",
-        "recruiter": "Adam Williams",
-        "spread": 1550
-      },
-      {
         "name": "Wayne Parks",
         "am": "Riley Laverty",
         "recruiter": "Mike Murphy",
         "spread": 2184
+      },
+      {
+        "name": "Patrick McDonald",
+        "am": "Riley Laverty",
+        "recruiter": "Julia McDonald",
+        "spread": 1740
       }
     ],
     "next_up": [],
@@ -496,7 +497,7 @@
     "advance_drawing": false
   },
   "fill_ratio": {
-    "as_of": "2026-09-09",
+    "as_of": "2026-09-10",
     "window_weeks": 13,
     "basis": "filled/(filled+washed+lost)",
     "company": {
@@ -509,21 +510,21 @@
     },
     "by_am": [
       {
-        "name": "Malia Graham",
-        "filled": 1,
-        "washed": 0,
-        "lost": 0,
-        "openings": 3,
-        "decided": 1,
-        "ratio": 1.0
-      },
-      {
         "name": "Jessica Evans",
         "filled": 2,
         "washed": 0,
         "lost": 0,
         "openings": 2,
         "decided": 2,
+        "ratio": 1.0
+      },
+      {
+        "name": "Malia Graham",
+        "filled": 1,
+        "washed": 0,
+        "lost": 0,
+        "openings": 3,
+        "decided": 1,
         "ratio": 1.0
       },
       {
@@ -619,22 +620,17 @@
     ]
   },
   "meetings": {
-    "quarterly_pace": 1182,
+    "quarterly_pace": 1152,
     "by_am": [
       {
         "name": "Hannah Craig",
-        "count": 145,
-        "weekly_avg": 11.2
-      },
-      {
-        "name": "Mollie Ferguson",
-        "count": 140,
-        "weekly_avg": 10.8
+        "count": 144,
+        "weekly_avg": 11.1
       },
       {
         "name": "Stephen Denzel",
-        "count": 136,
-        "weekly_avg": 10.5
+        "count": 132,
+        "weekly_avg": 10.2
       },
       {
         "name": "Mike Minnillo",
@@ -642,24 +638,29 @@
         "weekly_avg": 9.6
       },
       {
+        "name": "Mollie Ferguson",
+        "count": 122,
+        "weekly_avg": 9.4
+      },
+      {
         "name": "Riley Laverty",
-        "count": 120,
+        "count": 119,
         "weekly_avg": 9.2
       },
       {
         "name": "Brie Branting",
-        "count": 113,
-        "weekly_avg": 8.7
+        "count": 112,
+        "weekly_avg": 8.6
       },
       {
         "name": "Kollin Korell",
-        "count": 113,
-        "weekly_avg": 8.7
+        "count": 109,
+        "weekly_avg": 8.4
       },
       {
         "name": "Kelsie Laughlin",
-        "count": 106,
-        "weekly_avg": 8.2
+        "count": 105,
+        "weekly_avg": 8.1
       },
       {
         "name": "Jon Pack",
