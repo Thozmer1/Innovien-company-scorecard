@@ -1,0 +1,59 @@
+{
+  "_comment": "FALLBACK goals only. The live dashboard reads targets from the Notion 'Company Goals' database (Metric Key -> Value) for the current Period; these values are used only if that row is missing or the Goals DB is unreachable. Quarter dates live here because the Goals DB stores values, not the calendar.",
+  "_dates_comment": "EDIT THESE EACH QUARTER. baselineWeekStart = the Monday of the week we measure quarterly spread growth FROM (usually the week BEFORE the quarter). quarterStart/quarterEnd = the actual quarter window (Mon..Sun) used to count starts, pending, dump-in, meetings. The In/Out growth chart runs from baselineWeekStart through quarterEnd.",
+  "quarterLabel": "Q3 2026",
+  "baselineWeekStart": "2026-06-22",
+  "quarterStart": "2026-06-29",
+  "quarterEnd": "2026-09-27",
+  "lookbackWeeks": 13,
+  "company": {
+    "weeklySpreadGoal": 364000,
+    "qtrStartsGoal": 154,
+    "avgStartGoal": 1000,
+    "pendingAvgGoal": 1300,
+    "weeklyLockupCountGoal": 10,
+    "weeklyLockupSpreadGoal": 12000,
+    "weeklySubGoal": 40,
+    "qtrlyMeetingGoal": 1690,
+    "fillRatioGoal": 0.6,
+    "redeployedGoal": 12,
+    "yearSpreadGoal": 500000,
+    "dumpinSpreadGoal": 93926,
+    "hoursUtilGoal": 37.5,
+    "quarterGrowthTarget": 30000
+  },
+  "perAM": {
+    "_default": {
+      "weeklyMeetingGoal": 10,
+      "fillRatioGoal": 0.6
+    }
+  },
+  "perRecruiter": {
+    "_default": {
+      "weeklySubGoal": 4
+    }
+  },
+  "raffle": {
+    "threshold": 1250,
+    "batchSize": 15,
+    "programStart": "2026-01-01",
+    "_comment": "Qualifying start = weekly spread >= threshold. Every batchSize qualifying STARTED placements triggers a drawing; AM + recruiter each earn 1 ticket per qualifying start (2 tickets/start)."
+  },
+  "lockupRollForwardWeeks": 2,
+  "lockupRampWeeks": 2.5,
+  "dumpinCarryInExclusion": {
+    "spread": 21519,
+    "count": 19,
+    "_comment": "Q3-planning carry-ins created 2026-06-29..2026-07-15, before the quarterly kickoff. Already locked up in Q2, so they are not part of this quarter's net-new go-get. REPLACE with a Notion tag on those records and filter in rebuild_queries.json; reset to 0 each quarter."
+  },
+  "confirmedRenewals": [
+    "Christina Gallagher"
+  ],
+  "_renewals_comment": "Contractors the team has confirmed will renew. Excluded from next-quarter attrition in the rolling lock-up goal. Best fix is updating Actual End Date in Notion; clear names from here once that is done.",
+  "lockupGoalOverride": {
+    "value": 9446,
+    "throughDate": "2026-09-20",
+    "note": "$9,446 lock-up target for this week \u00b7 rolling next-quarter goal starts 9/21",
+    "_comment": "Holds the lock-up tile at the figure already published to the team this week so a mid-week rebuild cannot move it. Expires after throughDate (Sunday); the rolling roll-forward goal then takes over automatically. Safe to delete once expired."
+  }
+}
