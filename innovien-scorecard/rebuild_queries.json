@@ -1,0 +1,157 @@
+[
+  {
+    "key": "esf_starts",
+    "src": [
+      "collection://4f5bd217-8ccf-4989-b0a7-e7d09c4bf5b9"
+    ],
+    "sql": "SELECT SUM(CASE WHEN \"Status\" LIKE '%Complete%' AND date(\"date:Start Date:start\") BETWEEN '2026-06-29' AND date('now') THEN 1 ELSE 0 END) AS banked_n,SUM(CASE WHEN \"Status\" LIKE '%Complete%' AND date(\"date:Start Date:start\") BETWEEN '2026-06-29' AND date('now') THEN \"Est Weekly Spread\" ELSE 0 END) AS banked_sp,SUM(CASE WHEN \"Status\" NOT LIKE '%Complete%' AND \"Status\" NOT LIKE '%Cancel%' AND date(\"date:Start Date:start\") BETWEEN date('now') AND '2026-09-27' THEN 1 ELSE 0 END) AS pending_n,SUM(CASE WHEN \"Status\" NOT LIKE '%Complete%' AND \"Status\" NOT LIKE '%Cancel%' AND date(\"date:Start Date:start\") BETWEEN date('now') AND '2026-09-27' THEN \"Est Weekly Spread\" ELSE 0 END) AS pending_sp,SUM(CASE WHEN \"Status\" NOT LIKE '%Cancel%' AND date(\"date:Create Ts:start\")>='2026-06-29' AND date(\"date:Start Date:start\")<='2026-09-27' THEN 1 ELSE 0 END) AS dumpin_n,SUM(CASE WHEN \"Status\" NOT LIKE '%Cancel%' AND date(\"date:Create Ts:start\")>='2026-06-29' AND date(\"date:Start Date:start\")<='2026-09-27' THEN \"Est Weekly Spread\" ELSE 0 END) AS dumpin_sp,SUM(CASE WHEN \"Status\" NOT LIKE '%Cancel%' AND date(\"date:Create Ts:start\") BETWEEN date('now','-'||((strftime('%w','now')+6)%7)||' days') AND date('now','+'||(6-((strftime('%w','now')+6)%7))||' days') THEN \"Est Weekly Spread\" ELSE 0 END) AS lockup_wk_sp,SUM(CASE WHEN \"Status\" NOT LIKE '%Cancel%' AND date(\"date:Create Ts:start\")>='2026-06-29' AND date(\"date:Create Ts:start\") < date('now','-'||((strftime('%w','now')+6)%7)||' days') AND date(\"date:Start Date:start\")<='2026-09-27' THEN \"Est Weekly Spread\" ELSE 0 END) AS dumpin_wkstart_sp,MAX(date(\"date:Create Ts:start\")) AS max_create, COUNT(*) AS total_rows,SUM(CASE WHEN \"date:Create Ts:start\" IS NULL THEN 1 ELSE 0 END) AS create_blank FROM \"collection://4f5bd217-8ccf-4989-b0a7-e7d09c4bf5b9\""
+  },
+  {
+    "key": "psf_starts",
+    "src": [
+      "collection://3f6a7bc2-85f3-40d7-9f7d-1d225be76153"
+    ],
+    "sql": "SELECT SUM(CASE WHEN \"Status\" LIKE '%Complete%' AND date(\"date:Start Date:start\") BETWEEN '2026-06-29' AND date('now') THEN 1 ELSE 0 END) AS banked_n,SUM(CASE WHEN \"Status\" LIKE '%Complete%' AND date(\"date:Start Date:start\") BETWEEN '2026-06-29' AND date('now') THEN \"Est Weekly Spread\" ELSE 0 END) AS banked_sp,SUM(CASE WHEN \"Status\" NOT LIKE '%Complete%' AND \"Status\" NOT LIKE '%Cancel%' AND date(\"date:Start Date:start\") BETWEEN date('now') AND '2026-09-27' THEN 1 ELSE 0 END) AS pending_n,SUM(CASE WHEN \"Status\" NOT LIKE '%Complete%' AND \"Status\" NOT LIKE '%Cancel%' AND date(\"date:Start Date:start\") BETWEEN date('now') AND '2026-09-27' THEN \"Est Weekly Spread\" ELSE 0 END) AS pending_sp,SUM(CASE WHEN \"Status\" NOT LIKE '%Cancel%' AND date(\"date:Create Ts:start\")>='2026-06-29' AND date(\"date:Start Date:start\")<='2026-09-27' THEN 1 ELSE 0 END) AS dumpin_n,SUM(CASE WHEN \"Status\" NOT LIKE '%Cancel%' AND date(\"date:Create Ts:start\")>='2026-06-29' AND date(\"date:Start Date:start\")<='2026-09-27' THEN \"Est Weekly Spread\" ELSE 0 END) AS dumpin_sp,SUM(CASE WHEN \"Status\" NOT LIKE '%Cancel%' AND date(\"date:Create Ts:start\") BETWEEN date('now','-'||((strftime('%w','now')+6)%7)||' days') AND date('now','+'||(6-((strftime('%w','now')+6)%7))||' days') THEN \"Est Weekly Spread\" ELSE 0 END) AS lockup_wk_sp,SUM(CASE WHEN \"Status\" NOT LIKE '%Cancel%' AND date(\"date:Create Ts:start\")>='2026-06-29' AND date(\"date:Create Ts:start\") < date('now','-'||((strftime('%w','now')+6)%7)||' days') AND date(\"date:Start Date:start\")<='2026-09-27' THEN \"Est Weekly Spread\" ELSE 0 END) AS dumpin_wkstart_sp,MAX(date(\"date:Create Ts:start\")) AS max_create, COUNT(*) AS total_rows,SUM(CASE WHEN \"date:Create Ts:start\" IS NULL THEN 1 ELSE 0 END) AS create_blank FROM \"collection://3f6a7bc2-85f3-40d7-9f7d-1d225be76153\""
+  },
+  {
+    "key": "esf_forecast_in",
+    "src": [
+      "collection://4f5bd217-8ccf-4989-b0a7-e7d09c4bf5b9"
+    ],
+    "sql": "SELECT CAST((julianday(date(\"date:Start Date:start\"))-julianday('2026-06-29'))/7 AS INT) AS wk, SUM(\"Est Weekly Spread\") AS insp, COUNT(*) AS incount FROM \"collection://4f5bd217-8ccf-4989-b0a7-e7d09c4bf5b9\" WHERE \"Status\" NOT LIKE '%Cancel%' AND date(\"date:Start Date:start\")>='2026-06-29' AND date(\"date:Start Date:start\") < date('2026-06-29','+91 days') GROUP BY wk"
+  },
+  {
+    "key": "psf_forecast_in",
+    "src": [
+      "collection://3f6a7bc2-85f3-40d7-9f7d-1d225be76153"
+    ],
+    "sql": "SELECT CAST((julianday(date(\"date:Start Date:start\"))-julianday('2026-06-29'))/7 AS INT) AS wk, SUM(\"Est Weekly Spread\") AS insp, COUNT(*) AS incount FROM \"collection://3f6a7bc2-85f3-40d7-9f7d-1d225be76153\" WHERE \"Status\" NOT LIKE '%Cancel%' AND date(\"date:Start Date:start\")>='2026-06-29' AND date(\"date:Start Date:start\") < date('2026-06-29','+91 days') GROUP BY wk"
+  },
+  {
+    "key": "placement_forecast_out",
+    "src": [
+      "collection://ccec3d53-ab21-46ad-abe5-9756d69a50bd"
+    ],
+    "sql": "SELECT CAST((julianday(date(COALESCE(NULLIF(\"date:Actual End Date:start\",''),\"date:End Date:start\")))-julianday('2026-06-29'))/7 AS INT) AS wk, SUM(\"Est Spread\") AS outsp FROM \"collection://ccec3d53-ab21-46ad-abe5-9756d69a50bd\" WHERE COALESCE(NULLIF(\"date:Actual End Date:start\",''),\"date:End Date:start\") IS NOT NULL AND date(COALESCE(NULLIF(\"date:Actual End Date:start\",''),\"date:End Date:start\"))>='2026-06-29' AND date(COALESCE(NULLIF(\"date:Actual End Date:start\",''),\"date:End Date:start\")) < date('2026-06-29','+91 days') GROUP BY wk"
+  },
+  {
+    "key": "fill_status_company",
+    "src": [
+      "collection://3ec114ca-e94f-4715-a46d-2150bf41cec0"
+    ],
+    "sql": "SELECT SUM(\"Openings\") AS openings, SUM(\"Filled\") AS filled, SUM(\"Washed\") AS washed, SUM(\"Lost\") AS lost, MAX(date(\"Status Date\")) AS maxd FROM \"collection://3ec114ca-e94f-4715-a46d-2150bf41cec0\" WHERE date(\"Status Date\") BETWEEN '2026-06-29' AND date('now')"
+  },
+  {
+    "key": "fill_status_byam",
+    "src": [
+      "collection://3ec114ca-e94f-4715-a46d-2150bf41cec0"
+    ],
+    "sql": "SELECT \"Owner\" AS owner, SUM(\"Openings\") AS openings, SUM(\"Filled\") AS filled, SUM(\"Washed\") AS washed, SUM(\"Lost\") AS lost FROM \"collection://3ec114ca-e94f-4715-a46d-2150bf41cec0\" WHERE date(\"Status Date\") BETWEEN date('now','-91 days') AND date('now') GROUP BY owner"
+  },
+  {
+    "key": "fill_adj_company",
+    "src": [
+      "collection://3ec114ca-e94f-4715-a46d-2150bf41cec0"
+    ],
+    "sql": "SELECT SUM(\"Openings\") AS openings, SUM(\"Filled\") AS filled, SUM(\"Washed\") AS washed, SUM(\"Lost\") AS lost, MAX(date(\"Adjusted Status Date\")) AS maxd FROM \"collection://3ec114ca-e94f-4715-a46d-2150bf41cec0\" WHERE date(\"Adjusted Status Date\") BETWEEN '2026-06-29' AND date('now')"
+  },
+  {
+    "key": "fill_adj_byam",
+    "src": [
+      "collection://3ec114ca-e94f-4715-a46d-2150bf41cec0"
+    ],
+    "sql": "SELECT \"Owner\" AS owner, SUM(\"Openings\") AS openings, SUM(\"Filled\") AS filled, SUM(\"Washed\") AS washed, SUM(\"Lost\") AS lost FROM \"collection://3ec114ca-e94f-4715-a46d-2150bf41cec0\" WHERE date(\"Adjusted Status Date\") BETWEEN date('now','-91 days') AND date('now') GROUP BY owner"
+  },
+  {
+    "key": "meetings_byam",
+    "src": [
+      "collection://0b41d495-a3d1-40fc-aa42-0f1a22bf6f18"
+    ],
+    "sql": "SELECT \"Owner\" AS am, COUNT(*) AS c FROM \"collection://0b41d495-a3d1-40fc-aa42-0f1a22bf6f18\" WHERE date(\"date:Date:start\") BETWEEN date('now','-91 days') AND date('now') AND lower(trim(\"Activity\")) IN ('meeting (v)','first meeting (v)','req meeting (v)','lunch','rbm','meeting','first meeting','swag drop','bagel drop','req meeting','lunch (v)','intro meeting (v)','intro meeting','swag/bagel/treat drop','intro meeting (v) *','meeting (v) *','intro meeting *','meeting *','req meeting *','req meeting (v) *','rbm *','lunch *','swag/bagel/treat drop *') GROUP BY am"
+  },
+  {
+    "key": "subs_byrec",
+    "src": [
+      "collection://13c55b12-ae3a-4ff6-817e-3aba63a32b4c"
+    ],
+    "sql": "SELECT COALESCE(\"Employee\",\"Record Id\") AS emp, SUM(\"Submitted To Client\") AS subs FROM \"collection://13c55b12-ae3a-4ff6-817e-3aba63a32b4c\" WHERE date(\"date:Week:start\") BETWEEN date('now','-91 days') AND date('now') GROUP BY emp"
+  },
+  {
+    "key": "hours_main_byweek",
+    "src": [
+      "collection://b169fc8a-1fa6-44af-8992-137897ebd1af"
+    ],
+    "sql": "SELECT date(\"date:Week:start\") AS wk, SUM(\"Hours\") AS h, COUNT(DISTINCT \"Contractor\") AS cons FROM \"collection://b169fc8a-1fa6-44af-8992-137897ebd1af\" WHERE \"Status\"='Approved' AND \"is_detail\"='N' AND date(\"date:Week:start\")>='2026-01-01' AND date(\"date:Week:start\")<=date('now') GROUP BY wk"
+  },
+  {
+    "key": "raffle_candidates",
+    "src": [
+      "collection://4f5bd217-8ccf-4989-b0a7-e7d09c4bf5b9",
+      "collection://3f6a7bc2-85f3-40d7-9f7d-1d225be76153"
+    ],
+    "sql": "SELECT \"Contractor\" AS name, \"AM\" AS am, \"Recruiter\" AS rec, \"Est Weekly Spread\" AS sp, date(\"date:Start Date:start\") AS start FROM \"collection://4f5bd217-8ccf-4989-b0a7-e7d09c4bf5b9\" WHERE \"Status\" LIKE '%Complete%' AND \"Est Weekly Spread\">=1250 AND date(\"date:Start Date:start\") BETWEEN '2026-06-09' AND date('now') UNION ALL SELECT \"Candidate\", \"AM\", \"Recruiter\", \"Est Weekly Spread\", date(\"date:Start Date:start\") FROM \"collection://3f6a7bc2-85f3-40d7-9f7d-1d225be76153\" WHERE \"Status\" LIKE '%Complete%' AND \"Est Weekly Spread\">=1250 AND date(\"date:Start Date:start\") BETWEEN '2026-06-09' AND date('now')"
+  },
+  {
+    "key": "in_detail_esf_a",
+    "src": [
+      "collection://4f5bd217-8ccf-4989-b0a7-e7d09c4bf5b9"
+    ],
+    "sql": "SELECT date(\"date:Start Date:start\") AS dt, \"Contractor\" AS n, \"Customer\" AS c, \"AM\" AS a, \"Recruiter\" AS r, COALESCE(\"Est Weekly Spread\",0) AS s, \"Status\" AS x FROM \"collection://4f5bd217-8ccf-4989-b0a7-e7d09c4bf5b9\" WHERE \"Status\" NOT LIKE '%Cancel%' AND date(\"date:Start Date:start\") BETWEEN '2026-06-29' AND '2026-08-09' ORDER BY dt"
+  },
+  {
+    "key": "in_detail_esf_b",
+    "src": [
+      "collection://4f5bd217-8ccf-4989-b0a7-e7d09c4bf5b9"
+    ],
+    "sql": "SELECT date(\"date:Start Date:start\") AS dt, \"Contractor\" AS n, \"Customer\" AS c, \"AM\" AS a, \"Recruiter\" AS r, COALESCE(\"Est Weekly Spread\",0) AS s, \"Status\" AS x FROM \"collection://4f5bd217-8ccf-4989-b0a7-e7d09c4bf5b9\" WHERE \"Status\" NOT LIKE '%Cancel%' AND date(\"date:Start Date:start\") BETWEEN '2026-08-10' AND '2026-09-27' ORDER BY dt"
+  },
+  {
+    "key": "in_detail_psf",
+    "src": [
+      "collection://3f6a7bc2-85f3-40d7-9f7d-1d225be76153"
+    ],
+    "sql": "SELECT date(\"date:Start Date:start\") AS dt, \"Candidate\" AS n, \"Customer\" AS c, \"AM\" AS a, \"Recruiter\" AS r, COALESCE(\"Est Weekly Spread\",0) AS s, \"Status\" AS x FROM \"collection://3f6a7bc2-85f3-40d7-9f7d-1d225be76153\" WHERE \"Status\" NOT LIKE '%Cancel%' AND date(\"date:Start Date:start\") BETWEEN '2026-06-29' AND '2026-09-27' ORDER BY dt"
+  },
+  {
+    "key": "out_detail_a",
+    "src": [
+      "collection://ccec3d53-ab21-46ad-abe5-9756d69a50bd"
+    ],
+    "sql": "SELECT date(COALESCE(NULLIF(\"date:Actual End Date:start\",''),\"date:End Date:start\")) AS dt, \"Contractor\" AS n, \"Customer\" AS c, \"AM\" AS a, COALESCE(\"Est Spread\",0) AS s, \"Active\" AS x FROM \"collection://ccec3d53-ab21-46ad-abe5-9756d69a50bd\" WHERE date(COALESCE(NULLIF(\"date:Actual End Date:start\",''),\"date:End Date:start\")) BETWEEN '2026-06-29' AND '2026-06-30' ORDER BY dt"
+  },
+  {
+    "key": "out_detail_b",
+    "src": [
+      "collection://ccec3d53-ab21-46ad-abe5-9756d69a50bd"
+    ],
+    "sql": "SELECT date(COALESCE(NULLIF(\"date:Actual End Date:start\",''),\"date:End Date:start\")) AS dt, \"Contractor\" AS n, \"Customer\" AS c, \"AM\" AS a, COALESCE(\"Est Spread\",0) AS s, \"Active\" AS x FROM \"collection://ccec3d53-ab21-46ad-abe5-9756d69a50bd\" WHERE date(COALESCE(NULLIF(\"date:Actual End Date:start\",''),\"date:End Date:start\")) BETWEEN '2026-07-01' AND '2026-09-27' ORDER BY dt"
+  },
+  {
+    "key": "next_in_detail_esf",
+    "src": [
+      "collection://4f5bd217-8ccf-4989-b0a7-e7d09c4bf5b9"
+    ],
+    "sql": "SELECT date(\"date:Start Date:start\") AS dt, \"Contractor\" AS n, \"Customer\" AS c, \"AM\" AS a, \"Recruiter\" AS r, COALESCE(\"Est Weekly Spread\",0) AS s, \"Status\" AS x FROM \"collection://4f5bd217-8ccf-4989-b0a7-e7d09c4bf5b9\" WHERE \"Status\" NOT LIKE '%Cancel%' AND date(\"date:Start Date:start\") BETWEEN '2026-09-28' AND '2026-12-27' ORDER BY dt"
+  },
+  {
+    "key": "next_in_detail_psf",
+    "src": [
+      "collection://3f6a7bc2-85f3-40d7-9f7d-1d225be76153"
+    ],
+    "sql": "SELECT date(\"date:Start Date:start\") AS dt, \"Candidate\" AS n, \"Customer\" AS c, \"AM\" AS a, \"Recruiter\" AS r, COALESCE(\"Est Weekly Spread\",0) AS s, \"Status\" AS x FROM \"collection://3f6a7bc2-85f3-40d7-9f7d-1d225be76153\" WHERE \"Status\" NOT LIKE '%Cancel%' AND date(\"date:Start Date:start\") BETWEEN '2026-09-28' AND '2026-12-27' ORDER BY dt"
+  },
+  {
+    "key": "next_out_detail_a",
+    "src": [
+      "collection://ccec3d53-ab21-46ad-abe5-9756d69a50bd"
+    ],
+    "sql": "SELECT date(COALESCE(NULLIF(\"date:Actual End Date:start\",''),\"date:End Date:start\")) AS dt, \"Contractor\" AS n, \"Customer\" AS c, \"AM\" AS a, COALESCE(\"Est Spread\",0) AS s, \"Active\" AS x FROM \"collection://ccec3d53-ab21-46ad-abe5-9756d69a50bd\" WHERE date(COALESCE(NULLIF(\"date:Actual End Date:start\",''),\"date:End Date:start\")) BETWEEN '2026-09-28' AND '2026-11-08' ORDER BY dt"
+  },
+  {
+    "key": "next_out_detail_b",
+    "src": [
+      "collection://ccec3d53-ab21-46ad-abe5-9756d69a50bd"
+    ],
+    "sql": "SELECT date(COALESCE(NULLIF(\"date:Actual End Date:start\",''),\"date:End Date:start\")) AS dt, \"Contractor\" AS n, \"Customer\" AS c, \"AM\" AS a, COALESCE(\"Est Spread\",0) AS s, \"Active\" AS x FROM \"collection://ccec3d53-ab21-46ad-abe5-9756d69a50bd\" WHERE date(COALESCE(NULLIF(\"date:Actual End Date:start\",''),\"date:End Date:start\")) BETWEEN '2026-11-09' AND '2026-12-27' ORDER BY dt"
+  }
+]
