@@ -19,7 +19,8 @@
     "redeployedGoal": 12,
     "yearSpreadGoal": 500000,
     "dumpinSpreadGoal": 93926,
-    "hoursUtilGoal": 37.5
+    "hoursUtilGoal": 37.5,
+    "quarterGrowthTarget": 30000
   },
   "perAM": {
     "_default": {
@@ -37,5 +38,22 @@
     "batchSize": 15,
     "programStart": "2026-01-01",
     "_comment": "Qualifying start = weekly spread >= threshold. Every batchSize qualifying STARTED placements triggers a drawing; AM + recruiter each earn 1 ticket per qualifying start (2 tickets/start)."
+  },
+  "lockupRollForwardWeeks": 2,
+  "lockupRampWeeks": 2.5,
+  "dumpinCarryInExclusion": {
+    "spread": 21519,
+    "count": 19,
+    "_comment": "Q3-planning carry-ins created 2026-06-29..2026-07-15, before the quarterly kickoff. Already locked up in Q2, so they are not part of this quarter's net-new go-get. REPLACE with a Notion tag on those records and filter in rebuild_queries.json; reset to 0 each quarter."
+  },
+  "confirmedRenewals": [
+    "Christina Gallagher"
+  ],
+  "_renewals_comment": "Contractors the team has confirmed will renew. Excluded from next-quarter attrition in the rolling lock-up goal. Best fix is updating Actual End Date in Notion; clear names from here once that is done.",
+  "lockupGoalOverride": {
+    "value": 9446,
+    "throughDate": "2026-09-20",
+    "note": "$9,446 lock-up target for this week \u00b7 rolling next-quarter goal starts 9/21",
+    "_comment": "Holds the lock-up tile at the figure already published to the team this week so a mid-week rebuild cannot move it. Expires after throughDate (Sunday); the rolling roll-forward goal then takes over automatically. Safe to delete once expired."
   }
 }
