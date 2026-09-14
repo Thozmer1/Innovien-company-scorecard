@@ -40,6 +40,28 @@
   .bar{height:7px;background:#eef0ea;border-radius:999px;margin-top:9px;overflow:hidden}
   .bar>i{display:block;height:100%;background:var(--green)}
   h2.sec{font-size:15px;margin:24px 0 8px;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid var(--green);padding-bottom:5px}
+  .sechead{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin:24px 0 8px;border-bottom:2px solid var(--green);padding-bottom:5px}
+  .sechead h2.sec{margin:0;border:0;padding:0;flex:1}
+  .qtoggle{display:flex;align-items:center;gap:6px;flex:0 0 auto}
+  .qtoggle button{font:600 12px Calibri,sans-serif;color:var(--gray);background:#fff;border:1px solid #cfd4cf;border-radius:4px;padding:5px 10px;cursor:pointer;white-space:nowrap}
+  .qtoggle button:hover{background:#f2f7ec;border-color:var(--green)}
+  .qtoggle .qlabel{font:600 11px Calibri,sans-serif;color:#8a8f8a;text-transform:uppercase;letter-spacing:.5px}
+  #modal{position:fixed;inset:0;background:rgba(20,24,20,.45);display:none;align-items:center;justify-content:center;z-index:50;padding:20px}
+  #modal.open{display:flex}
+  #modal .box{background:#fff;border-radius:6px;max-width:860px;width:100%;max-height:82vh;display:flex;flex-direction:column;box-shadow:0 12px 40px rgba(0,0,0,.3)}
+  #modal .hd{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:16px 20px;border-bottom:2px solid var(--green)}
+  #modal .hd h3{margin:0;font-size:15px;color:var(--gray);text-transform:uppercase;letter-spacing:.5px}
+  #modal .hd .sub{font-size:12px;color:#8a8f8a;margin-top:4px}
+  #modal .x{background:none;border:0;font-size:22px;line-height:1;color:#8a8f8a;cursor:pointer;padding:0 4px}
+  #modal .x:hover{color:var(--gray)}
+  #modal .bd{overflow:auto;padding:0 20px 16px}
+  #modal table{width:100%;border-collapse:collapse;font-size:12px}
+  #modal th{position:sticky;top:0;background:#fff;text-align:left;padding:8px 6px;border-bottom:1px solid #e2e6e2;color:#8a8f8a;text-transform:uppercase;font-size:10px;letter-spacing:.5px}
+  #modal td{padding:6px;border-bottom:1px solid #f0f2f0}
+  #modal td.num{text-align:right;font-variant-numeric:tabular-nums}
+  #modal tr:hover td{background:#f7faf4}
+  #modal .tag{display:inline-block;font-size:10px;padding:1px 6px;border-radius:3px;background:#fdf0d5;color:#8a6d1f}
+  canvas#forecastChart{cursor:pointer}
   table{width:100%;border-collapse:collapse;font-size:13.5px;background:#fff;border:1px solid var(--lgray);border-radius:8px;overflow:hidden}
   th{background:var(--green);text-align:left;padding:8px 10px;font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.3px}
   td{padding:7px 10px;border-top:1px solid #eef0ea}
@@ -68,8 +90,12 @@
   <section class="page active" data-page="scorecard">
     <h2 class="sec">Stretch Scorecard</h2>
     <div class="grid kpis" id="kpi-scorecard"></div>
-    <h2 class="sec">Weekly Spread In &amp; Out — In the Door vs Out the Door (quarter weeks; growth vs baseline)</h2>
+    <div class="sechead">
+      <h2 class="sec" id="fc-title">Weekly Spread In &amp; Out — In the Door vs Out the Door (quarter weeks; growth vs baseline)</h2>
+      <div class="qtoggle"><span class="qlabel" id="fc-qlabel"></span><button id="fc-prev" title="Previous quarter" hidden>&#9664;</button><button id="fc-next" title="Next quarter">&#9654;</button></div>
+    </div>
     <div class="card"><canvas id="forecastChart" height="110"></canvas></div>
+    <div style="font-size:11px;color:#8a8f8a;margin-top:4px">Click any In or Out bar to see the placements behind it.</div>
   </section>
   <section class="page" data-page="goals">
     <h2 class="sec">Consultant Hours Utilization</h2>
@@ -96,6 +122,12 @@
     <div class="card" id="raffle-intro" style="border-left:5px solid var(--green)"></div>
   </section>
 </main>
+<div id="modal" role="dialog" aria-modal="true">
+  <div class="box">
+    <div class="hd"><div><h3 id="m-title"></h3><div class="sub" id="m-sub"></div></div><button class="x" id="m-close" aria-label="Close">&times;</button></div>
+    <div class="bd" id="m-body"></div>
+  </div>
+</div>
 <footer>
   Source-linked: every figure is computed live from the Comtrak-fed Notion databases
   (Active Contracts · ESF Pipeline · PSF Pipeline · Recruiter Daily Activity · AM Weekly Activity · Open Reqs · Placement Events · Innovien Next).
@@ -109,6 +141,7 @@ const fmtUsd=n=>"$"+Math.round(n).toLocaleString();
 const fmt={usd:fmtUsd,int:n=>Math.round(n).toLocaleString(),dec:n=>(+n).toFixed(1),pct:n=>(n*100).toFixed(1)+"%"};
 let chart1;
 let chart2;
+let FC={cur:[],next:null,view:'cur',label:'',nextLabel:''};
 
 function nav(){const n=document.getElementById('nav');n.innerHTML='';PAGES.forEach(([id,label],i)=>{const b=document.createElement('button');b.textContent=label;b.className=i===0?'active':'';b.onclick=()=>{document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.dataset.page===id));};n.appendChild(b);});}
 
@@ -228,7 +261,12 @@ function render(d){
     {h:'Started',r:1,f:r=>r.startDate?r.startDate.slice(5):'—'}]);
   }
 
-  drawForecast(sc.forecast);
+  FC.cur = sc.forecast || [];
+  FC.next = (sc.forecastNext && sc.forecastNext.weeks && sc.forecastNext.weeks.length) ? sc.forecastNext : null;
+  FC.label = (d.meta && d.meta.quarterLabel) ? d.meta.quarterLabel : 'This quarter';
+  FC.nextLabel = FC.next ? (FC.next.label || 'Next quarter') : '';
+  FC.view = 'cur';
+  renderForecast();
 }
 function drawHoursChart(hu){
   const ctx=document.getElementById('hoursChart'); if(!ctx) return;
@@ -253,6 +291,50 @@ function drawHoursChart(hu){
     tooltip:{callbacks:{label:c=>c.dataset.label+': '+(+c.raw).toFixed(1)+' hrs'}}},
     scales:{y:{suggestedMin:0,title:{display:true,text:'Avg hrs / wk / consultant'}}}}});
 }
+function renderForecast(){
+  const showNext = FC.view==='next' && FC.next;
+  const weeks = showNext ? FC.next.weeks : FC.cur;
+  const t=document.getElementById('fc-title'), ql=document.getElementById('fc-qlabel');
+  const bn=document.getElementById('fc-next'), bp=document.getElementById('fc-prev');
+  if(t) t.innerHTML = showNext
+    ? 'Weekly Spread In &amp; Out — '+FC.nextLabel+' Outlook (as currently booked in Comtrak)'
+    : 'Weekly Spread In &amp; Out — In the Door vs Out the Door (quarter weeks; growth vs baseline)';
+  if(ql) ql.textContent = showNext ? FC.nextLabel : FC.label;
+  if(bn) bn.hidden = showNext || !FC.next;
+  if(bp) bp.hidden = !showNext;
+  drawForecast(weeks);
+}
+function fcUsd(v){return (v<0?'-$':'$')+Math.abs(Math.round(v)).toLocaleString();}
+function openDetail(weeks,di,i){
+  const w=weeks[i]; if(!w) return;
+  const isIn = di===0;
+  const rows=(isIn ? w.inDetail : w.outDetail) || [];
+  const total=rows.reduce((t,r)=>t+(+r.s||0),0);
+  const d=new Date(w.weekStart+'T00:00:00');
+  const wkTxt=(d.getMonth()+1)+'/'+d.getDate();
+  document.getElementById('m-title').textContent=(isIn?'In the door':'Out the door')+' — week of '+wkTxt;
+  document.getElementById('m-sub').textContent = rows.length
+    ? rows.length+(rows.length===1?' placement':' placements')+' · '+fcUsd(total)+' weekly spread'
+    : 'No placement detail available for this week.';
+  let html='';
+  if(rows.length){
+    const sorted=rows.slice().sort((x,y)=>(+y.s||0)-(+x.s||0));
+    html='<table><thead><tr><th>Consultant</th><th>Client</th><th>AM</th>'
+      +(isIn?'<th>Recruiter</th>':'')+'<th class="num">Weekly $</th><th>'+(isIn?'Status':'')+'</th></tr></thead><tbody>';
+    sorted.forEach(r=>{
+      const flag = !isIn && String(r.x||'').toUpperCase()==='Y' ? '<span class="tag">still active</span>' : '';
+      html+='<tr><td>'+esc(r.n)+'</td><td>'+esc(r.c)+'</td><td>'+esc(r.a)+'</td>'
+        +(isIn?'<td>'+esc(r.r)+'</td>':'')
+        +'<td class="num">'+fcUsd(+r.s||0)+'</td><td>'+(isIn?esc(r.x||''):flag)+'</td></tr>';
+    });
+    html+='</tbody></table>';
+  }
+  document.getElementById('m-body').innerHTML=html;
+  document.getElementById('modal').classList.add('open');
+}
+function esc(v){return String(v==null?'':v).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function closeDetail(){document.getElementById('modal').classList.remove('open');}
+
 function drawForecast(weeks){
   const ctx=document.getElementById('forecastChart'); if(chart1)chart1.destroy();
   const labels=weeks.map(w=>w.weekStart.slice(5));
@@ -276,6 +358,10 @@ function drawForecast(weeks){
     {type:'bar',label:'Out the door (ended)',data:weeks.map(w=>-w.plannedOut),backgroundColor:outColors,stack:'flow',order:2},
     {type:'line',label:'Cumulative spread growth (vs baseline)',data:weeks.map(w=>w.cumNet),borderColor:'#3a5a10',backgroundColor:'#3a5a10',borderWidth:2,pointRadius:2,tension:.25,yAxisID:'yCum',order:1}
   ]},options:{responsive:true,interaction:{mode:'index',intersect:false},
+    onClick:(evt,els,ch)=>{const hit=ch.getElementsAtEventForMode(evt,'nearest',{intersect:true},true);
+      if(hit.length && hit[0].datasetIndex<2) openDetail(weeks,hit[0].datasetIndex,hit[0].index);},
+    onHover:(evt,els,ch)=>{const hit=ch.getElementsAtEventForMode(evt,'nearest',{intersect:true},true);
+      ch.canvas.style.cursor = (hit.length && hit[0].datasetIndex<2) ? 'pointer' : 'default';},
     plugins:{legend:{position:'bottom'},tooltip:{callbacks:{label:c=>{
       const v=c.raw; const lbl=c.dataset.label;
       return lbl+': '+(v<0?'-$':'$')+Math.abs(Math.round(v)).toLocaleString();
@@ -297,6 +383,11 @@ async function load(forceLive){
     render(SAMPLE);
   }
 }
+document.getElementById('fc-next').onclick=()=>{FC.view='next';renderForecast();};
+document.getElementById('fc-prev').onclick=()=>{FC.view='cur';renderForecast();};
+document.getElementById('m-close').onclick=closeDetail;
+document.getElementById('modal').onclick=e=>{if(e.target.id==='modal')closeDetail();};
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDetail();});
 nav(); load(false);
 </script>
 </body>
