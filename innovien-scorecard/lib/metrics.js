@@ -253,8 +253,27 @@ export function buildScorecard(data, goals, asOfStr, weekly, roster) {
       const wd = d(w.weekStart);
       return { weekStart: w.weekStart, plannedIn: Math.round(pin), plannedOut: Math.round(pout),
                inCount: (w.inCount ?? null),
+               inDetail: w.inDetail || [], outDetail: w.outDetail || [],
                net: Math.round(net), cumNet: Math.round(_cum), isPast: wd ? wd < asOf : false };
     });
+  }
+  // Next-quarter In/Out (file-fed). Same shape as oForecast so the chart can swap straight in.
+  let oForecastNext = null;
+  if (_wsc.forecast_next && Array.isArray(_wsc.forecast_next.weeks) && _wsc.forecast_next.weeks.length) {
+    let _cn = 0;
+    oForecastNext = {
+      label: _wsc.forecast_next.label || "Next quarter",
+      quarterStart: _wsc.forecast_next.quarterStart || null,
+      quarterEnd: _wsc.forecast_next.quarterEnd || null,
+      weeks: _wsc.forecast_next.weeks.map(w => {
+        const pin = w.plannedIn || 0, pout = w.plannedOut || 0, net = pin - pout; _cn += net;
+        const wd = d(w.weekStart);
+        return { weekStart: w.weekStart, plannedIn: Math.round(pin), plannedOut: Math.round(pout),
+                 inCount: (w.inCount ?? null),
+                 inDetail: w.inDetail || [], outDetail: w.outDetail || [],
+                 net: Math.round(net), cumNet: Math.round(_cn), isPast: wd ? wd < asOf : false };
+      }),
+    };
   }
   const pct = (a, go) => go ? round((a / go) * 100) : null;
   const onp = (a, go) => go ? a >= go : null;
@@ -324,9 +343,15 @@ export function buildScorecard(data, goals, asOfStr, weekly, roster) {
   // Filled / (Filled + Washed + Lost) to match the Power BI DLT close ratio (excludes reqs
   // still open in the window). Denominator falls back to filled+washed+lost if `decided` absent.
   {
-    const _ff = amFillFinal.reduce((s, r) => s + (r.filled || 0), 0);
-    const _fd = amFillFinal.reduce((s, r) => s + (r.decided != null ? r.decided : (r.filled || 0) + (r.washed || 0) + (r.lost || 0)), 0);
-    if (_fd > 0) fillRatioV = round(_ff / _fd, 3);
+    // Only rows sourced from weekly_data.json fill_ratio carry `decided` (filled+washed+lost).
+    // Live Open-Reqs rows have no washed/lost, so decided would collapse to filled and the tile
+    // would read a bogus 100% — in that case keep the filled/openings fallback computed above.
+    const _rows = amFillFinal.filter(r => r.decided != null);
+    if (_rows.length) {
+      const _ff = _rows.reduce((s, r) => s + (r.filled || 0), 0);
+      const _fd = _rows.reduce((s, r) => s + r.decided, 0);
+      if (_fd > 0) fillRatioV = round(_ff / _fd, 3);
+    }
   }
 
   // Hours Utilization (Q3-to-date vs YTD-2026 baseline) — from weekly.hours_util.
@@ -390,6 +415,7 @@ export function buildScorecard(data, goals, asOfStr, weekly, roster) {
       redeployed: kpi(oRedeployed, g.redeployedGoal, "int"),
       availableBench: oBench,
       forecast: oForecast,
+      forecastNext: oForecastNext,
     },
     goalTracking: {
       weeklySubAvg: subPaceKpi,
