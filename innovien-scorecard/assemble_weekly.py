@@ -89,6 +89,20 @@ dumpin_n  = rnd(e.get("dumpin_n")) + rnd(p.get("dumpin_n"))
 dumpin_sp = n(e.get("dumpin_sp")) + n(p.get("dumpin_sp"))
 lockup_wk = n(e.get("lockup_wk_sp")) + n(p.get("lockup_wk_sp"))
 dumpin_wkstart = n(e.get("dumpin_wkstart_sp")) + n(p.get("dumpin_wkstart_sp"))
+
+# --- Carry-in exclusion (Taylor, 2026-09-14) ----------------------------------
+# Dump-in is the NET-NEW go-get: what we still had to win after the starts already
+# locked up in the prior quarter. Forms created in the opening days of the quarter,
+# before the quarterly kickoff, are part of that already-locked-up set and were
+# inflating the tile. Stopgap constant until those records carry a Notion tag.
+_ci = (goals.get("dumpinCarryInExclusion") or {})
+_ci_sp, _ci_n = float(_ci.get("spread") or 0), int(_ci.get("count") or 0)
+if _ci_sp:
+    dumpin_sp = max(0.0, dumpin_sp - _ci_sp)
+    dumpin_n  = max(0, dumpin_n - _ci_n)
+    dumpin_wkstart = max(0.0, dumpin_wkstart - _ci_sp)
+    warnings.append(f"dump-in excludes {_ci_n} pre-kickoff carry-in form(s) worth ${round(_ci_sp):,} "
+                    f"(locked up last quarter — not part of this quarter's go-get)")
 max_create = max([d for d in (e.get("max_create"), p.get("max_create")) if d], default=None)
 create_blank = rnd(e.get("create_blank")) + rnd(p.get("create_blank"))
 esf_total = rnd(e.get("total_rows"))
@@ -169,28 +183,28 @@ if _nin_raw or _nout_raw:
     forecast_next = {"label": _lbl, "quarterStart": NQS.isoformat(),
                      "quarterEnd": (NQS + timedelta(days=90)).isoformat(), "weeks": _weeks}
 
-# ---- fill ratio: pick freshest status-date column ----
-sc_c, adj_c = row0("fill_status_company"), row0("fill_adj_company")
-use_adj = bool(adj_c.get("maxd")) and (not sc_c.get("maxd") or adj_c["maxd"] > sc_c["maxd"])
-comp = adj_c if use_adj else sc_c
-byam_rows = q("fill_adj_byam") if use_adj else q("fill_status_byam")
-# Close Ratio = Filled / (Filled + Washed + Lost), to match the Power BI DLT (excludes reqs
-# still open in the window). "decided" = the denominator; openings kept for context.
-by_am = []
-for r in byam_rows:
-    o = n(r.get("openings")); f = n(r.get("filled")); w = n(r.get("washed")); l = n(r.get("lost"))
-    owner = r.get("owner"); dec = f + w + l
-    if not owner or owner == "Unassigned" or dec <= 0: continue
-    by_am.append({"name": owner, "filled": rnd(f), "washed": rnd(w), "lost": rnd(l),
-                  "openings": rnd(o), "decided": rnd(dec), "ratio": round(f / dec, 4)})
-by_am = merge_rows(by_am, ["filled","washed","lost","openings","decided"])
+# ---- close ratio: AM Productivity Snapshot (the sanctioned source) ----
+# Close Ratio Details carries no usable close date (Status Date is legacy-only), so windowed
+# aggregates must NOT come from it. The snapshot's Close Ratio (13wk) is computed from a fresh
+# windowed ComTrak close-date pull. Snapshot Date sits 1-2 weeks back by design.
+snap_rows = q("close_ratio_snapshot")
+by_am, snap_date = [], None
+for r in snap_rows:
+    am = r.get("am"); ratio = r.get("ratio"); closed = rnd(r.get("closed"))
+    snap_date = snap_date or r.get("snap")
+    if not am or am == "Unassigned" or ratio is None or closed <= 0: continue
+    by_am.append({"name": am, "ratio": round(float(ratio), 4), "decided": closed,
+                  "filled": rnd(float(ratio) * closed), "closedReqs": closed,
+                  "spread": rnd(r.get("spread")), "delta": rnd(r.get("delta"))})
+by_am = merge_rows(by_am, ["filled", "decided", "closedReqs"])
 for r in by_am: r["ratio"] = round(r["filled"] / r["decided"], 4) if r["decided"] else 0
 by_am.sort(key=lambda x: -x["ratio"])
-co, cf, cw, cl = n(comp.get("openings")), n(comp.get("filled")), n(comp.get("washed")), n(comp.get("lost"))
-cdec = cf + cw + cl
-fill_ratio = {"as_of": TODAY.isoformat(), "window_weeks": 13, "basis": "filled/(filled+washed+lost)",
-              "company": {"filled": rnd(cf), "washed": rnd(cw), "lost": rnd(cl), "openings": rnd(co),
-                          "decided": rnd(cdec), "ratio": round(cf / cdec, 4) if cdec else 0},
+cf = sum(x["filled"] for x in by_am); cdec = sum(x["decided"] for x in by_am)
+fill_ratio = {"as_of": TODAY.isoformat(), "window_weeks": 13,
+              "basis": "filled/(filled+washed+lost) — AM Productivity Snapshot",
+              "snapshot_date": snap_date,
+              "company": {"filled": rnd(cf), "decided": rnd(cdec),
+                          "ratio": round(cf / cdec, 4) if cdec else 0},
               "by_am": by_am}
 
 # ---- meetings (13-wk) ----
@@ -202,33 +216,37 @@ mtg.sort(key=lambda x: -x["weekly_avg"])
 meetings = {"quarterly_pace": sum(m["count"] for m in mtg), "by_am": mtg, "lookback_weeks": 13}
 
 # ---- subs (13-wk) ----
-sb = [{"name": r["emp"], "count": rnd(r.get("subs")), "weekly_avg": r1(n(r.get("subs")) / 13)}
-      for r in q("subs_byrec") if r.get("emp") and r["emp"] != "Unassigned"]
+# Recruiter Activity is a WINDOWED table — it holds fewer weeks than the 13-week lookback,
+# so divide by the weeks actually present, never a hard 13.
+_sub_rows = [r for r in q("subs_byrec") if r.get("emp") and r["emp"] != "Unassigned"]
+sub_wks = max([rnd(r.get("wks")) for r in _sub_rows] or [0]) or 13
+sb = [{"name": r["emp"], "count": rnd(r.get("subs")), "weekly_avg": 0.0} for r in _sub_rows]
 sb = merge_rows(sb, ["count"])
-for r in sb: r["weekly_avg"] = r1(r["count"] / 13)
+for r in sb: r["weekly_avg"] = r1(r["count"] / sub_wks)
 sb.sort(key=lambda x: -x["weekly_avg"])
-subs = {"weekly_avg": r1(sum(x["weekly_avg"] for x in sb)), "by_recruiter": sb, "lookback_weeks": 13}
+subs = {"weekly_avg": r1(sum(x["weekly_avg"] for x in sb)), "by_recruiter": sb,
+        "lookback_weeks": sub_wks}
 
-# ---- hours utilization (main history table only) ----
-# NOTE: the Comtrak "(API)" hours twin stores different units (its Hours values run ~2x the
-# main table for the same consultants), so overlaying it doubled the average. Main-only matches
-# the source-of-truth figures, so we use it exclusively.
-def hmap(key):
-    m = {}
-    for r in q(key):
-        if r.get("wk"): m[r["wk"]] = (n(r.get("h")), rnd(r.get("cons")))
-    return m
-merged = hmap("hours_main_byweek")
-def hu(pred):
-    wk = [w for w in merged if pred(w)]
-    H = sum(merged[w][0] for w in wk); C = sum(merged[w][1] for w in wk)
-    return (r1(H / C) if C else 0, C, len(wk))
-q3_avg, q3_cw, q3_wks = hu(lambda w: QS.isoformat() <= w <= TODAY.isoformat())
-ytd_avg, _, ytd_wks   = hu(lambda w: w[:4] == "2026")
-by_week = [{"week": w, "avg": r1(merged[w][0] / merged[w][1]) if merged[w][1] else 0, "consultants": merged[w][1]}
-           for w in sorted(merged) if QS.isoformat() <= w <= TODAY.isoformat()]
-hours_util = {"current": q3_avg, "baseline": ytd_avg, "current_label": "Q3-to-date", "baseline_label": "YTD 2026",
-              "current_consultant_weeks": q3_cw, "current_weeks": q3_wks, "baseline_weeks": ytd_wks, "by_week": by_week}
+# ---- hours utilization (Comtrak API table, per-consultant rows only) ----
+# The table mixes per-consultant rows with employment-type roll-ups; "Count"=1 isolates the
+# per-consultant ones (the query does this). It is WINDOWED, so there is no YTD baseline here —
+# the tile compares against the fixed goal from Company Goals (hoursUtilGoal).
+merged = {}
+for r in q("hours_main_byweek"):
+    if r.get("wk"): merged[r["wk"]] = (n(r.get("h")), rnd(r.get("cons")))
+_maxc = max([c for _, c in merged.values()] or [0])
+settled = {w: v for w, v in merged.items() if v[1] >= 0.5 * _maxc}     # drop unsettled weeks
+unsettled = sorted(set(merged) - set(settled))
+if unsettled: warnings.append(f"hours: ignoring unsettled week(s) {', '.join(unsettled)} (timesheets still approving)")
+_q3 = {w: v for w, v in settled.items() if QS.isoformat() <= w <= TODAY.isoformat()}
+_H = sum(v[0] for v in _q3.values()); _C = sum(v[1] for v in _q3.values())
+hours_goal = float((goals.get("company") or {}).get("hoursUtilGoal") or 37.5)
+by_week = [{"week": w, "avg": r1(settled[w][0] / settled[w][1]) if settled[w][1] else 0,
+            "consultants": settled[w][1]} for w in sorted(_q3)]
+hours_util = {"current": r1(_H / _C) if _C else 0, "baseline": hours_goal,
+              "current_label": "Q3-to-date", "baseline_label": "Goal",
+              "current_consultant_weeks": _C, "current_weeks": len(_q3),
+              "baseline_weeks": None, "by_week": by_week}
 
 # ---- raffle (building-cohort, preserve + advance) ----
 rf = json.loads(json.dumps(prev.get("raffle", {})))
@@ -268,6 +286,59 @@ sc["avg_start_spread"] = rnd(banked_sp / banked_n) if banked_n else 0
 sc["forecast"] = forecast
 if forecast_next: sc["forecast_next"] = forecast_next
 elif "forecast_next" in prev.get("scorecard", {}): sc["forecast_next"] = prev["scorecard"]["forecast_next"]
+
+# --- Rolling lock-up goal (Taylor, 2026-09-14) --------------------------------
+# Inside the last ROLL_WKS weeks of a quarter, anything locked up has very little
+# chance of walking in before quarter end. So the lock-up target stops chasing
+# this quarter's dump-in gap and starts funding the NEXT quarter: cover the
+# attrition already booked there, plus a growth step, paced across the rolling
+# window (weeks left here + next quarter's weeks) less the ramp buffer.
+ROLL_WKS = float(goals.get("lockupRollForwardWeeks", 2))
+GROWTH   = float((goals.get("company") or {}).get("quarterGrowthTarget", 30000))
+RAMP     = float(goals.get("lockupRampWeeks", 2.5))
+_fn = sc.get("forecast_next") or {}
+_nqw = _fn.get("weeks") or []
+if _nqw and weeks_left <= ROLL_WKS:
+    nq_out = sum(abs(w.get("plannedOut") or 0) for w in _nqw)
+    # Placements the team has confirmed will renew are not attrition, even though the
+    # Notion end date still says they roll off. Fix at source by updating Actual End
+    # Date; this list keeps the goal honest in the meantime.
+    _renew = {" ".join(str(x).split()).lower() for x in (goals.get("confirmedRenewals") or [])}
+    _rsum, _rnames = 0.0, []
+    if _renew:
+        for _w in _nqw:
+            for _r in (_w.get("outDetail") or []):
+                if " ".join(str(_r.get("n") or "").split()).lower() in _renew:
+                    _rsum += abs(float(_r.get("s") or 0)); _rnames.append(_r.get("n"))
+        if _rsum:
+            nq_out = max(0.0, nq_out - _rsum)
+            warnings.append(f"next-qtr attrition excludes {len(_rnames)} confirmed renewal(s) "
+                            f"worth ${round(_rsum):,}: {', '.join(_rnames)}")
+    window = int(round(weeks_left)) + len(_nqw)
+    rdenom = max(1.0, window - RAMP)
+    need   = GROWTH + nq_out
+    lock_goal = round(need / rdenom)
+    _lbl = _fn.get("label", "next qtr")
+    lock_note = (f"${round(need):,} to lock up over the next {window} wks "
+                 f"(${round(GROWTH):,} growth + ${round(nq_out):,} {_lbl} attrition) "
+                 f"/ {rdenom:.1f} earning wks")
+    warnings.append(f"lock-up goal rolled forward to {_lbl}: ${round(need):,} over "
+                    f"{window} wks / {rdenom:.1f} earning wks = ${lock_goal:,}/wk")
+
+# --- Lock-up goal hold (Taylor, 2026-09-14) -----------------------------------
+# Pin the lock-up goal to the figure already published to the team for the current
+# week, so a mid-week rebuild cannot move a number leadership has already seen.
+# Once throughDate passes, the computed goal above takes over on its own.
+_ov = goals.get("lockupGoalOverride") or {}
+if _ov.get("value") and _ov.get("throughDate"):
+    if TODAY <= date.fromisoformat(_ov["throughDate"]):
+        lock_goal = round(float(_ov["value"]))
+        lock_note = _ov.get("note") or f"${lock_goal:,} lock-up target for this week"
+        warnings.append(f"lock-up goal HELD at ${lock_goal:,} through {_ov['throughDate']} "
+                        f"(published figure); rolling goal resumes after that")
+    else:
+        warnings.append(f"lockupGoalOverride expired {_ov['throughDate']} — rolling goal now live; "
+                        f"remove the key from goals.json")
 sc["lockup_count"] = None
 if esf_blank_ratio > 0.5:
     warnings.append(f"ESF Create Ts {esf_blank_ratio*100:.0f}% blank — keeping prior dump-in (${sc.get('dumpin_spread',0):,}) and lock-up target")
@@ -284,7 +355,7 @@ wd.setdefault("meta", {})["rebuilt_at"] = datetime.now(timezone.utc).isoformat()
 wd["meta"]["rebuild_source"] = "comtrak-notion-hybrid-sql"
 
 # ---- report ----
-print(f"as-of {TODAY} | week Monday {WK_MON} | ESF max create {max_create} | fill col: {'Adjusted' if use_adj else 'Status'} Date")
+print(f"as-of {TODAY} | week Monday {WK_MON} | ESF max create {max_create} | close ratio snapshot {fill_ratio.get('snapshot_date')} | subs window {sub_wks} wks")
 for w in warnings: print("WARN:", w)
 def g(o, path):
     for k in path.split("."):

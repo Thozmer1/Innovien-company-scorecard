@@ -35,34 +35,6 @@
     "sql": "SELECT CAST((julianday(date(COALESCE(NULLIF(\"date:Actual End Date:start\",''),\"date:End Date:start\")))-julianday('2026-06-29'))/7 AS INT) AS wk, SUM(\"Est Spread\") AS outsp FROM \"collection://ccec3d53-ab21-46ad-abe5-9756d69a50bd\" WHERE COALESCE(NULLIF(\"date:Actual End Date:start\",''),\"date:End Date:start\") IS NOT NULL AND date(COALESCE(NULLIF(\"date:Actual End Date:start\",''),\"date:End Date:start\"))>='2026-06-29' AND date(COALESCE(NULLIF(\"date:Actual End Date:start\",''),\"date:End Date:start\")) < date('2026-06-29','+91 days') GROUP BY wk"
   },
   {
-    "key": "fill_status_company",
-    "src": [
-      "collection://3ec114ca-e94f-4715-a46d-2150bf41cec0"
-    ],
-    "sql": "SELECT SUM(\"Openings\") AS openings, SUM(\"Filled\") AS filled, SUM(\"Washed\") AS washed, SUM(\"Lost\") AS lost, MAX(date(\"Status Date\")) AS maxd FROM \"collection://3ec114ca-e94f-4715-a46d-2150bf41cec0\" WHERE date(\"Status Date\") BETWEEN '2026-06-29' AND date('now')"
-  },
-  {
-    "key": "fill_status_byam",
-    "src": [
-      "collection://3ec114ca-e94f-4715-a46d-2150bf41cec0"
-    ],
-    "sql": "SELECT \"Owner\" AS owner, SUM(\"Openings\") AS openings, SUM(\"Filled\") AS filled, SUM(\"Washed\") AS washed, SUM(\"Lost\") AS lost FROM \"collection://3ec114ca-e94f-4715-a46d-2150bf41cec0\" WHERE date(\"Status Date\") BETWEEN date('now','-91 days') AND date('now') GROUP BY owner"
-  },
-  {
-    "key": "fill_adj_company",
-    "src": [
-      "collection://3ec114ca-e94f-4715-a46d-2150bf41cec0"
-    ],
-    "sql": "SELECT SUM(\"Openings\") AS openings, SUM(\"Filled\") AS filled, SUM(\"Washed\") AS washed, SUM(\"Lost\") AS lost, MAX(date(\"Adjusted Status Date\")) AS maxd FROM \"collection://3ec114ca-e94f-4715-a46d-2150bf41cec0\" WHERE date(\"Adjusted Status Date\") BETWEEN '2026-06-29' AND date('now')"
-  },
-  {
-    "key": "fill_adj_byam",
-    "src": [
-      "collection://3ec114ca-e94f-4715-a46d-2150bf41cec0"
-    ],
-    "sql": "SELECT \"Owner\" AS owner, SUM(\"Openings\") AS openings, SUM(\"Filled\") AS filled, SUM(\"Washed\") AS washed, SUM(\"Lost\") AS lost FROM \"collection://3ec114ca-e94f-4715-a46d-2150bf41cec0\" WHERE date(\"Adjusted Status Date\") BETWEEN date('now','-91 days') AND date('now') GROUP BY owner"
-  },
-  {
     "key": "meetings_byam",
     "src": [
       "collection://0b41d495-a3d1-40fc-aa42-0f1a22bf6f18"
@@ -72,16 +44,16 @@
   {
     "key": "subs_byrec",
     "src": [
-      "collection://13c55b12-ae3a-4ff6-817e-3aba63a32b4c"
+      "collection://d65a1736-7835-450a-9ec2-11176986494a"
     ],
-    "sql": "SELECT COALESCE(\"Employee\",\"Record Id\") AS emp, SUM(\"Submitted To Client\") AS subs FROM \"collection://13c55b12-ae3a-4ff6-817e-3aba63a32b4c\" WHERE date(\"date:Week:start\") BETWEEN date('now','-91 days') AND date('now') GROUP BY emp"
+    "sql": "SELECT \"Employee\" AS emp, SUM(\"Subs\") AS subs, COUNT(DISTINCT date(\"date:Week:start\")) AS wks FROM \"collection://d65a1736-7835-450a-9ec2-11176986494a\" WHERE date(\"date:Week:start\") BETWEEN date('now','-91 days') AND date('now') AND \"Employee\" IS NOT NULL GROUP BY emp"
   },
   {
     "key": "hours_main_byweek",
     "src": [
-      "collection://b169fc8a-1fa6-44af-8992-137897ebd1af"
+      "collection://7f53d438-17c3-4ca9-82ba-be138f657166"
     ],
-    "sql": "SELECT date(\"date:Week:start\") AS wk, SUM(\"Hours\") AS h, COUNT(DISTINCT \"Contractor\") AS cons FROM \"collection://b169fc8a-1fa6-44af-8992-137897ebd1af\" WHERE \"Status\"='Approved' AND \"is_detail\"='N' AND date(\"date:Week:start\")>='2026-01-01' AND date(\"date:Week:start\")<=date('now') GROUP BY wk"
+    "sql": "SELECT date(\"date:Week:start\") AS wk, SUM(\"Hours\") AS h, COUNT(*) AS cons FROM \"collection://7f53d438-17c3-4ca9-82ba-be138f657166\" WHERE \"Status\"='Approved' AND \"Count\"=1 AND date(\"date:Week:start\")>='2026-01-01' AND date(\"date:Week:start\")<=date('now') GROUP BY wk"
   },
   {
     "key": "raffle_candidates",
@@ -153,5 +125,12 @@
       "collection://ccec3d53-ab21-46ad-abe5-9756d69a50bd"
     ],
     "sql": "SELECT date(COALESCE(NULLIF(\"date:Actual End Date:start\",''),\"date:End Date:start\")) AS dt, \"Contractor\" AS n, \"Customer\" AS c, \"AM\" AS a, COALESCE(\"Est Spread\",0) AS s, \"Active\" AS x FROM \"collection://ccec3d53-ab21-46ad-abe5-9756d69a50bd\" WHERE date(COALESCE(NULLIF(\"date:Actual End Date:start\",''),\"date:End Date:start\")) BETWEEN '2026-11-09' AND '2026-12-27' ORDER BY dt"
+  },
+  {
+    "key": "close_ratio_snapshot",
+    "src": [
+      "collection://8bd3abb0-321a-46f9-972d-8b32c79e3255"
+    ],
+    "sql": "SELECT \"AM\" AS am, \"Close Ratio (13wk)\" AS ratio, \"Closed Reqs (13wk)\" AS closed, \"Spread\" AS spread, \"Delta\" AS delta, date(\"date:Snapshot Date:start\") AS snap FROM \"collection://8bd3abb0-321a-46f9-972d-8b32c79e3255\" WHERE date(\"date:Snapshot Date:start\")=(SELECT MAX(date(\"date:Snapshot Date:start\")) FROM \"collection://8bd3abb0-321a-46f9-972d-8b32c79e3255\")"
   }
 ]
