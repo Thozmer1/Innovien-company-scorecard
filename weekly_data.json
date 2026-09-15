@@ -8,7 +8,7 @@
     "baseline_week_start": "2026-03-23",
     "quarter_start": "2026-03-30",
     "quarter_end": "2026-06-28",
-    "rebuilt_at": "2026-09-15T12:58:41.790505+00:00",
+    "rebuilt_at": "2026-09-15T13:32:30.842822+00:00",
     "rebuild_source": "comtrak-notion-hybrid-sql",
     "partial_note": "2026-09-11: queries repointed to the columns the Comtrak API populates on every row \u2014 ESF/PSF 'Est Weekly Spread' (was 'Est Spread'/'Weekly Spread'), 'AM' (was 'Account Manager'), Contact Activity 'Owner' (was 'AM'), Recruiter Activity COALESCE(Employee, Record Id). Starts/pending/dump-in/lock-up/forecast/raffle rebuilt on the corrected columns. Close ratio, meetings, subs and hours still carried forward from 2026-09-10: their source tables lag (Close Ratio ends 8/26, Recruiter Activity 8/31, Hours 8/24)."
   },
@@ -2112,7 +2112,7 @@
             "x": "Y"
           }
         ],
-        "unplannedOut": 2370
+        "unplannedOut": 0
       },
       {
         "weekStart": "2026-09-21",
@@ -2214,7 +2214,7 @@
             "x": "Perm"
           }
         ],
-        "unplannedOut": 2370
+        "unplannedOut": 0
       }
     ],
     "lockup_spread_goal": 9446,

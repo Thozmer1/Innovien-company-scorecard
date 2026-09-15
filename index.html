@@ -43,6 +43,13 @@
   .sechead{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin:24px 0 8px;border-bottom:2px solid var(--green);padding-bottom:5px}
   .sechead h2.sec{margin:0;border:0;padding:0;flex:1}
   .qtoggle{display:flex;align-items:center;gap:6px;flex:0 0 auto}
+  .fcsum{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+  .fcsum .s{flex:1 1 150px;min-width:140px;background:var(--card);border:1px solid #e3e7e0;border-radius:6px;padding:8px 10px}
+  .fcsum .s .l{font-size:10.5px;color:var(--gray);text-transform:uppercase;letter-spacing:.4px;font-weight:600;display:flex;align-items:center;gap:6px}
+  .fcsum .s .l i{width:9px;height:9px;border-radius:2px;flex:0 0 auto}
+  .fcsum .s .v{font-size:19px;font-weight:700;color:var(--ink);margin-top:2px}
+  .fcsum .s .sub{font-size:11px;color:var(--gray)}
+  .fcsum .s.net{background:#f7faf3;border-color:#d4e2c2}
   .qtoggle button{font:600 12px Calibri,sans-serif;color:var(--gray);background:#fff;border:1px solid #cfd4cf;border-radius:4px;padding:5px 10px;cursor:pointer;white-space:nowrap}
   .qtoggle button:hover{background:#f2f7ec;border-color:var(--green)}
   .qtoggle .qlabel{font:600 11px Calibri,sans-serif;color:#8a8f8a;text-transform:uppercase;letter-spacing:.5px}
@@ -96,6 +103,7 @@
     </div>
     <div class="card"><canvas id="forecastChart" height="110"></canvas></div>
     <div style="font-size:11px;color:#8a8f8a;margin-top:4px">Click any In or Out bar to see the placements behind it. Amber = estimated unplanned attrition (no detail).</div>
+    <div class="fcsum" id="fc-summary"></div>
   </section>
   <section class="page" data-page="goals">
     <h2 class="sec">Consultant Hours Utilization</h2>
@@ -302,6 +310,7 @@ function renderForecast(){
   if(ql) ql.textContent = showNext ? FC.nextLabel : FC.label;
   if(bn) bn.hidden = showNext || !FC.next;
   if(bp) bp.hidden = !showNext;
+  renderFcSummary(weeks, showNext ? FC.nextLabel : FC.label);
   drawForecast(weeks);
 }
 function fcUsd(v){return (v<0?'-$':'$')+Math.abs(Math.round(v)).toLocaleString();}
@@ -335,6 +344,27 @@ function openDetail(weeks,di,i){
 function esc(v){return String(v==null?'':v).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 function closeDetail(){document.getElementById('modal').classList.remove('open');}
 
+function renderFcSummary(weeks,label){
+  const el=document.getElementById('fc-summary'); if(!el) return;
+  const usd=v=>'$'+Math.round(Math.abs(v)).toLocaleString();
+  const lock=weeks.reduce((a,w)=>a+(w.plannedIn||0),0);
+  const lockN=weeks.reduce((a,w)=>a+(w.inCount||0),0);
+  const pout=weeks.reduce((a,w)=>a+(w.plannedOut||0),0);
+  const poutN=weeks.reduce((a,w)=>a+((w.outDetail||[]).length),0);
+  const unp=weeks.reduce((a,w)=>a+(w.unplannedOut||0),0);
+  const unpW=weeks.filter(w=>(w.unplannedOut||0)>0).length;
+  const net=lock-pout-unp;
+  const card=(sw,l,v,sub,cls)=>'<div class="s'+(cls||'')+'"><div class="l">'+
+    (sw?'<i style="background:'+sw+'"></i>':'')+l+'</div><div class="v">'+v+
+    '</div><div class="sub">'+sub+'</div></div>';
+  el.innerHTML =
+    card('#B0DD66','Locked-up spread',usd(lock),lockN+' start'+(lockN===1?'':'s')+' booked')+
+    card('#747777','Planned attrition','-'+usd(pout),poutN+' placement'+(poutN===1?'':'s'))+
+    card('rgba(214,158,46,0.75)','Unplanned (est.)',unp?'-'+usd(unp):'—',
+         unp?unpW+' wk'+(unpW===1?'':'s')+' x '+usd(unp/unpW):'not applied')+
+    card('','Net change',(net<0?'-':'+')+usd(net),
+         label+(unp?' · booked + est.':' · as booked today'),' net');
+}
 function drawForecast(weeks){
   const ctx=document.getElementById('forecastChart'); if(chart1)chart1.destroy();
   const labels=weeks.map(w=>w.weekStart.slice(5));
@@ -363,7 +393,7 @@ function drawForecast(weeks){
   chart1=new Chart(ctx,{plugins:[barValueLabels],data:{labels,datasets:[
     {type:'bar',label:'In the door (starts)',data:weeks.map(w=>w.plannedIn),backgroundColor:inColors,stack:'flow',order:2},
     {type:'bar',label:'Out the door (ended)',data:weeks.map(w=>-w.plannedOut),backgroundColor:outColors,stack:'flow',order:2},
-    {type:'bar',label:'Unplanned attrition (est.)',data:weeks.map(w=>-(w.unplannedOut||0)),backgroundColor:unpColors,stack:'flow',order:2,hidden:!hasUnp},
+    {type:'bar',label:'Unplanned attrition (est.)',data:weeks.map(w=>-(w.unplannedOut||0)),backgroundColor:unpColors,borderColor:'#f4f6f1',borderWidth:{top:2},stack:'flow',order:2,hidden:!hasUnp},
     {type:'line',label:'Cumulative spread growth (vs baseline)',data:weeks.map(w=>w.cumNet),borderColor:'#3a5a10',backgroundColor:'#3a5a10',borderWidth:2,pointRadius:2,tension:.25,yAxisID:'yCum',order:1}
   ]},options:{responsive:true,interaction:{mode:'index',intersect:false},
     onClick:(evt,els,ch)=>{const hit=ch.getElementsAtEventForMode(evt,'nearest',{intersect:true},true);
