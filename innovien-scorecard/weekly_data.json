@@ -8,7 +8,7 @@
     "baseline_week_start": "2026-03-23",
     "quarter_start": "2026-03-30",
     "quarter_end": "2026-06-28",
-    "rebuilt_at": "2026-09-14T16:27:50.643988+00:00",
+    "rebuilt_at": "2026-09-15T12:05:03.755015+00:00",
     "rebuild_source": "comtrak-notion-hybrid-sql",
     "partial_note": "2026-09-11: queries repointed to the columns the Comtrak API populates on every row \u2014 ESF/PSF 'Est Weekly Spread' (was 'Est Spread'/'Weekly Spread'), 'AM' (was 'Account Manager'), Contact Activity 'Owner' (was 'AM'), Recruiter Activity COALESCE(Employee, Record Id). Starts/pending/dump-in/lock-up/forecast/raffle rebuilt on the corrected columns. Close ratio, meetings, subs and hours still carried forward from 2026-09-10: their source tables lag (Close Ratio ends 8/26, Recruiter Activity 8/31, Hours 8/24)."
   },
@@ -302,15 +302,15 @@
     }
   ],
   "scorecard": {
-    "net_new_starts": 84,
-    "avg_start_spread": 1207,
-    "pending_count": 22,
-    "pending_avg_spread": 1065,
-    "pending_total_spread": 23429,
+    "net_new_starts": 94,
+    "avg_start_spread": 1173,
+    "pending_count": 13,
+    "pending_avg_spread": 1223,
+    "pending_total_spread": 15904,
     "lockup_count": null,
-    "lockup_spread": 0,
-    "dumpin_count": 56,
-    "dumpin_spread": 66446,
+    "lockup_spread": 1340,
+    "dumpin_count": 57,
+    "dumpin_spread": 67786,
     "active_consultants": 279,
     "redeployed": null,
     "available_bench": null,
@@ -319,7 +319,7 @@
         "weekStart": "2026-06-29",
         "plannedIn": 15501,
         "inCount": 13,
-        "plannedOut": 66201,
+        "plannedOut": 66191,
         "inDetail": [
           {
             "n": "Robert Gabriel",
@@ -933,7 +933,7 @@
         "weekStart": "2026-07-13",
         "plannedIn": 8843,
         "inCount": 7,
-        "plannedOut": 2541,
+        "plannedOut": 2542,
         "inDetail": [
           {
             "n": "Dylan Mueller",
@@ -1075,7 +1075,7 @@
         "weekStart": "2026-07-27",
         "plannedIn": 10080,
         "inCount": 10,
-        "plannedOut": 6871,
+        "plannedOut": 6872,
         "inDetail": [
           {
             "n": "Ian Godshall",
@@ -1207,7 +1207,7 @@
         "weekStart": "2026-08-03",
         "plannedIn": 12997,
         "inCount": 11,
-        "plannedOut": 3739,
+        "plannedOut": 3740,
         "inDetail": [
           {
             "n": "Jeremy Eades",
@@ -1443,7 +1443,7 @@
         "weekStart": "2026-08-17",
         "plannedIn": 10810,
         "inCount": 8,
-        "plannedOut": 5821,
+        "plannedOut": 5822,
         "inDetail": [
           {
             "n": "Anthony Bush",
@@ -1746,7 +1746,7 @@
         "weekStart": "2026-09-07",
         "plannedIn": 5474,
         "inCount": 3,
-        "plannedOut": 531,
+        "plannedOut": 1869,
         "inDetail": [
           {
             "n": "Lukus Anderson",
@@ -1787,7 +1787,7 @@
         "weekStart": "2026-09-14",
         "plannedIn": 15067,
         "inCount": 15,
-        "plannedOut": 1160,
+        "plannedOut": 3482,
         "inDetail": [
           {
             "n": "Mohammad Rahimi",
@@ -1922,9 +1922,9 @@
       },
       {
         "weekStart": "2026-09-21",
-        "plannedIn": 8362,
-        "inCount": 7,
-        "plannedOut": 4344,
+        "plannedIn": 9702,
+        "inCount": 8,
+        "plannedOut": 3093,
         "inDetail": [
           {
             "n": "Eduardo Cesario",
@@ -2016,7 +2016,7 @@
       }
     ],
     "lockup_spread_goal": 9446,
-    "lockup_target_note": "$9,446 lock-up target for this week \u00b7 rolling next-quarter goal starts 9/21 \u00b7 ESF feed through 2026-09-10",
+    "lockup_target_note": "$9,446 lock-up target for this week \u00b7 rolling next-quarter goal starts 9/21",
     "forecast_next": {
       "label": "Q4 2026",
       "quarterStart": "2026-09-28",
@@ -2904,7 +2904,7 @@
     "advance_drawing": false
   },
   "fill_ratio": {
-    "as_of": "2026-09-14",
+    "as_of": "2026-09-15",
     "window_weeks": 13,
     "basis": "filled/(filled+washed+lost) \u2014 AM Productivity Snapshot",
     "snapshot_date": "2026-08-31",
