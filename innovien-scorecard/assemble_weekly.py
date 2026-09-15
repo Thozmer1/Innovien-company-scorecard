@@ -336,14 +336,20 @@ UNP_BASE = float((goals.get("company") or {}).get("unplannedAttritionBase") or 0
 _unp_wk = round(UNP_RATE * UNP_BASE) if UNP_RATE else 0
 if _unp_wk:
     _n1 = _n2 = 0
-    for _w in forecast:                                   # this quarter: current week forward
-        if _w["weekStart"] >= WK_MON.isoformat(): _w["unplannedOut"] = _unp_wk; _n1 += 1
+    # Inside the final ROLL_WKS weeks of a quarter the remaining weeks are effectively
+    # closed — an early termination now barely moves the quarter, and an estimate on those
+    # weeks just muddies the close number (Taylor, 2026-09-15). So the allowance applies to
+    # this quarter's forward weeks ONLY while we are outside that final stretch.
+    _cur_ok = weeks_left > float(goals.get("lockupRollForwardWeeks", 2))
+    for _w in forecast:
+        if _cur_ok and _w["weekStart"] >= WK_MON.isoformat(): _w["unplannedOut"] = _unp_wk; _n1 += 1
         else: _w["unplannedOut"] = 0
     if forecast_next:
         for _w in forecast_next["weeks"]: _w["unplannedOut"] = _unp_wk; _n2 += 1
     warnings.append(f"unplanned-attrition allowance ${_unp_wk:,}/wk "
                     f"({UNP_RATE*100:.2f}% of ${rnd(UNP_BASE):,}) on {_n1} remaining wk(s) this qtr "
-                    f"+ {_n2} wk(s) next qtr — estimate, not booked roll-off")
+                    f"+ {_n2} wk(s) next qtr — estimate, not booked roll-off"
+                    + ("" if _cur_ok else f" · none applied to this quarter's last {weeks_left:.0f} wk(s)"))
 sc["forecast"] = forecast
 if forecast_next: sc["forecast_next"] = forecast_next
 elif "forecast_next" in prev.get("scorecard", {}): sc["forecast_next"] = prev["scorecard"]["forecast_next"]
