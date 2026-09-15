@@ -95,7 +95,7 @@
       <div class="qtoggle"><span class="qlabel" id="fc-qlabel"></span><button id="fc-prev" title="Previous quarter" hidden>&#9664;</button><button id="fc-next" title="Next quarter">&#9654;</button></div>
     </div>
     <div class="card"><canvas id="forecastChart" height="110"></canvas></div>
-    <div style="font-size:11px;color:#8a8f8a;margin-top:4px">Click any In or Out bar to see the placements behind it.</div>
+    <div style="font-size:11px;color:#8a8f8a;margin-top:4px">Click any In or Out bar to see the placements behind it. Amber = estimated unplanned attrition (no detail).</div>
   </section>
   <section class="page" data-page="goals">
     <h2 class="sec">Consultant Hours Utilization</h2>
@@ -341,6 +341,9 @@ function drawForecast(weeks){
   // past weeks = solid Innovien colors (actuals); future weeks = lighter (forecast)
   const inColors =weeks.map(w=>w.isPast?'#B0DD66':'rgba(176,221,102,0.45)');
   const outColors=weeks.map(w=>w.isPast?'#747777':'rgba(116,119,119,0.40)');
+  // estimated unplanned attrition: amber, always "forecast" toned — never a booked placement
+  const unpColors=weeks.map(()=>'rgba(214,158,46,0.55)');
+  const hasUnp=weeks.some(w=>(w.unplannedOut||0)>0);
   const kfmt=v=>{v=Math.abs(v); return v>=1000 ? '$'+(v/1000).toFixed(v>=10000?0:1)+'k' : '$'+Math.round(v);};
   // inline plugin: draw the $ value at the tip of each In/Out bar
   const barValueLabels={id:'barValueLabels',afterDatasetsDraw(chart){const{ctx}=chart;ctx.save();ctx.font='600 9px Calibri, sans-serif';ctx.textAlign='center';
@@ -352,10 +355,15 @@ function drawForecast(weeks){
         if(raw>=0){ctx.textBaseline='bottom'; ctx.fillText(txt, el.x, el.y-2);}
         else {ctx.textBaseline='top'; ctx.fillText(txt, el.x, el.y+2);}
       });});
+    const um=chart.getDatasetMeta(2);
+    if(um && !um.hidden){ctx.font='600 8px Calibri, sans-serif';ctx.fillStyle='#8a6d1f';ctx.textBaseline='middle';
+      um.data.forEach((el,i)=>{const raw=chart.data.datasets[2].data[i]; if(!raw)return;
+        const p=el.getCenterPoint(); ctx.fillText(kfmt(raw), p.x, p.y);});}
     ctx.restore();}};
   chart1=new Chart(ctx,{plugins:[barValueLabels],data:{labels,datasets:[
     {type:'bar',label:'In the door (starts)',data:weeks.map(w=>w.plannedIn),backgroundColor:inColors,stack:'flow',order:2},
     {type:'bar',label:'Out the door (ended)',data:weeks.map(w=>-w.plannedOut),backgroundColor:outColors,stack:'flow',order:2},
+    {type:'bar',label:'Unplanned attrition (est.)',data:weeks.map(w=>-(w.unplannedOut||0)),backgroundColor:unpColors,stack:'flow',order:2,hidden:!hasUnp},
     {type:'line',label:'Cumulative spread growth (vs baseline)',data:weeks.map(w=>w.cumNet),borderColor:'#3a5a10',backgroundColor:'#3a5a10',borderWidth:2,pointRadius:2,tension:.25,yAxisID:'yCum',order:1}
   ]},options:{responsive:true,interaction:{mode:'index',intersect:false},
     onClick:(evt,els,ch)=>{const hit=ch.getElementsAtEventForMode(evt,'nearest',{intersect:true},true);

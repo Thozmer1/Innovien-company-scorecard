@@ -20,7 +20,9 @@
     "yearSpreadGoal": 500000,
     "dumpinSpreadGoal": 93926,
     "hoursUtilGoal": 37.5,
-    "quarterGrowthTarget": 30000
+    "quarterGrowthTarget": 30000,
+    "unplannedAttritionRate": 0.008,
+    "unplannedAttritionBase": 296195
   },
   "perAM": {
     "_default": {
@@ -47,13 +49,58 @@
     "_comment": "Q3-planning carry-ins created 2026-06-29..2026-07-15, before the quarterly kickoff. Already locked up in Q2, so they are not part of this quarter's net-new go-get. REPLACE with a Notion tag on those records and filter in rebuild_queries.json; reset to 0 each quarter."
   },
   "confirmedRenewals": [
-    "Christina Gallagher"
+    "Ifedayo Thomas",
+    "German Quezada",
+    "Christopher Greathouse",
+    "Brian Mackin",
+    "Olumide Ogundana",
+    "Brett Potter",
+    "Raymond Rodriguez",
+    "Naod Feleke",
+    "Ani Abraham",
+    "Brian Demorcy",
+    "Tara Ott",
+    "Alex Lemberg",
+    "Michael Armentrout",
+    "Maria Kang",
+    "Suruchi ARELLI",
+    "Zachary Arndt",
+    "Schmar James",
+    "Taofeek Ibrahim",
+    "Adam Thomas",
+    "Arjun Krishnamoorthi",
+    "Tyler Crabtree",
+    "Michael Grotzer",
+    "AYESHA HAMZA",
+    "Emeka Egwuonwu",
+    "Oksana Kinker",
+    "Chad Moore",
+    "Paris Aldridge",
+    "Rupert Parchment",
+    "Adigun Palmer",
+    "Irina Belska",
+    "BRIAN CHILDS",
+    "Andrew Elliott",
+    "PAUL SHEEN",
+    "Mahesh Chukka",
+    "Leonardo Ramirez",
+    "Denne Adams",
+    "JA'NA CROWDER",
+    "Tsegabrhan Gebrehiwot",
+    "Basazin Belhu",
+    "Anthony Bush",
+    "Omar Valadez",
+    "Colton Xyla Kalman",
+    "Colton Kalman",
+    "CHRISTINA GALLAGHER",
+    "Darnell Suggs"
   ],
-  "_renewals_comment": "Contractors the team has confirmed will renew. Excluded from next-quarter attrition in the rolling lock-up goal. Best fix is updating Actual End Date in Notion; clear names from here once that is done.",
+  "_renewals_comment": "Contractors the team confirmed will renew in Q4. Held out of the next-quarter Out bars AND the rolling lock-up goal. Matching ignores the trailing ' / id' and quotes. Best fix is updating Actual End Date in Notion; clear names from here once that is done.",
   "lockupGoalOverride": {
     "value": 9446,
     "throughDate": "2026-09-20",
     "note": "$9,446 lock-up target for this week \u00b7 rolling next-quarter goal starts 9/21",
     "_comment": "Holds the lock-up tile at the figure already published to the team this week so a mid-week rebuild cannot move it. Expires after throughDate (Sunday); the rolling roll-forward goal then takes over automatically. Safe to delete once expired."
-  }
+  },
+  "_unplanned_comment": "Estimated early terminations not yet recorded in Notion. Applied to the current week forward only (past weeks already carry their actuals). 2026 actuals by quarter: Q1 1.09%/wk, Q2 0.66%, Q3 1.00% - blended 0.91%. Base = active contract Est Spread; refresh it each quarter. Set rate to 0 to turn the amber segment off entirely."
 }
