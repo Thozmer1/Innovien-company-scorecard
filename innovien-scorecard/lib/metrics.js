@@ -249,10 +249,13 @@ export function buildScorecard(data, goals, asOfStr, weekly, roster) {
     // Compute running cumulative + past/forecast flag so the chart renders identically.
     let _cum = 0;
     oForecast = _wsc.forecast.map(w => {
-      const pin = w.plannedIn || 0, pout = w.plannedOut || 0, net = pin - pout; _cum += net;
+      const pin = w.plannedIn || 0, pout = w.plannedOut || 0;
+      // unplannedOut is an ESTIMATE, kept separate from booked roll-off so the Out bar's
+      // booked segment stays exactly equal to its drill-through detail.
+      const unp = w.unplannedOut || 0, net = pin - pout - unp; _cum += net;
       const wd = d(w.weekStart);
       return { weekStart: w.weekStart, plannedIn: Math.round(pin), plannedOut: Math.round(pout),
-               inCount: (w.inCount ?? null),
+               unplannedOut: Math.round(unp), inCount: (w.inCount ?? null),
                inDetail: w.inDetail || [], outDetail: w.outDetail || [],
                net: Math.round(net), cumNet: Math.round(_cum), isPast: wd ? wd < asOf : false };
     });
@@ -266,10 +269,11 @@ export function buildScorecard(data, goals, asOfStr, weekly, roster) {
       quarterStart: _wsc.forecast_next.quarterStart || null,
       quarterEnd: _wsc.forecast_next.quarterEnd || null,
       weeks: _wsc.forecast_next.weeks.map(w => {
-        const pin = w.plannedIn || 0, pout = w.plannedOut || 0, net = pin - pout; _cn += net;
+        const pin = w.plannedIn || 0, pout = w.plannedOut || 0;
+        const unp = w.unplannedOut || 0, net = pin - pout - unp; _cn += net;
         const wd = d(w.weekStart);
         return { weekStart: w.weekStart, plannedIn: Math.round(pin), plannedOut: Math.round(pout),
-                 inCount: (w.inCount ?? null),
+                 unplannedOut: Math.round(unp), inCount: (w.inCount ?? null),
                  inDetail: w.inDetail || [], outDetail: w.outDetail || [],
                  net: Math.round(net), cumNet: Math.round(_cn), isPast: wd ? wd < asOf : false };
       }),
