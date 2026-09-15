@@ -132,9 +132,19 @@ fin = {}
 for key in ("esf_forecast_in", "psf_forecast_in"):
     for r in q(key):
         wk = int(r["wk"]); a = fin.setdefault(wk, [0, 0]); a[0] += n(r.get("insp")); a[1] += rnd(r.get("incount"))
+_active_est_spread = float((goals.get("company") or {}).get("unplannedAttritionBase") or 0)
 fout = {}
 for r in q("placement_forecast_out"):
     fout[int(r["wk"])] = fout.get(int(r["wk"]), 0) + abs(n(r.get("outsp")))
+# placement_forecast_out covers CONTRACT ends only (Active Contracts holds no perm rows).
+# Perm fees amortize to "Est Last week Spread" and stop the week after, so fold those into
+# this quarter's Out bars as well — otherwise the bar and its click-through disagree.
+for r in (qopt("perm_rolloff") or []):
+    _d = r.get("dt")
+    if not _d: continue
+    _w = (date.fromisoformat(_d) - QS).days // 7
+    if 0 <= _w < 13:
+        fout[_w] = fout.get(_w, 0) + abs(n(r.get("s")))
 forecast = []
 for w in range(13):
     ws = QS + timedelta(days=7 * w)
@@ -144,7 +154,12 @@ for w in range(13):
 # ---- per-week placement detail (click-through) + next-quarter outlook ----
 IN_F, OUT_F = ["n", "c", "a", "r", "s", "x"], ["n", "c", "a", "s", "x"]
 _in_raw  = (qopt("in_detail_esf_a") or []) + (qopt("in_detail_esf_b") or []) + (qopt("in_detail_psf") or [])
-_out_raw = (qopt("out_detail_a") or []) + (qopt("out_detail_b") or [])
+# Perm placements amortize their fee weekly until "Est Last week Spread"; the week AFTER
+# that is the roll-off. PSF perm counts on the In side, so it has to count on the Out side
+# too or the chart is structurally optimistic. One query feeds both quarters — wkbucket
+# keeps only the weeks that fall inside each.
+_perm_out = qopt("perm_rolloff") or []
+_out_raw = (qopt("out_detail_a") or []) + (qopt("out_detail_b") or []) + _perm_out
 have_detail = bool(_in_raw or _out_raw)
 if have_detail:
     _ind, _outd = wkbucket(_in_raw, QS, IN_F), wkbucket(_out_raw, QS, OUT_F)
@@ -159,7 +174,33 @@ else:
 
 NQS = QE + timedelta(days=1)                       # next quarter starts the day after this one ends
 _nin_raw  = (qopt("next_in_detail_esf") or []) + (qopt("next_in_detail_psf") or [])
-_nout_raw = (qopt("next_out_detail_a") or []) + (qopt("next_out_detail_b") or [])
+_nout_raw = (qopt("next_out_detail_a") or []) + (qopt("next_out_detail_b") or []) + _perm_out
+
+# --- Confirmed renewals (Taylor, 2026-09-15) ----------------------------------
+# Placements the team has confirmed will renew are NOT attrition. Their Notion end
+# date still says they roll off, so strip them here — this keeps them out of BOTH
+# the next-quarter Out bars and the rolling lock-up goal. Best fix is updating
+# Actual End Date in Notion; clear names from goals.json once that is done.
+def _rnkey(s):
+    import re as _r
+    s = _r.sub(r"\s*/\s*[0-9]+\s*$", "", str(s or ""))     # drop the trailing " / id"
+    s = s.replace('"', ' ').replace("'", " ")
+    return " ".join(s.split()).lower()
+_renew = {_rnkey(x) for x in (goals.get("confirmedRenewals") or [])}
+if _renew:
+    _keep, _drop = [], []
+    for _r0 in _nout_raw:
+        (_drop if _rnkey(_r0.get("n")) in _renew else _keep).append(_r0)
+    if _drop:
+        _nout_raw = _keep
+        warnings.append(f"next-qtr roll-off excludes {len(_drop)} confirmed renewal(s) "
+                        f"worth ${rnd(sum(abs(n(x.get('s'))) for x in _drop)):,} "
+                        f"(held out of the Out bars and the lock-up goal)")
+    _hitkeys = {_rnkey(x.get("n")) for x in _drop}
+    _un = sorted(x for x in (goals.get("confirmedRenewals") or []) if _rnkey(x) not in _hitkeys)
+    if _un:
+        warnings.append("confirmedRenewals with no next-qtr roll-off (alias spelling, already "
+                        "re-dated in Notion, or a typo): " + ", ".join(_un))
 forecast_next = None
 if _nin_raw or _nout_raw:
     _nin, _nout = wkbucket(_nin_raw, NQS, IN_F), wkbucket(_nout_raw, NQS, OUT_F)
@@ -283,6 +324,26 @@ sc["pending_count"] = pending_n; sc["pending_total_spread"] = rnd(pending_sp)
 sc["pending_avg_spread"] = rnd(pending_sp / pending_n) if pending_n else 0
 sc["net_new_starts"] = banked_n
 sc["avg_start_spread"] = rnd(banked_sp / banked_n) if banked_n else 0
+
+# --- Estimated unplanned attrition (Taylor, 2026-09-15) -----------------------
+# Booked roll-off only ever shows placements whose END DATE is already recorded.
+# Early terminations are not in the table until someone ends them, so every forward
+# week needs an allowance. 2026 actuals (placements whose Actual End Date landed
+# before their contracted End Date): Q1 1.09%/wk, Q2 0.66%, Q3 1.00% - blended 0.91%.
+# Kept as its own field so the booked Out bars stay exactly equal to their drill-through.
+UNP_RATE = float((goals.get("company") or {}).get("unplannedAttritionRate") or 0)
+UNP_BASE = float((goals.get("company") or {}).get("unplannedAttritionBase") or 0) or n(_active_est_spread)
+_unp_wk = round(UNP_RATE * UNP_BASE) if UNP_RATE else 0
+if _unp_wk:
+    _n1 = _n2 = 0
+    for _w in forecast:                                   # this quarter: current week forward
+        if _w["weekStart"] >= WK_MON.isoformat(): _w["unplannedOut"] = _unp_wk; _n1 += 1
+        else: _w["unplannedOut"] = 0
+    if forecast_next:
+        for _w in forecast_next["weeks"]: _w["unplannedOut"] = _unp_wk; _n2 += 1
+    warnings.append(f"unplanned-attrition allowance ${_unp_wk:,}/wk "
+                    f"({UNP_RATE*100:.2f}% of ${rnd(UNP_BASE):,}) on {_n1} remaining wk(s) this qtr "
+                    f"+ {_n2} wk(s) next qtr — estimate, not booked roll-off")
 sc["forecast"] = forecast
 if forecast_next: sc["forecast_next"] = forecast_next
 elif "forecast_next" in prev.get("scorecard", {}): sc["forecast_next"] = prev["scorecard"]["forecast_next"]
@@ -300,27 +361,19 @@ _fn = sc.get("forecast_next") or {}
 _nqw = _fn.get("weeks") or []
 if _nqw and weeks_left <= ROLL_WKS:
     nq_out = sum(abs(w.get("plannedOut") or 0) for w in _nqw)
-    # Placements the team has confirmed will renew are not attrition, even though the
-    # Notion end date still says they roll off. Fix at source by updating Actual End
-    # Date; this list keeps the goal honest in the meantime.
-    _renew = {" ".join(str(x).split()).lower() for x in (goals.get("confirmedRenewals") or [])}
-    _rsum, _rnames = 0.0, []
-    if _renew:
-        for _w in _nqw:
-            for _r in (_w.get("outDetail") or []):
-                if " ".join(str(_r.get("n") or "").split()).lower() in _renew:
-                    _rsum += abs(float(_r.get("s") or 0)); _rnames.append(_r.get("n"))
-        if _rsum:
-            nq_out = max(0.0, nq_out - _rsum)
-            warnings.append(f"next-qtr attrition excludes {len(_rnames)} confirmed renewal(s) "
-                            f"worth ${round(_rsum):,}: {', '.join(_rnames)}")
+    # Unplanned attrition is spread we still have to replace even though no placement
+    # carries its date yet, so the weekly target has to cover it alongside booked roll-off.
+    nq_unp = sum(abs(w.get("unplannedOut") or 0) for w in _nqw)
+    nq_out += nq_unp
+    # renewals already stripped from _nqw upstream; nq_out is clean here.
     window = int(round(weeks_left)) + len(_nqw)
     rdenom = max(1.0, window - RAMP)
     need   = GROWTH + nq_out
     lock_goal = round(need / rdenom)
     _lbl = _fn.get("label", "next qtr")
+    _att = f"${round(nq_out - nq_unp):,} booked" + (f" + ${round(nq_unp):,} unplanned" if nq_unp else "")
     lock_note = (f"${round(need):,} to lock up over the next {window} wks "
-                 f"(${round(GROWTH):,} growth + ${round(nq_out):,} {_lbl} attrition) "
+                 f"(${round(GROWTH):,} growth + {_lbl} attrition: {_att}) "
                  f"/ {rdenom:.1f} earning wks")
     warnings.append(f"lock-up goal rolled forward to {_lbl}: ${round(need):,} over "
                     f"{window} wks / {rdenom:.1f} earning wks = ${lock_goal:,}/wk")

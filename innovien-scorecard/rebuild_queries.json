@@ -132,5 +132,12 @@
       "collection://8bd3abb0-321a-46f9-972d-8b32c79e3255"
     ],
     "sql": "SELECT \"AM\" AS am, \"Close Ratio (13wk)\" AS ratio, \"Closed Reqs (13wk)\" AS closed, \"Spread\" AS spread, \"Delta\" AS delta, date(\"date:Snapshot Date:start\") AS snap FROM \"collection://8bd3abb0-321a-46f9-972d-8b32c79e3255\" WHERE date(\"date:Snapshot Date:start\")=(SELECT MAX(date(\"date:Snapshot Date:start\")) FROM \"collection://8bd3abb0-321a-46f9-972d-8b32c79e3255\")"
+  },
+  {
+    "key": "perm_rolloff",
+    "src": [
+      "collection://3f6a7bc2-85f3-40d7-9f7d-1d225be76153"
+    ],
+    "sql": "SELECT date(\"date:Est Last week Spread:start\",'+7 days') AS dt, \"Candidate\" AS n, \"Customer\" AS c, \"AM\" AS a, ROUND(COALESCE(\"Est Weekly Spread\",0),0) AS s, 'Perm' AS x FROM \"collection://3f6a7bc2-85f3-40d7-9f7d-1d225be76153\" WHERE \"Status\" NOT LIKE '%Cancel%' AND \"date:Est Last week Spread:start\" IS NOT NULL AND date(\"date:Est Last week Spread:start\") BETWEEN '2026-06-22' AND '2026-12-20' AND COALESCE(\"Est Weekly Spread\",0) > 0 ORDER BY dt"
   }
 ]
