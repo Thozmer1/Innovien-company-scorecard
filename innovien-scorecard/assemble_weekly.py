@@ -237,6 +237,17 @@ for r in snap_rows:
     by_am.append({"name": am, "ratio": round(float(ratio), 4), "decided": closed,
                   "filled": rnd(float(ratio) * closed), "closedReqs": closed,
                   "spread": rnd(r.get("spread")), "delta": rnd(r.get("delta"))})
+# ---- latest-closed-week company spread (AM Productivity Snapshot) ----
+# Tile value = SUM(Spread) over ALL rows at the latest Snapshot Date — every AM row, not just the
+# ones that survive the fill-ratio filter below (that filter drops ratio=None rows and would
+# understate the total). Rows are split-adjusted and deduped upstream, so the sum IS the company
+# total for that settled week. Snapshot Date is the Monday of the last settled week; a week settles
+# 10 days after its Friday end, so the ~1.5-2 week lag behind the calendar is CORRECT, not stale.
+# Never recompute this from the raw Spread mirror and never filter by calendar week.
+snap_spread = (sum(n(r.get("spread")) for r in snap_rows if r.get("snap") == snap_date)
+               if snap_date else None)
+snap_n = len([r for r in snap_rows if r.get("snap") == snap_date]) if snap_date else 0
+
 by_am = merge_rows(by_am, ["filled", "decided", "closedReqs"])
 for r in by_am: r["ratio"] = round(r["filled"] / r["decided"], 4) if r["decided"] else 0
 by_am.sort(key=lambda x: -x["ratio"])
@@ -409,6 +420,14 @@ if not feed_covers_week:
     warnings.append(f"ESF/PSF creates only through {max_create} (< week of {WK_MON}) — lock-up shows ${rnd(lockup_wk):,} so far this week; it fills in as Comtrak loads")
     if sc.get("lockup_target_note"):
         sc["lockup_target_note"] += f" · ESF feed through {max_create}"
+if snap_date and snap_spread is not None:
+    wd.setdefault("company", {})["weekly_spread"] = round(snap_spread, 2)
+    wd["company"]["weekly_spread_week"] = snap_date
+    warnings.append(f"company spread ${round(snap_spread):,} = latest settled week {snap_date} "
+                    f"({snap_n} AM rows) \u00b7 lags calendar ~1.5-2 wks by design")
+else:
+    warnings.append("close_ratio_snapshot empty \u2014 company.weekly_spread CARRIED FORWARD "
+                    "from the previous file; do not treat the tile as current")
 wd["fill_ratio"] = fill_ratio; wd["meetings"] = meetings; wd["subs"] = subs; wd["hours_util"] = hours_util; wd["raffle"] = rf
 wd.setdefault("meta", {})["rebuilt_at"] = datetime.now(timezone.utc).isoformat()
 wd["meta"]["rebuild_source"] = "comtrak-notion-hybrid-sql"
