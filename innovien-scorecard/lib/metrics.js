@@ -229,6 +229,12 @@ export function buildScorecard(data, goals, asOfStr, weekly, roster) {
   const _wsc = (weekly && weekly.scorecard) || {};
   const ov = (v, cur) => (v === null || v === undefined) ? cur : v;
   const oWeeklySpread = ov(_wco.weekly_spread, weeklySpread);
+  // Company spread comes from the AM Productivity Snapshot's latest settled week; label it so the
+  // ~1.5-2 week lag behind the calendar reads as intentional rather than stale.
+  const _wsWeek = _wco.weekly_spread_week || null;
+  const _wsNote = _wsWeek
+    ? "Week of " + new Date(_wsWeek + "T00:00:00Z").toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" }) + " · latest closed week"
+    : null;
   const oNetNew       = ov(_wsc.net_new_starts, qtrStarts);
   const oAvgStart     = ov(_wsc.avg_start_spread, avgStartSpread);
   const oPendCount    = ov(_wsc.pending_count, pendingCount);
@@ -401,7 +407,7 @@ export function buildScorecard(data, goals, asOfStr, weekly, roster) {
       lookbackWeeks: lookback, weeksElapsed, weeksInQuarter,
     },
     scorecard: {
-      weeklySpread: kpi(oWeeklySpread, g.weeklySpreadGoal, "usd"),
+      weeklySpread: Object.assign(kpi(oWeeklySpread, g.weeklySpreadGoal, "usd"), _wsNote ? { note: _wsNote } : {}),
       netNewStarts: kpi(oNetNew, g.qtrStartsGoal, "int"),
       avgStartSpread: kpi(oAvgStart, g.avgStartGoal, "usd"),
       pendingStarts: { count: oPendCount, avgSpread: oPendAvg, totalSpread: oPendTot,
