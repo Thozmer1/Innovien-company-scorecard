@@ -8,7 +8,7 @@
     "baseline_week_start": "2026-03-23",
     "quarter_start": "2026-03-30",
     "quarter_end": "2026-06-28",
-    "rebuilt_at": "2026-09-22T11:44:34.135205+00:00",
+    "rebuilt_at": "2026-09-22T12:57:59.013735+00:00",
     "rebuild_source": "comtrak-notion-hybrid-sql",
     "partial_note": "2026-09-11: queries repointed to the columns the Comtrak API populates on every row \u2014 ESF/PSF 'Est Weekly Spread' (was 'Est Spread'/'Weekly Spread'), 'AM' (was 'Account Manager'), Contact Activity 'Owner' (was 'AM'), Recruiter Activity COALESCE(Employee, Record Id). Starts/pending/dump-in/lock-up/forecast/raffle rebuilt on the corrected columns. Close ratio, meetings, subs and hours still carried forward from 2026-09-10: their source tables lag (Close Ratio ends 8/26, Recruiter Activity 8/31, Hours 8/24)."
   },
@@ -3025,11 +3025,11 @@
     "as_of": "2026-09-22",
     "window_weeks": 13,
     "basis": "filled/(filled+washed+lost) \u2014 AM Productivity Snapshot",
-    "snapshot_date": "2026-08-31",
+    "snapshot_date": "2026-09-07",
     "company": {
       "filled": 55,
-      "decided": 79,
-      "ratio": 0.6962
+      "decided": 76,
+      "ratio": 0.7237
     },
     "by_am": [
       {
@@ -3038,8 +3038,8 @@
         "decided": 8,
         "filled": 8,
         "closedReqs": 8,
-        "spread": 36209,
-        "delta": 1454
+        "spread": 30727,
+        "delta": -5482
       },
       {
         "name": "Malia Graham",
@@ -3056,8 +3056,8 @@
         "decided": 16,
         "filled": 14,
         "closedReqs": 16,
-        "spread": 19184,
-        "delta": -132
+        "spread": 19454,
+        "delta": 270
       },
       {
         "name": "Mollie Ferguson",
@@ -3065,8 +3065,8 @@
         "decided": 13,
         "filled": 11,
         "closedReqs": 13,
-        "spread": 132556,
-        "delta": 1162
+        "spread": 108383,
+        "delta": -24174
       },
       {
         "name": "Brie Branting",
@@ -3074,8 +3074,8 @@
         "decided": 10,
         "filled": 8,
         "closedReqs": 10,
-        "spread": 48546,
-        "delta": 5778
+        "spread": 40366,
+        "delta": -8180
       },
       {
         "name": "Riley Laverty",
@@ -3083,8 +3083,8 @@
         "decided": 6,
         "filled": 4,
         "closedReqs": 6,
-        "spread": 12730,
-        "delta": -1716
+        "spread": 12911,
+        "delta": 181
       },
       {
         "name": "Stephen Denzel",
@@ -3092,8 +3092,8 @@
         "decided": 11,
         "filled": 7,
         "closedReqs": 11,
-        "spread": 33529,
-        "delta": 3327
+        "spread": 26417,
+        "delta": -7112
       },
       {
         "name": "Mike Minnillo",
@@ -3101,8 +3101,8 @@
         "decided": 5,
         "filled": 1,
         "closedReqs": 5,
-        "spread": 11019,
-        "delta": -3273
+        "spread": 11468,
+        "delta": 449
       },
       {
         "name": "Hannah Craig",
@@ -3110,17 +3110,8 @@
         "decided": 6,
         "filled": 1,
         "closedReqs": 6,
-        "spread": 24321,
-        "delta": -2066
-      },
-      {
-        "name": "Kollin Korell",
-        "ratio": 0.0,
-        "decided": 3,
-        "filled": 0,
-        "closedReqs": 3,
-        "spread": 0,
-        "delta": 0
+        "spread": 22229,
+        "delta": -2092
       }
     ]
   },
