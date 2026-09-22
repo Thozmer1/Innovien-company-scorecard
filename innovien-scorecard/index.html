@@ -187,7 +187,6 @@ function render(d){
     (p.avgOnPace===null?'':paceLine((p.avgOnPace?'Avg ≥ goal':'Avg below goal')+(p.avgPct!=null?` · ${p.avgPct}%`:''),p.avgOnPace));
   const lockSub =
     `<div class="goal">Lock-up goal ${lu.spreadGoal?fmtUsd(lu.spreadGoal):'—'}</div>`+
-    (lu.targetNote?`<div class="goal" style="opacity:.7;font-size:.82em">${lu.targetNote}</div>`:'')+
     (lu.hitList?`<div class="goal" style="margin-top:3px">Hit list: <b>${lu.hitList.reqs}</b> req${lu.hitList.reqs===1?'':'s'} · ~${fmtUsd(lu.hitList.potentialSpread)} potential (${lu.hitList.openings} opening${lu.hitList.openings===1?'':'s'})</div>`:'')+
     (lu.spreadOnPace===null?'':paceLine((lu.spreadOnPace?'At / above goal':'Below goal')+(lu.spreadPct!=null?` · ${lu.spreadPct}%`:''),lu.spreadOnPace));
   const dumpSub =
@@ -195,7 +194,7 @@ function render(d){
     `<div class="goal">Goal ${di.spreadGoal?fmtUsd(di.spreadGoal):'—'}</div>`+
     (di.spreadOnPace===null||di.spreadOnPace===undefined?'':paceLine((di.spreadOnPace?'At / above goal':'Below goal')+(di.spreadPct!=null?` · ${di.spreadPct}%`:''),di.spreadOnPace));
   document.getElementById('kpi-scorecard').innerHTML =
-    kpiCard('Weekly Spread',sc.weeklySpread)+
+    kpiCard('Company Spread',sc.weeklySpread)+
     kpiCard('Net New Starts · Qtr',sc.netNewStarts)+
     kpiCard('Avg Weekly Spread / New Start',sc.avgStartSpread)+
     multiCard('Pending Start Avg Spread',fmtUsd(p.avgSpread)+wk,pendingSub)+
