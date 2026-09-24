@@ -96,11 +96,5 @@
     "Darnell Suggs"
   ],
   "_renewals_comment": "Contractors the team confirmed will renew in Q4. Held out of the next-quarter Out bars AND the rolling lock-up goal. Matching ignores the trailing ' / id' and quotes. Best fix is updating Actual End Date in Notion; clear names from here once that is done.",
-  "lockupGoalOverride": {
-    "value": 9446,
-    "throughDate": "2026-09-20",
-    "note": "$9,446 lock-up target for this week \u00b7 rolling next-quarter goal starts 9/21",
-    "_comment": "Holds the lock-up tile at the figure already published to the team this week so a mid-week rebuild cannot move it. Expires after throughDate (Sunday); the rolling roll-forward goal then takes over automatically. Safe to delete once expired."
-  },
   "_unplanned_comment": "Estimated early terminations not yet recorded in Notion. Applied to the current week forward only (past weeks already carry their actuals). 2026 actuals by quarter: Q1 1.09%/wk, Q2 0.66%, Q3 1.00% - blended 0.91%. Base = active contract Est Spread; refresh it each quarter. Set rate to 0 to turn the amber segment off entirely."
 }

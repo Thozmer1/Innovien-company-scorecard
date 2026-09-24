@@ -139,5 +139,19 @@
       "collection://3f6a7bc2-85f3-40d7-9f7d-1d225be76153"
     ],
     "sql": "SELECT date(\"date:Est Last week Spread:start\",'+7 days') AS dt, \"Candidate\" AS n, \"Customer\" AS c, \"AM\" AS a, ROUND(COALESCE(\"Est Weekly Spread\",0),0) AS s, 'Perm' AS x FROM \"collection://3f6a7bc2-85f3-40d7-9f7d-1d225be76153\" WHERE \"Status\" NOT LIKE '%Cancel%' AND \"date:Est Last week Spread:start\" IS NOT NULL AND date(\"date:Est Last week Spread:start\") BETWEEN '2026-06-22' AND '2026-12-20' AND COALESCE(\"Est Weekly Spread\",0) > 0 ORDER BY dt"
+  },
+  {
+    "key": "week_meetings",
+    "src": [
+      "collection://0b41d495-a3d1-40fc-aa42-0f1a22bf6f18"
+    ],
+    "sql": "SELECT date('now','-6 days','weekday 1','-7 days') AS wk, COUNT(*) AS c, COUNT(DISTINCT \"Owner\") AS ams, (SELECT MAX(date(\"date:Date:start\")) FROM \"collection://0b41d495-a3d1-40fc-aa42-0f1a22bf6f18\") AS maxd FROM \"collection://0b41d495-a3d1-40fc-aa42-0f1a22bf6f18\" WHERE date(\"date:Date:start\") BETWEEN date('now','-6 days','weekday 1','-7 days') AND date('now','-6 days','weekday 1','-1 days') AND \"Owner\" IS NOT NULL AND \"Owner\" <> 'Unassigned' AND lower(trim(\"Activity\")) IN ('meeting (v)','first meeting (v)','req meeting (v)','lunch','rbm','meeting','first meeting','swag drop','bagel drop','req meeting','lunch (v)','intro meeting (v)','intro meeting','swag/bagel/treat drop','intro meeting (v) *','meeting (v) *','intro meeting *','meeting *','req meeting *','req meeting (v) *','rbm *','lunch *','swag/bagel/treat drop *')"
+  },
+  {
+    "key": "week_subs",
+    "src": [
+      "collection://d65a1736-7835-450a-9ec2-11176986494a"
+    ],
+    "sql": "SELECT date('now','-6 days','weekday 1','-7 days') AS wk, SUM(\"Subs\") AS subs, COUNT(DISTINCT \"Employee\") AS recs, (SELECT MAX(date(\"date:Week:start\")) FROM \"collection://d65a1736-7835-450a-9ec2-11176986494a\") AS maxwk FROM \"collection://d65a1736-7835-450a-9ec2-11176986494a\" WHERE date(\"date:Week:start\") = date('now','-6 days','weekday 1','-7 days') AND \"Employee\" IS NOT NULL AND \"Employee\" <> 'Unassigned'"
   }
 ]

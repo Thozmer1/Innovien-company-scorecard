@@ -228,14 +228,22 @@ if _nin_raw or _nout_raw:
 # Close Ratio Details carries no usable close date (Status Date is legacy-only), so windowed
 # aggregates must NOT come from it. The snapshot's Close Ratio (13wk) is computed from a fresh
 # windowed ComTrak close-date pull. Snapshot Date sits 1-2 weeks back by design.
+# Taylor, 2026-09-23: the snapshot publishes ONLY "Close Ratio (13wk)" and "Closed Reqs (13wk)"
+# — there is no Filled/Washed/Lost breakdown in the table (schema checked). The old code invented
+# filled = round(ratio x closed) and decided = closed, then RE-DERIVED ratio = filled/decided.
+# That round-trip moved most AMs off their own source number (Hannah 20% -> 16.7%, Brie 85% ->
+# 80%) and the invented columns were not even arithmetically possible: for 5 of 9 AMs
+# ratio x closed is not a whole number, so Closed Reqs is NOT the ratio's denominator.
+# RULE: carry Comtrak's ratio through untouched and never reconstruct a numerator from it.
+# Closed Reqs is displayed as its own column and used ONLY as the weight for the company tile.
 snap_rows = q("close_ratio_snapshot")
 by_am, snap_date = [], None
 for r in snap_rows:
     am = r.get("am"); ratio = r.get("ratio"); closed = rnd(r.get("closed"))
     snap_date = snap_date or r.get("snap")
     if not am or am == "Unassigned" or ratio is None or closed <= 0: continue
-    by_am.append({"name": am, "ratio": round(float(ratio), 4), "decided": closed,
-                  "filled": rnd(float(ratio) * closed), "closedReqs": closed,
+    by_am.append({"name": am, "ratio": round(float(ratio), 4), "closedReqs": closed,
+                  "_rw": float(ratio) * closed,
                   "spread": rnd(r.get("spread")), "delta": rnd(r.get("delta"))})
 # ---- latest-closed-week company spread (AM Productivity Snapshot) ----
 # Tile value = SUM(Spread) over ALL rows at the latest Snapshot Date — every AM row, not just the
@@ -248,15 +256,24 @@ snap_spread = (sum(n(r.get("spread")) for r in snap_rows if r.get("snap") == sna
                if snap_date else None)
 snap_n = len([r for r in snap_rows if r.get("snap") == snap_date]) if snap_date else 0
 
-by_am = merge_rows(by_am, ["filled", "decided", "closedReqs"])
-for r in by_am: r["ratio"] = round(r["filled"] / r["decided"], 4) if r["decided"] else 0
+# A duplicate-spelling merge re-weights by Closed Reqs; a single-row AM keeps its exact source
+# ratio (x/x round-trips clean).
+by_am = merge_rows(by_am, ["closedReqs", "_rw"])
+for r in by_am:
+    r["ratio"] = round(r["_rw"] / r["closedReqs"], 4) if r["closedReqs"] else 0
+    r.pop("_rw", None)
 by_am.sort(key=lambda x: -x["ratio"])
-cf = sum(x["filled"] for x in by_am); cdec = sum(x["decided"] for x in by_am)
+# Company tile = Closed-Reqs-weighted mean of the AM ratios. The snapshot carries no company
+# row and no filled/decided counts, so this is the only aggregate available; it is an
+# approximation of a true pooled ratio and must be labelled as a weighted average, not as
+# "filled / decided".
+cw = sum(x["ratio"] * x["closedReqs"] for x in by_am)
+cdec = sum(x["closedReqs"] for x in by_am)
 fill_ratio = {"as_of": TODAY.isoformat(), "window_weeks": 13,
-              "basis": "filled/(filled+washed+lost) — AM Productivity Snapshot",
+              "basis": "Comtrak Close Ratio (13wk) per AM, carried through verbatim; company = "
+                       "Closed-Reqs-weighted mean (snapshot has no filled/decided counts)",
               "snapshot_date": snap_date,
-              "company": {"filled": rnd(cf), "decided": rnd(cdec),
-                          "ratio": round(cf / cdec, 4) if cdec else 0},
+              "company": {"closedReqs": rnd(cdec), "ratio": round(cw / cdec, 4) if cdec else 0},
               "by_am": by_am}
 
 # ---- meetings (13-wk) ----
@@ -278,6 +295,55 @@ for r in sb: r["weekly_avg"] = r1(r["count"] / sub_wks)
 sb.sort(key=lambda x: -x["weekly_avg"])
 subs = {"weekly_avg": r1(sum(x["weekly_avg"] for x in sb)), "by_recruiter": sb,
         "lookback_weeks": sub_wks}
+
+# ---- last COMPLETE week totals (Q3 goal-tracking tiles) ----
+# Taylor, 2026-09-23: the tiles read the last complete Mon-Sun week, never the week in progress
+# (which is always a partial and on a Monday would read 0), and never the current day (Contact
+# Activity backfills for 1-2 days after the fact). The window advances on its own each Monday.
+# Both queries are UNGROUPED single-row aggregates on purpose: the Notion connector splits and
+# mis-attributes GROUP BY buckets, and these tiles only need company totals.
+LAST_WK = WK_MON - timedelta(days=7)
+week_totals = None
+week_block_reason = None
+_wm, _ws = qopt("week_meetings"), qopt("week_subs")
+if _wm or _ws:
+    _wmr = (_wm or [{}])[0] if _wm else {}
+    _wsr = (_ws or [{}])[0] if _ws else {}
+    week_totals = {"week_start": LAST_WK.isoformat(),
+                   "week_end": (LAST_WK + timedelta(days=6)).isoformat(),
+                   "meetings": rnd(_wmr.get("c")) if _wm else None,
+                   "meeting_ams": rnd(_wmr.get("ams")) if _wm else None,
+                   "subs": rnd(_wsr.get("subs")) if _ws else None,
+                   "sub_recruiters": rnd(_wsr.get("recs")) if _ws else None}
+    # The query stamps the window it actually used; if it disagrees with the Monday this run
+    # computed, the fixture is from a previous week and the tiles would silently show stale
+    # totals under a fresh label. Fail loudly and do not publish a week we cannot vouch for.
+    for _k, _rows in (("week_meetings", _wm), ("week_subs", _ws)):
+        _w = (_rows or [{}])[0].get("wk") if _rows else None
+        if _w and _w != LAST_WK.isoformat():
+            warnings.append(f"{_k} fixture covers week {_w}, not {LAST_WK} \u2014 re-run that query; "
+                            f"week totals NOT published")
+            week_totals = None; week_block_reason = f"{_k} fixture is for week {_w}"
+    # Coverage check. A count is only "the week's total" if the feed actually reached the end of
+    # that week. Contact Activity backfills for 1-2 days and has stalled for days at a time, and a
+    # stalled feed returns a small number, not an error -- which would publish a materially short
+    # week under a clean "Week of <date>" label. Require the meetings feed to carry through the
+    # Friday and the subs feed to have published that week's row; otherwise carry forward.
+    _fri = (LAST_WK + timedelta(days=4)).isoformat()
+    _maxd = (_wm or [{}])[0].get("maxd") if _wm else None
+    _maxwk = (_ws or [{}])[0].get("maxwk") if _ws else None
+    if week_totals and _maxd and _maxd < _fri:
+        warnings.append(f"Contact Activity carries no rows past {_maxd} (needs {_fri}, the Friday "
+                        f"of week {LAST_WK}) \u2014 feed is behind; week totals NOT published")
+        week_totals = None; week_block_reason = f"meetings feed stops at {_maxd}"
+    if week_totals and _maxwk and _maxwk < LAST_WK.isoformat():
+        warnings.append(f"Recruiter Activity's latest week is {_maxwk}, not {LAST_WK} \u2014 feed is "
+                        f"behind; week totals NOT published")
+        week_totals = None; week_block_reason = f"subs feed's latest week is {_maxwk}"
+else:
+    warnings.append("week_meetings/week_subs missing \u2014 last-complete-week tiles CARRIED "
+                    "FORWARD from the previous file; re-run those two queries")
+    week_block_reason = "week queries did not run"
 
 # ---- hours utilization (Comtrak API table, per-consultant rows only) ----
 # The table mixes per-consultant rows with employment-type roll-ups; "Count"=1 isolates the
@@ -429,6 +495,13 @@ else:
     warnings.append("close_ratio_snapshot empty \u2014 company.weekly_spread CARRIED FORWARD "
                     "from the previous file; do not treat the tile as current")
 wd["fill_ratio"] = fill_ratio; wd["meetings"] = meetings; wd["subs"] = subs; wd["hours_util"] = hours_util; wd["raffle"] = rf
+if week_totals:
+    wd["week_totals"] = week_totals
+elif wd.get("week_totals"):
+    # Carried forward. Stamp it so the tile says so rather than presenting a week-old count as
+    # this week's - a carried-forward value is not a value anything checks.
+    wd["week_totals"]["carried_forward"] = True
+    wd["week_totals"]["carry_reason"] = week_block_reason or "week totals could not be verified"
 wd.setdefault("meta", {})["rebuilt_at"] = datetime.now(timezone.utc).isoformat()
 wd["meta"]["rebuild_source"] = "comtrak-notion-hybrid-sql"
 
@@ -442,7 +515,8 @@ def g(o, path):
 print("\nDiff (was -> now):")
 for f in ["scorecard.net_new_starts","scorecard.avg_start_spread","scorecard.pending_count","scorecard.pending_total_spread",
           "scorecard.dumpin_count","scorecard.dumpin_spread","scorecard.lockup_spread","scorecard.lockup_spread_goal",
-          "fill_ratio.company.filled","fill_ratio.company.openings","fill_ratio.company.ratio",
+          "fill_ratio.company.closedReqs","fill_ratio.company.ratio",
+          "week_totals.week_start","week_totals.meetings","week_totals.subs",
           "meetings.quarterly_pace","subs.weekly_avg","hours_util.current","hours_util.baseline","raffle.current_drawing_no"]:
     a, b = g(prev, f), g(wd, f)
     print(f"{'   ' if a==b else ' * '}{f}: {a} -> {b}")

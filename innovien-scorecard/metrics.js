@@ -147,8 +147,14 @@ export function buildScorecard(data, goals, asOfStr, weekly, roster) {
   if (weekly && weekly.fill_ratio) {
     const fr = weekly.fill_ratio;
     if (fr.company && fr.company.ratio != null) fillRatioV = round(fr.company.ratio, 3);
+    // Comtrak's Close Ratio (13wk) is carried through verbatim (4dp, not re-rounded to 3) —
+    // the snapshot has no filled/decided counts, so any "Filled"/"Decided" here would be
+    // invented. Closed Reqs (13wk) rides along as its own column and as the tile weight.
+    // (The legacy lib/rebuild.mjs path emits a real filled/washed/lost `decided` instead; it is
+    // an honest denominator, so it stands in as the weight and ratio x decided = filled exactly.)
     if (Array.isArray(fr.by_am)) amFillRatioV = fr.by_am.map(a => ({
-      name: a.name, ratio: round(a.ratio, 3), filled: a.filled, openings: a.openings,
+      name: a.name, ratio: a.ratio,
+      closedReqs: (a.closedReqs != null ? a.closedReqs : a.decided),
       goal: goalFor(goals.perAM, a.name, "fillRatioGoal"),
     }));
   }
@@ -227,6 +233,12 @@ export function buildScorecard(data, goals, asOfStr, weekly, roster) {
   const _wsc = (weekly && weekly.scorecard) || {};
   const ov = (v, cur) => (v === null || v === undefined) ? cur : v;
   const oWeeklySpread = ov(_wco.weekly_spread, weeklySpread);
+  // Company spread comes from the AM Productivity Snapshot's latest settled week; label it so the
+  // ~1.5-2 week lag behind the calendar reads as intentional rather than stale.
+  const _wsWeek = _wco.weekly_spread_week || null;
+  const _wsNote = _wsWeek
+    ? "Week of " + new Date(_wsWeek + "T00:00:00Z").toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" }) + " · latest closed week"
+    : null;
   const oNetNew       = ov(_wsc.net_new_starts, qtrStarts);
   const oAvgStart     = ov(_wsc.avg_start_spread, avgStartSpread);
   const oPendCount    = ov(_wsc.pending_count, pendingCount);
@@ -247,12 +259,35 @@ export function buildScorecard(data, goals, asOfStr, weekly, roster) {
     // Compute running cumulative + past/forecast flag so the chart renders identically.
     let _cum = 0;
     oForecast = _wsc.forecast.map(w => {
-      const pin = w.plannedIn || 0, pout = w.plannedOut || 0, net = pin - pout; _cum += net;
+      const pin = w.plannedIn || 0, pout = w.plannedOut || 0;
+      // unplannedOut is an ESTIMATE, kept separate from booked roll-off so the Out bar's
+      // booked segment stays exactly equal to its drill-through detail.
+      const unp = w.unplannedOut || 0, net = pin - pout - unp; _cum += net;
       const wd = d(w.weekStart);
       return { weekStart: w.weekStart, plannedIn: Math.round(pin), plannedOut: Math.round(pout),
-               inCount: (w.inCount ?? null),
+               unplannedOut: Math.round(unp), inCount: (w.inCount ?? null),
+               inDetail: w.inDetail || [], outDetail: w.outDetail || [],
                net: Math.round(net), cumNet: Math.round(_cum), isPast: wd ? wd < asOf : false };
     });
+  }
+  // Next-quarter In/Out (file-fed). Same shape as oForecast so the chart can swap straight in.
+  let oForecastNext = null;
+  if (_wsc.forecast_next && Array.isArray(_wsc.forecast_next.weeks) && _wsc.forecast_next.weeks.length) {
+    let _cn = 0;
+    oForecastNext = {
+      label: _wsc.forecast_next.label || "Next quarter",
+      quarterStart: _wsc.forecast_next.quarterStart || null,
+      quarterEnd: _wsc.forecast_next.quarterEnd || null,
+      weeks: _wsc.forecast_next.weeks.map(w => {
+        const pin = w.plannedIn || 0, pout = w.plannedOut || 0;
+        const unp = w.unplannedOut || 0, net = pin - pout - unp; _cn += net;
+        const wd = d(w.weekStart);
+        return { weekStart: w.weekStart, plannedIn: Math.round(pin), plannedOut: Math.round(pout),
+                 unplannedOut: Math.round(unp), inCount: (w.inCount ?? null),
+                 inDetail: w.inDetail || [], outDetail: w.outDetail || [],
+                 net: Math.round(net), cumNet: Math.round(_cn), isPast: wd ? wd < asOf : false };
+      }),
+    };
   }
   const pct = (a, go) => go ? round((a / go) * 100) : null;
   const onp = (a, go) => go ? a >= go : null;
@@ -318,12 +353,18 @@ export function buildScorecard(data, goals, asOfStr, weekly, roster) {
     if (recruiterSubFinal.length !== rec0) weeklySubAvgV = round(recruiterSubFinal.reduce((s, r) => s + (r.weeklyAvg || 0), 0), 1);
   }
 
-  // Fill Ratio tile now reflects the trailing-13-week aggregate of the shown active AMs
-  // (matches the AM Fill Ratio (13 Wk) table window) instead of company QTD.
+  // Close Ratio tile = trailing-13-week aggregate over the AMs actually shown on the tab, as a
+  // Closed-Reqs-weighted mean of their source ratios, so tile = aggregate of detail still holds
+  // after the roster filter. The snapshot publishes no filled/decided counts to pool.
   {
-    const _ff = amFillFinal.reduce((s, r) => s + (r.filled || 0), 0);
-    const _fo = amFillFinal.reduce((s, r) => s + (r.openings || 0), 0);
-    if (_fo > 0) fillRatioV = round(_ff / _fo, 3);
+    // Only rows sourced from weekly_data.json fill_ratio carry `closedReqs`; live Open-Reqs
+    // fallback rows do not, and for those the filled/openings ratio computed above stands.
+    const _rows = amFillFinal.filter(r => r.closedReqs != null && r.ratio != null);
+    if (_rows.length) {
+      const _fw = _rows.reduce((s, r) => s + r.ratio * r.closedReqs, 0);
+      const _fd = _rows.reduce((s, r) => s + r.closedReqs, 0);
+      if (_fd > 0) fillRatioV = round(_fw / _fd, 3);
+    }
   }
 
   // Hours Utilization (Q3-to-date vs YTD-2026 baseline) — from weekly.hours_util.
@@ -362,6 +403,33 @@ export function buildScorecard(data, goals, asOfStr, weekly, roster) {
     Math.round(subWeeklyRate * weeksElapsed), Math.round(perRecSubRate * numRecs * weeksElapsed),
     `${perRecSubRate}/recruiter/wk · ${numRecs} recruiters · wk ${weeksElapsed} of ${weeksInQuarter}`);
 
+  // ---------- LAST COMPLETE WEEK totals (Q3 goal-tracking tiles) ----------
+  // Company-wide counts for the most recent finished Mon–Sun week, straight from
+  // weekly_data.week_totals. Never the week in progress: that is always partial, reads 0 on a
+  // Monday, and Contact Activity backfills for 1–2 days after the fact. The goals reuse the same
+  // per-person rates as the QTD pace tiles so the two read on one basis.
+  let weekTotals = null;
+  if (weekly && weekly.week_totals && weekly.week_totals.week_start) {
+    const wt = weekly.week_totals;
+    const wkLabel = new Date(wt.week_start + "T00:00:00Z")
+      .toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
+    const wkKpi = (actual, goal, note) => (actual == null ? null : {
+      actual, goal: goal || null, pct: goal ? round((actual / goal) * 100) : null,
+      onPace: goal ? actual >= goal : null, fmt: "int", note,
+    });
+    // A carried-forward block failed its freshness check in the builder; say so on the tile
+    // instead of presenting a week-old count as the current one.
+    const wkNote = wt.carried_forward
+      ? `Week of ${wkLabel} · not refreshed (${wt.carry_reason || "feed behind"})`
+      : `Week of ${wkLabel} · last complete week`;
+    weekTotals = {
+      weekStart: wt.week_start, weekEnd: wt.week_end, weekLabel: wkLabel,
+      carriedForward: !!wt.carried_forward,
+      meetings: wkKpi(wt.meetings, Math.round(perAMmtgRate * numAMs), wkNote),
+      subs: wkKpi(wt.subs, Math.round(perRecSubRate * numRecs), wkNote),
+    };
+  }
+
   return {
     meta: {
       asOf: asOfStr, quarterLabel: goals.quarterLabel,
@@ -369,7 +437,7 @@ export function buildScorecard(data, goals, asOfStr, weekly, roster) {
       lookbackWeeks: lookback, weeksElapsed, weeksInQuarter,
     },
     scorecard: {
-      weeklySpread: kpi(oWeeklySpread, g.weeklySpreadGoal, "usd"),
+      weeklySpread: Object.assign(kpi(oWeeklySpread, g.weeklySpreadGoal, "usd"), _wsNote ? { note: _wsNote } : {}),
       netNewStarts: kpi(oNetNew, g.qtrStartsGoal, "int"),
       avgStartSpread: kpi(oAvgStart, g.avgStartGoal, "usd"),
       pendingStarts: { count: oPendCount, avgSpread: oPendAvg, totalSpread: oPendTot,
@@ -387,11 +455,15 @@ export function buildScorecard(data, goals, asOfStr, weekly, roster) {
       redeployed: kpi(oRedeployed, g.redeployedGoal, "int"),
       availableBench: oBench,
       forecast: oForecast,
+      forecastNext: oForecastNext,
     },
     goalTracking: {
+      weekTotals,
       weeklySubAvg: subPaceKpi,
       qtrlyMeetingPace: meetingPaceKpi,
-      fillRatio: kpi(fillRatioV, g.fillRatioGoal, "pct"),
+      fillRatio: Object.assign(kpi(fillRatioV, g.fillRatioGoal, "pct"),
+        (weekly && weekly.fill_ratio && weekly.fill_ratio.snapshot_date)
+          ? { note: "Comtrak 13-wk close ratio · weighted by closed reqs" } : {}),
       amMeetingAvg: amMeetingFinal.sort((a, b) => b.weeklyAvg - a.weeklyAvg),
       recruiterSubAvg: recruiterSubFinal.sort((a, b) => b.weeklyAvg - a.weeklyAvg),
       amFillRatio: amFillFinal.sort((a, b) => b.ratio - a.ratio),
