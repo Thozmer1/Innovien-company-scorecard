@@ -1,14 +1,14 @@
 {
   "_comment": "FALLBACK goals only. The live dashboard reads targets from the Notion 'Company Goals' database (Metric Key -> Value) for the current Period; these values are used only if that row is missing or the Goals DB is unreachable. Quarter dates live here because the Goals DB stores values, not the calendar.",
   "_dates_comment": "EDIT THESE EACH QUARTER. baselineWeekStart = the Monday of the week we measure quarterly spread growth FROM (usually the week BEFORE the quarter). quarterStart/quarterEnd = the actual quarter window (Mon..Sun) used to count starts, pending, dump-in, meetings. The In/Out growth chart runs from baselineWeekStart through quarterEnd.",
-  "quarterLabel": "Q3 2026",
-  "baselineWeekStart": "2026-06-22",
-  "quarterStart": "2026-06-29",
-  "quarterEnd": "2026-09-27",
+  "quarterLabel": "Q4 2026",
+  "baselineWeekStart": "2026-09-21",
+  "quarterStart": "2026-09-28",
+  "quarterEnd": "2026-12-27",
   "lookbackWeeks": 13,
   "company": {
     "weeklySpreadGoal": 364000,
-    "qtrStartsGoal": 154,
+    "qtrStartsGoal": 103,
     "avgStartGoal": 1000,
     "pendingAvgGoal": 1300,
     "weeklyLockupCountGoal": 10,
@@ -22,7 +22,7 @@
     "hoursUtilGoal": 37.5,
     "quarterGrowthTarget": 30000,
     "unplannedAttritionRate": 0.008,
-    "unplannedAttritionBase": 296195
+    "unplannedAttritionBase": 294156
   },
   "perAM": {
     "_default": {
@@ -44,9 +44,9 @@
   "lockupRollForwardWeeks": 2,
   "lockupRampWeeks": 2.5,
   "dumpinCarryInExclusion": {
-    "spread": 21519,
-    "count": 19,
-    "_comment": "Q3-planning carry-ins created 2026-06-29..2026-07-15, before the quarterly kickoff. Already locked up in Q2, so they are not part of this quarter's net-new go-get. REPLACE with a Notion tag on those records and filter in rebuild_queries.json; reset to 0 each quarter."
+    "spread": 0,
+    "count": 0,
+    "_comment": "RESET for Q4 2026 (was 21519 / 19 for Q3). Holds forms created in the opening days of the quarter, before the quarterly kickoff, that were already locked up last quarter — they are not part of this quarter's net-new go-get. Fill it in once the Q4 kickoff date is set and the pre-kickoff forms are known. REPLACE with a Notion tag on those records and filter in rebuild_queries.json."
   },
   "confirmedRenewals": [
     "Ifedayo Thomas",
@@ -95,6 +95,6 @@
     "CHRISTINA GALLAGHER",
     "Darnell Suggs"
   ],
-  "_renewals_comment": "Contractors the team confirmed will renew in Q4. Held out of the next-quarter Out bars AND the rolling lock-up goal. Matching ignores the trailing ' / id' and quotes. Best fix is updating Actual End Date in Notion; clear names from here once that is done.",
-  "_unplanned_comment": "Estimated early terminations not yet recorded in Notion. Applied to the current week forward only (past weeks already carry their actuals). 2026 actuals by quarter: Q1 1.09%/wk, Q2 0.66%, Q3 1.00% - blended 0.91%. Base = active contract Est Spread; refresh it each quarter. Set rate to 0 to turn the amber segment off entirely."
+  "_renewals_comment": "Contractors the team confirmed will renew in Q4 — now the CURRENT quarter, so they are stripped from this quarter's Out bars (the filter runs on both quarters). Held out of the Out bars AND the rolling lock-up goal. Matching ignores the trailing ' / id' and quotes. Best fix is updating Actual End Date in Notion; clear names from here once that is done.",
+  "_unplanned_comment": "Estimated early terminations not yet recorded in Notion. Applied to the current week forward only (past weeks already carry their actuals). 2026 actuals by quarter: Q1 1.09%/wk, Q2 0.66%, Q3 1.00% - blended 0.91%. Base = active contract Est Spread; refresh it each quarter (2026-09-28: 270 active rows, $294,156). Set rate to 0 to turn the amber segment off entirely."
 }
