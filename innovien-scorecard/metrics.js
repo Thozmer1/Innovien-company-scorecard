@@ -299,7 +299,7 @@ export function buildScorecard(data, goals, asOfStr, weekly, roster) {
   const pct = (a, go) => go ? round((a / go) * 100) : null;
   const onp = (a, go) => go ? a >= go : null;
 
-  // ---------- Q2 tab: restrict to ACTIVE AMs / Recruiters (Notion People DB) ----------
+  // ---------- Goal-tracking tab: restrict to ACTIVE AMs / Recruiters (Notion People DB) ----------
   // Show only people currently tagged Active AND in an AM/Recruiter role. Recompute the
   // Meeting-Pace and Weekly-Sub tiles from the filtered detail so tile = sum(detail) holds.
   // Fail-open: missing roster set, or a filter that would blank a populated table (name
@@ -340,14 +340,22 @@ export function buildScorecard(data, goals, asOfStr, weekly, roster) {
     }
   }
 
-  // Hard exclude: never show on the Q2 tab regardless of People-DB Active flag.
-  // For people who have role-transitioned but are still tagged active in Notion.
-  // Applies even when the live roster filter is skipped (fail-open), and recomputes
-  // the Meeting-Pace / Weekly-Sub tiles so tile = sum(detail) still holds.
-  // Leaders over the AM / intern-TA teams (not individual-target carriers) + role-transitioned.
-  const Q2_EXCLUDE = new Set(["johnna fusco", "josh mastel", "shannon johnson"]);
-  if (Q2_EXCLUDE.size) {
-    const drop = r => Q2_EXCLUDE.has(_norm(r.name));
+  // Hard exclude: never show on the goal-tracking tab regardless of the People-DB Active flag.
+  // For leadership seats that carry a team, not an individual target, and for people who have
+  // role-transitioned but are still tagged active in Notion. Applies even when the live roster
+  // filter is skipped (fail-open), and recomputes the Meeting-Pace / Weekly-Sub tiles so
+  // tile = sum(detail) still holds.
+  //
+  // Why this list and not the People DB Role: these people ARE Account Managers in Comtrak and
+  // in the People DB, and mislabelling their Role to force them out would corrupt the personnel
+  // record that HR and the 1-1 briefs read. Keep Role truthful; exclude from the TILE here.
+  // Added 2026-09-30 (Taylor, "exclude them for now"): Nick Raynor and Andy Czuchry (Comtrak
+  // usertype "Office Manager") and Trevor Lowe ("Selling Sales Manager"). Revisit Trevor if a
+  // selling manager should carry a reduced meeting goal.
+  const LEADER_EXCLUDE = new Set(["johnna fusco", "josh mastel", "shannon johnson",
+                                  "nick raynor", "andy czuchry", "trevor lowe"]);
+  if (LEADER_EXCLUDE.size) {
+    const drop = r => LEADER_EXCLUDE.has(_norm(r.name));
     const exAM = [...new Set([...amMeetingFinal, ...amFillFinal].filter(drop).map(r => r.name))];
     const exRec = recruiterSubFinal.filter(drop).map(r => r.name);
     if (exAM.length) rosterInfo.excludedAMs = [...new Set([...rosterInfo.excludedAMs, ...exAM])];
@@ -410,7 +418,7 @@ export function buildScorecard(data, goals, asOfStr, weekly, roster) {
     Math.round(subWeeklyRate * weeksElapsed), Math.round(perRecSubRate * numRecs * weeksElapsed),
     `${perRecSubRate}/recruiter/wk · ${numRecs} recruiters · wk ${weeksElapsed} of ${weeksInQuarter}`);
 
-  // ---------- LAST COMPLETE WEEK totals (Q3 goal-tracking tiles) ----------
+  // ---------- LAST COMPLETE WEEK totals (goal-tracking tiles) ----------
   // Company-wide counts for the most recent finished Mon–Sun week, straight from
   // weekly_data.week_totals. Never the week in progress: that is always partial, reads 0 on a
   // Monday, and Contact Activity backfills for 1–2 days after the fact. The goals reuse the same
