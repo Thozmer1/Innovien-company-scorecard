@@ -462,8 +462,18 @@ export function buildScorecard(data, goals, asOfStr, weekly, roster) {
         countPct: pct(oLockCount, oLockCountGoal), countOnPace: onp(oLockCount, oLockCountGoal),
         spreadPct: pct(oLockSpread, oLockSpreadGoal), spreadOnPace: onp(oLockSpread, oLockSpreadGoal),
         weekStart: wkStart.toISOString().slice(0,10), targetNote: _wsc.lockup_target_note ?? null,
+        // potentialSpread is the RATE-CARD sum the API computes per req from Bill/Pay rates.
+        // The openings x avg-start fallback only fires for an older API payload that predates
+        // the 2026-10-05 change and carries no `spread` field - never prefer it, it drifts with
+        // quarter-to-date starts rather than with the board. A genuine 0 stays 0.
         hitList: (data.hitList ? { reqs: data.hitList.reqs, openings: data.hitList.openings,
-          potentialSpread: Math.round((data.hitList.openings || 0) * oAvgStart) } : null) },
+          reqsWithSeats: data.hitList.reqsWithSeats ?? null,
+          totalOpenings: data.hitList.totalOpenings ?? null,
+          ratedOpenings: data.hitList.ratedOpenings ?? null,
+          basis: data.hitList.basis ?? "legacy: openings x avg start spread",
+          potentialSpread: (data.hitList.spread != null
+            ? data.hitList.spread
+            : Math.round((data.hitList.openings || 0) * oAvgStart)) } : null) },
       dumpIn: { count: oDumpCount, spread: oDumpSpread, spreadGoal: g.dumpinSpreadGoal,
         spreadPct: pct(oDumpSpread, g.dumpinSpreadGoal), spreadOnPace: onp(oDumpSpread, g.dumpinSpreadGoal) },
       activeConsultants: oActive,
