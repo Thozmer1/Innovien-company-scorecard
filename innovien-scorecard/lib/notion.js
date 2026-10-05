@@ -18,10 +18,16 @@ export const DB = {
   esfPipeline:     process.env.DB_ESF_PIPELINE     || "6981fee2-c458-4e09-99ed-a29fe9e4633d",
   psfPipeline:     process.env.DB_PSF_PIPELINE     || "08344154-4a4e-47a4-b7ae-f0e322caf834",
   companyGoals:    process.env.DB_COMPANY_GOALS    || "68691cd3-0222-4760-b2ed-8bd07ce528ae",
-  // People roster (Comtrak-fed). Used to keep the Q2 tab to ACTIVE AMs/Recruiters only.
+  // People roster. Used to keep the goal-tracking tab to ACTIVE AMs/Recruiters only. Role is the
+  // field that decides (api/scorecard.js AM_ROLES / REC_ROLES); some Roles are deliberate
+  // overrides of Comtrak Employee Title - see the People DB notes before "correcting" one.
   people:          process.env.DB_PEOPLE          || "3600fa85-b8df-80d9-be56-d5f97893a7ab",
   // Comtrak Raw - Req Details (live). Used for the Hit List count + potential spread on the Lock-Up tile.
-  reqDetails:      process.env.DB_REQ_DETAILS      || "1ff4d93e-1b69-4b9f-8ef0-362f0d03e325",
+  // Comtrack Raw - Req Details (API) - the LIVE table (Comtrak API -> Notion, daily 7:00 AM weekdays).
+  // Repointed 2026-10-05. The prior table 1ff4d93e ("(Retire) Comtrack Raw - Req Details", data source
+  // 3e653966) is FROZEN: its Hit List held 5 stale reqs with ZERO overlap against the live board.
+  // Do not point anything back at it.
+  reqDetails:      process.env.DB_REQ_DETAILS      || "7c754e92-cc94-4319-b26d-375551b9e6e4",
 };
 
 // Query every page in a database (handles pagination + an optional filter).
