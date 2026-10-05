@@ -8,7 +8,7 @@
     "baseline_week_start": "2026-03-23",
     "quarter_start": "2026-03-30",
     "quarter_end": "2026-06-28",
-    "rebuilt_at": "2026-10-05T12:31:16.451545+00:00",
+    "rebuilt_at": "2026-10-05T20:51:25.978696+00:00",
     "rebuild_source": "comtrak-notion-hybrid-sql",
     "partial_note": "2026-09-11: queries repointed to the columns the Comtrak API populates on every row \u2014 ESF/PSF 'Est Weekly Spread' (was 'Est Spread'/'Weekly Spread'), 'AM' (was 'Account Manager'), Contact Activity 'Owner' (was 'AM'), Recruiter Activity COALESCE(Employee, Record Id). Starts/pending/dump-in/lock-up/forecast/raffle rebuilt on the corrected columns. Close ratio, meetings, subs and hours still carried forward from 2026-09-10: their source tables lag (Close Ratio ends 8/26, Recruiter Activity 8/31, Hours 8/24)."
   },
@@ -306,11 +306,11 @@
     }
   ],
   "scorecard": {
-    "net_new_starts": 5,
-    "avg_start_spread": 1942,
-    "pending_count": 26,
-    "pending_avg_spread": 1212,
-    "pending_total_spread": 31501,
+    "net_new_starts": 8,
+    "avg_start_spread": 1557,
+    "pending_count": 23,
+    "pending_avg_spread": 1250,
+    "pending_total_spread": 28756,
     "lockup_count": null,
     "lockup_spread": 0,
     "dumpin_count": 10,
@@ -449,32 +449,32 @@
       },
       {
         "weekStart": "2026-10-05",
-        "plannedIn": 8171,
-        "inCount": 8,
+        "plannedIn": 6779,
+        "inCount": 7,
         "plannedOut": 4185,
         "inDetail": [
-          {
-            "n": "Eduardo Cesario",
-            "c": "ABM",
-            "a": "Brie Branting",
-            "r": "Ben Dorsey",
-            "s": 1392,
-            "x": "Pending Payroll"
-          },
-          {
-            "n": "Patrick KaiKai",
-            "c": "ABM",
-            "a": "Brie Branting",
-            "r": "Jamie Houvig",
-            "s": 1050,
-            "x": "Pending Payroll"
-          },
           {
             "n": "James Runnels",
             "c": "ABM",
             "a": "Brie Branting",
             "r": "Brandon Dowdell",
             "s": 812,
+            "x": "Complete"
+          },
+          {
+            "n": "Vijesh Reddy Singareddy",
+            "c": "Aflac",
+            "a": "Jon Pack",
+            "r": "Monika DuVarney",
+            "s": 960,
+            "x": "Complete"
+          },
+          {
+            "n": "Kimberly Troxer Black",
+            "c": "Harmoni Towers",
+            "a": "Jon Pack",
+            "r": "Mike Murphy",
+            "s": 604,
             "x": "Pending Payroll"
           },
           {
@@ -494,19 +494,11 @@
             "x": "Pending Payroll"
           },
           {
-            "n": "Vijesh Reddy Singareddy",
-            "c": "Aflac",
-            "a": "Jon Pack",
-            "r": "Monika DuVarney",
-            "s": 960,
-            "x": "Pending Payroll"
-          },
-          {
-            "n": "Kimberly Troxer Black",
-            "c": "Harmoni Towers",
-            "a": "Jon Pack",
-            "r": "Mike Murphy",
-            "s": 604,
+            "n": "Patrick KaiKai",
+            "c": "ABM",
+            "a": "Brie Branting",
+            "r": "Jamie Houvig",
+            "s": 1050,
             "x": "Pending Payroll"
           },
           {
@@ -515,7 +507,7 @@
             "a": "Stephen Denzel",
             "r": "Jamie Houvig",
             "s": 973,
-            "x": "Pending Office Manager"
+            "x": "Complete"
           }
         ],
         "outDetail": [
@@ -552,10 +544,18 @@
       },
       {
         "weekStart": "2026-10-12",
-        "plannedIn": 11940,
-        "inCount": 10,
+        "plannedIn": 13332,
+        "inCount": 11,
         "plannedOut": 1628,
         "inDetail": [
+          {
+            "n": "Eduardo Cesario",
+            "c": "ABM",
+            "a": "Brie Branting",
+            "r": "Ben Dorsey",
+            "s": 1392,
+            "x": "Pending Payroll"
+          },
           {
             "n": "Cristion Oliphant",
             "c": "Lockheed Martin",
@@ -2162,7 +2162,8 @@
           "unplannedOut": 2353
         }
       ]
-    }
+    },
+    "lockup_detail": []
   },
   "raffle": {
     "threshold": 1250,

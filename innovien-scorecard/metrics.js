@@ -462,6 +462,10 @@ export function buildScorecard(data, goals, asOfStr, weekly, roster) {
         countPct: pct(oLockCount, oLockCountGoal), countOnPace: onp(oLockCount, oLockCountGoal),
         spreadPct: pct(oLockSpread, oLockSpreadGoal), spreadOnPace: onp(oLockSpread, oLockSpreadGoal),
         weekStart: wkStart.toISOString().slice(0,10), targetNote: _wsc.lockup_target_note ?? null,
+        // Rows behind the weekly number: every ESF/PSF created this Mon-Sun, with its onboard
+        // stage. Null (not []) when the builder did not emit it, so the UI can tell "no forms
+        // yet this week" from "this build predates the drill-through".
+        detail: _wsc.lockup_detail ?? null,
         // potentialSpread is the RATE-CARD sum the API computes per req from Bill/Pay rates.
         // The openings x avg-start fallback only fires for an older API payload that predates
         // the 2026-10-05 change and carries no `spread` field - never prefer it, it drifts with

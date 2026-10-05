@@ -67,6 +67,9 @@
   #modal td{padding:6px;border-bottom:1px solid #f0f2f0}
   #modal td.num{text-align:right;font-variant-numeric:tabular-nums}
   #modal tr:hover td{background:#f7faf4}
+  .drill{cursor:pointer;border-bottom:1px dashed var(--green)}
+  .drill:hover{color:var(--green)}
+  .drill:focus-visible{outline:2px solid var(--green);outline-offset:2px}
   #modal .tag{display:inline-block;font-size:10px;padding:1px 6px;border-radius:3px;background:#fdf0d5;color:#8a6d1f}
   canvas#forecastChart{cursor:pointer}
   table{width:100%;border-collapse:collapse;font-size:13.5px;background:#fff;border:1px solid var(--lgray);border-radius:8px;overflow:hidden}
@@ -210,8 +213,12 @@ function render(d){
     kpiCard('Net New Starts · Qtr',sc.netNewStarts)+
     kpiCard('Avg Weekly Spread / New Start',sc.avgStartSpread)+
     multiCard('Pending Start Avg Spread',fmtUsd(p.avgSpread)+wk,pendingSub)+
-    multiCard('Weekly Lock-Up',fmtUsd(lu.spread)+wk,lockSub)+
+    multiCard('Weekly Lock-Up',(lu.detail?`<span class="drill" id="lu-drill" role="button" tabindex="0" title="See the offers behind this number">${fmtUsd(lu.spread)}</span>`:fmtUsd(lu.spread))+wk,lockSub)+
     multiCard('Total Dump-In Spread',fmtUsd(di.spread),dumpSub);
+  // bind after innerHTML: the span above is recreated on every render
+  const _lud=document.getElementById('lu-drill');
+  if(_lud){ _lud.onclick=()=>openLockup(lu);
+            _lud.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openLockup(lu);}}; }
 
   const gt=d.goalTracking;
   document.getElementById('kpi-mtg').innerHTML = kpiCard('Meeting Pace · QTD',gt.qtrlyMeetingPace);
@@ -354,6 +361,37 @@ function openDetail(weeks,di,i){
       html+='<tr><td>'+esc(r.n)+'</td><td>'+esc(r.c)+'</td><td>'+esc(r.a)+'</td>'
         +(isIn?'<td>'+esc(r.r)+'</td>':'')
         +'<td class="num">'+fcUsd(+r.s||0)+'</td><td>'+(isIn?esc(r.x||''):flag)+'</td></tr>';
+    });
+    html+='</tbody></table>';
+  }
+  document.getElementById('m-body').innerHTML=html;
+  document.getElementById('modal').classList.add('open');
+}
+function openLockup(lu){
+  const rows=(lu && lu.detail)||[];
+  const total=rows.reduce((t,r)=>t+(+r.s||0),0);
+  const d=lu.weekStart?new Date(lu.weekStart+'T00:00:00'):null;
+  const wkTxt=d?((d.getMonth()+1)+'/'+d.getDate()):'this week';
+  document.getElementById('m-title').textContent='Weekly lock-up — week of '+wkTxt;
+  // DONE = the form has cleared onboarding and posted. Everything else is an offer that is
+  // signed but still moving through onboarding - already counted in the tile, not yet a start.
+  const done=r=>String(r.ob||'').toLowerCase()==='clear to start'
+                && String(r.x||'').toLowerCase().indexOf('complete')>-1;
+  const pend=rows.filter(r=>!done(r)).length;
+  document.getElementById('m-sub').textContent = rows.length
+    ? rows.length+(rows.length===1?' offer':' offers')+' · '+fcUsd(total)+' weekly spread'
+      +(pend?' · '+pend+' still onboarding':'')
+    : 'No offers locked up yet this week — ESFs appear here as they are created.';
+  let html='';
+  if(rows.length){
+    html='<table><thead><tr><th>Candidate</th><th>Company</th><th>Role</th><th>AM</th>'
+      +'<th>Recruiter</th><th class="num">Weekly $</th><th>Stage</th></tr></thead><tbody>';
+    rows.forEach(r=>{
+      const perm = String(r.t||'')==='Perm' ? ' <span class="tag">perm</span>' : '';
+      const stage = done(r) ? esc(r.ob||'') : '<span class="tag">'+esc(r.ob||r.x||'pending')+'</span>';
+      html+='<tr><td>'+esc(r.n)+perm+'</td><td>'+esc(r.c)+'</td><td>'+esc(r.j)+'</td>'
+        +'<td>'+esc(r.a)+'</td><td>'+esc(r.r)+'</td>'
+        +'<td class="num">'+fcUsd(+r.s||0)+'</td><td>'+stage+'</td></tr>';
     });
     html+='</tbody></table>';
   }

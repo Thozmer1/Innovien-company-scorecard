@@ -30,11 +30,28 @@ goals = load(os.path.join(ROOT, "goals.json"))
 prev  = load(os.path.join(ROOT, "weekly_data.json"))
 
 TODAY = datetime.now(timezone.utc).date()
-QS = date.fromisoformat(goals.get("quarterStart", "2026-06-29"))
-QE = date.fromisoformat(goals.get("quarterEnd", "2026-09-27"))
+# No fallback quarter: a missing quarterStart/quarterEnd used to default to Q3 2026, which would
+# silently build the wrong quarter. Fail loudly instead (Taylor, 2026-09-30 pre-publish audit).
+if not goals.get("quarterStart") or not goals.get("quarterEnd"):
+    raise SystemExit("goals.json is missing quarterStart/quarterEnd - refusing to guess the quarter.")
+QS = date.fromisoformat(goals["quarterStart"])
+QE = date.fromisoformat(goals["quarterEnd"])
 warnings = []
-if QS != date(2026, 6, 29) or QE != date(2026, 9, 27):
-    warnings.append(f"goals quarter ({QS}..{QE}) != the dates hardcoded in rebuild_queries.json (2026-06-29..2026-09-27) — regenerate the queries for the new quarter.")
+# Tripwire: the quarter window lives in goals.json but is BAKED into the SQL in
+# rebuild_queries.json, and a roll that updates one and not the other builds a quarter's
+# tiles from the previous quarter's rows. Read the dates back out of esf_starts rather than
+# hardcoding them here, so this check keeps working every quarter without an edit
+# (Taylor, 2026-09-28 — the hardcoded version fired a false alarm on the Q3->Q4 roll).
+try:
+    import re as _re
+    _qsql = next(x["sql"] for x in load(os.path.join(ROOT, "scripts", "rebuild_queries.json"))
+                 if x.get("key") == "esf_starts")
+    _lits = sorted(set(_re.findall(r"\d{4}-\d{2}-\d{2}", _qsql)))
+    if _lits and (_lits[0] != QS.isoformat() or _lits[-1] != QE.isoformat()):
+        warnings.append(f"goals quarter ({QS}..{QE}) != the window baked into rebuild_queries.json "
+                        f"({_lits[0]}..{_lits[-1]}) \u2014 regenerate the queries for the new quarter.")
+except Exception as _e:
+    warnings.append(f"could not verify rebuild_queries.json's quarter window: {_e}")
 WK_MON = TODAY - timedelta(days=TODAY.weekday())          # Monday of this week
 weeks_left = ((QE - WK_MON).days + 1) / 7.0
 denom = max(1.0, weeks_left - 2.5)
@@ -160,6 +177,46 @@ _in_raw  = (qopt("in_detail_esf_a") or []) + (qopt("in_detail_esf_b") or []) + (
 # keeps only the weeks that fall inside each.
 _perm_out = qopt("perm_rolloff") or []
 _out_raw = (qopt("out_detail_a") or []) + (qopt("out_detail_b") or []) + _perm_out
+
+# --- Confirmed renewals (Taylor, 2026-09-15; widened to the current quarter 2026-09-28) ---
+# Placements the team has confirmed will renew are NOT attrition. Their Notion end date
+# still says they roll off, so strip them from the Out side. Until the Q3->Q4 roll these
+# names only ever landed in the NEXT quarter, so the filter ran on _nout_raw alone; once
+# Q4 became the current quarter the same names moved into THIS quarter's Out bars and the
+# chart went gross of renewals overnight. The filter now runs on both windows, and the
+# current-quarter bar is reduced by exactly what is removed from its drill-through so the
+# two keep agreeing. Best fix is still updating Actual End Date in Notion; clear names
+# from goals.json once that is done.
+def _rnkey(s):
+    import re as _r
+    s = _r.sub(r"\s*/\s*[0-9]+\s*$", "", str(s or ""))     # drop the trailing " / id"
+    s = s.replace('"', ' ').replace("'", " ")
+    return " ".join(s.split()).lower()
+_renew = {_rnkey(x) for x in (goals.get("confirmedRenewals") or [])}
+_renew_hits = set()
+
+def _strip_renewals(rows):
+    """Split rows into (kept, dropped-because-confirmed-renewal)."""
+    if not _renew: return rows, []
+    _keep, _drop = [], []
+    for _r0 in rows:
+        (_drop if _rnkey(_r0.get("n")) in _renew else _keep).append(_r0)
+    _renew_hits.update(_rnkey(x.get("n")) for x in _drop)
+    return _keep, _drop
+
+_out_raw, _cur_drop = _strip_renewals(_out_raw)
+if _cur_drop:
+    # keep the bar equal to its drill-through: take the same money out of both
+    for _r0 in _cur_drop:
+        _d0 = _r0.get("dt")
+        if not _d0: continue
+        _w0 = (date.fromisoformat(_d0) - QS).days // 7
+        if 0 <= _w0 < len(forecast):
+            forecast[_w0]["plannedOut"] = max(0, rnd(forecast[_w0]["plannedOut"]) - rnd(_r0.get("s")))
+    warnings.append(f"this-qtr roll-off excludes {len(_cur_drop)} confirmed renewal(s) "
+                    f"worth ${rnd(sum(abs(n(x.get('s'))) for x in _cur_drop)):,} "
+                    f"(held out of the Out bars and the lock-up goal)")
+
 have_detail = bool(_in_raw or _out_raw)
 if have_detail:
     _ind, _outd = wkbucket(_in_raw, QS, IN_F), wkbucket(_out_raw, QS, OUT_F)
@@ -176,31 +233,18 @@ NQS = QE + timedelta(days=1)                       # next quarter starts the day
 _nin_raw  = (qopt("next_in_detail_esf") or []) + (qopt("next_in_detail_psf") or [])
 _nout_raw = (qopt("next_out_detail_a") or []) + (qopt("next_out_detail_b") or []) + _perm_out
 
-# --- Confirmed renewals (Taylor, 2026-09-15) ----------------------------------
-# Placements the team has confirmed will renew are NOT attrition. Their Notion end
-# date still says they roll off, so strip them here — this keeps them out of BOTH
-# the next-quarter Out bars and the rolling lock-up goal. Best fix is updating
-# Actual End Date in Notion; clear names from goals.json once that is done.
-def _rnkey(s):
-    import re as _r
-    s = _r.sub(r"\s*/\s*[0-9]+\s*$", "", str(s or ""))     # drop the trailing " / id"
-    s = s.replace('"', ' ').replace("'", " ")
-    return " ".join(s.split()).lower()
-_renew = {_rnkey(x) for x in (goals.get("confirmedRenewals") or [])}
+# Confirmed renewals, next-quarter window (the helper and the comment are defined above,
+# where the current quarter's Out side is filtered).
+_nout_raw, _nxt_drop = _strip_renewals(_nout_raw)
+if _nxt_drop:
+    warnings.append(f"next-qtr roll-off excludes {len(_nxt_drop)} confirmed renewal(s) "
+                    f"worth ${rnd(sum(abs(n(x.get('s'))) for x in _nxt_drop)):,} "
+                    f"(held out of the Out bars and the lock-up goal)")
 if _renew:
-    _keep, _drop = [], []
-    for _r0 in _nout_raw:
-        (_drop if _rnkey(_r0.get("n")) in _renew else _keep).append(_r0)
-    if _drop:
-        _nout_raw = _keep
-        warnings.append(f"next-qtr roll-off excludes {len(_drop)} confirmed renewal(s) "
-                        f"worth ${rnd(sum(abs(n(x.get('s'))) for x in _drop)):,} "
-                        f"(held out of the Out bars and the lock-up goal)")
-    _hitkeys = {_rnkey(x.get("n")) for x in _drop}
-    _un = sorted(x for x in (goals.get("confirmedRenewals") or []) if _rnkey(x) not in _hitkeys)
+    _un = sorted(x for x in (goals.get("confirmedRenewals") or []) if _rnkey(x) not in _renew_hits)
     if _un:
-        warnings.append("confirmedRenewals with no next-qtr roll-off (alias spelling, already "
-                        "re-dated in Notion, or a typo): " + ", ".join(_un))
+        warnings.append("confirmedRenewals with no roll-off in either quarter (alias spelling, "
+                        "already re-dated in Notion, or a typo): " + ", ".join(_un))
 forecast_next = None
 if _nin_raw or _nout_raw:
     _nin, _nout = wkbucket(_nin_raw, NQS, IN_F), wkbucket(_nout_raw, NQS, OUT_F)
@@ -245,13 +289,46 @@ for r in snap_rows:
     by_am.append({"name": am, "ratio": round(float(ratio), 4), "closedReqs": closed,
                   "_rw": float(ratio) * closed,
                   "spread": rnd(r.get("spread")), "delta": rnd(r.get("delta"))})
-# ---- latest-closed-week company spread (AM Productivity Snapshot) ----
+# ---- latest-closed-week company spread (Comtrak Raw - Spread (API)) ----
+# Taylor, 2026-09-24: re-pointed from the AM Productivity Snapshot to the raw Spread mirror.
+# The snapshot lagged ~2 weeks AND had a five-week hole (nothing for 08-03..08-24), so the tile
+# sat a month behind reality. The mirror carries every week and is re-synced daily.
+#
+# BASIS: "Assignment Type"='Office Manager' rows ONLY. That is the one assignment type with
+# complete, unsplit coverage - every placement appears exactly once at Split %=1.00 (plus a
+# second row when it has overtime). Account Manager rows undercount (~4-6%: their splits do not
+# total 100% on every placement) and Recruiter rows are a third, near-but-not-complete figure.
+# Summing across ALL assignment types multiplies the company total ~3x. Never do that.
+#
+# SETTLE GUARD: a week's rows exist from day one but carry almost no spread until hours post
+# (2026-09-21 read $26,274 against a ~$307K norm while already showing 293 consultants), so
+# consultant count is NOT a completeness signal - only magnitude is. Publish a week only when it
+# has fully ended AND its spread is at least 60% of the median of the four weeks before it.
+SPREAD_FLOOR = 0.60
+_spw = [r for r in (qopt("spread_week") or []) if r.get("wk")]
+_spw.sort(key=lambda r: r["wk"])
+spread_row, spread_reason = None, None
+for i in range(len(_spw) - 1, -1, -1):
+    r = _spw[i]
+    wk_end = date.fromisoformat(r["wk"]) + timedelta(days=6)
+    if wk_end >= TODAY:
+        spread_reason = f"week {r['wk']} has not ended"; continue
+    prior = [x["sp"] for x in _spw[max(0, i - 4):i] if n(x.get("sp")) > 0]
+    med = sorted(prior)[len(prior) // 2] if prior else 0
+    if med and n(r.get("sp")) < SPREAD_FLOOR * med:
+        spread_reason = (f"week {r['wk']} at ${round(n(r.get('sp'))):,} is under {int(SPREAD_FLOOR*100)}% "
+                         f"of the ${round(med):,} 4-week median - hours still posting")
+        continue
+    spread_row = r; break
+
+# ---- (retired) AM Productivity Snapshot spread ----
 # Tile value = SUM(Spread) over ALL rows at the latest Snapshot Date — every AM row, not just the
 # ones that survive the fill-ratio filter below (that filter drops ratio=None rows and would
 # understate the total). Rows are split-adjusted and deduped upstream, so the sum IS the company
 # total for that settled week. Snapshot Date is the Monday of the last settled week; a week settles
 # 10 days after its Friday end, so the ~1.5-2 week lag behind the calendar is CORRECT, not stale.
 # Never recompute this from the raw Spread mirror and never filter by calendar week.
+# Kept only as a cross-check in the report line; it no longer feeds the tile.
 snap_spread = (sum(n(r.get("spread")) for r in snap_rows if r.get("snap") == snap_date)
                if snap_date else None)
 snap_n = len([r for r in snap_rows if r.get("snap") == snap_date]) if snap_date else 0
@@ -296,7 +373,7 @@ sb.sort(key=lambda x: -x["weekly_avg"])
 subs = {"weekly_avg": r1(sum(x["weekly_avg"] for x in sb)), "by_recruiter": sb,
         "lookback_weeks": sub_wks}
 
-# ---- last COMPLETE week totals (Q3 goal-tracking tiles) ----
+# ---- last COMPLETE week totals (goal-tracking tiles) ----
 # Taylor, 2026-09-23: the tiles read the last complete Mon-Sun week, never the week in progress
 # (which is always a partial and on a Monday would read 0), and never the current day (Contact
 # Activity backfills for 1-2 days after the fact). The window advances on its own each Monday.
@@ -340,6 +417,21 @@ if _wm or _ws:
         warnings.append(f"Recruiter Activity's latest week is {_maxwk}, not {LAST_WK} \u2014 feed is "
                         f"behind; week totals NOT published")
         week_totals = None; week_block_reason = f"subs feed's latest week is {_maxwk}"
+    # Magnitude check (Taylor, 2026-09-28). The watermark above only proves the feed REACHED the
+    # Friday, not that the Friday is fully loaded - Contact Activity backfills, so a week can sit
+    # at a third of its real count with a watermark that passes. Same defence as the spread settle
+    # guard: measure against the run rate, not against a timestamp. On the Q3->Q4 roll this week
+    # read 53 against a ~91/wk 13-week rate, which would have published a materially short week
+    # under a clean "Week of Sep 21" label.
+    WEEK_MTG_FLOOR = 0.60
+    _rate13 = (meetings.get("quarterly_pace") or 0) / 13.0
+    _wc = rnd(_wmr.get("c")) if _wm else None
+    if week_totals and _wc is not None and _rate13 and _wc < WEEK_MTG_FLOOR * _rate13:
+        warnings.append(f"week {LAST_WK} shows {_wc} meetings, under {int(WEEK_MTG_FLOOR*100)}% of "
+                        f"the {_rate13:.0f}/wk 13-week rate \u2014 Contact Activity is still backfilling; "
+                        f"week totals NOT published")
+        week_totals = None
+        week_block_reason = f"week {LAST_WK} meetings ({_wc}) under {int(WEEK_MTG_FLOOR*100)}% of the 13-wk rate"
 else:
     warnings.append("week_meetings/week_subs missing \u2014 last-complete-week tiles CARRIED "
                     "FORWARD from the previous file; re-run those two queries")
@@ -357,12 +449,23 @@ settled = {w: v for w, v in merged.items() if v[1] >= 0.5 * _maxc}     # drop un
 unsettled = sorted(set(merged) - set(settled))
 if unsettled: warnings.append(f"hours: ignoring unsettled week(s) {', '.join(unsettled)} (timesheets still approving)")
 _q3 = {w: v for w, v in settled.items() if QS.isoformat() <= w <= TODAY.isoformat()}
+# Hours settle ~10 days after a week ends, so for the first couple of weeks of a quarter the
+# QTD window is empty and the tile would read 0.0 hrs - which looks broken rather than honest
+# (Taylor, 2026-09-28, Q3->Q4 roll). Fall back to the last 4 settled weeks and say so in the
+# label, then switch back to QTD the moment the quarter has a settled week of its own.
+_hlabel = ((goals.get("quarterLabel") or "").split(" ")[0] or "Qtr") + "-to-date"
+if not _q3 and settled:
+    _recent = sorted(settled)[-4:]
+    _q3 = {w: settled[w] for w in _recent}
+    _hlabel = f"last {len(_recent)} settled wk{'' if len(_recent) == 1 else 's'}"
+    warnings.append(f"hours: no settled week inside the quarter yet - tile shows the {_hlabel} "
+                    f"({_recent[0]}..{_recent[-1]}) instead of QTD")
 _H = sum(v[0] for v in _q3.values()); _C = sum(v[1] for v in _q3.values())
 hours_goal = float((goals.get("company") or {}).get("hoursUtilGoal") or 37.5)
 by_week = [{"week": w, "avg": r1(settled[w][0] / settled[w][1]) if settled[w][1] else 0,
             "consultants": settled[w][1]} for w in sorted(_q3)]
 hours_util = {"current": r1(_H / _C) if _C else 0, "baseline": hours_goal,
-              "current_label": "Q3-to-date", "baseline_label": "Goal",
+              "current_label": _hlabel, "baseline_label": "Goal",
               "current_consultant_weeks": _C, "current_weeks": len(_q3),
               "baseline_weeks": None, "by_week": by_week}
 
@@ -482,18 +585,53 @@ else:
     sc["dumpin_count"] = dumpin_n; sc["dumpin_spread"] = rnd(dumpin_sp)
     if lock_goal is not None: sc["lockup_spread_goal"] = lock_goal; sc["lockup_target_note"] = lock_note
 sc["lockup_spread"] = rnd(lockup_wk)
+
+# ---- lock-up drill-through (Josh, 2026-10-05) --------------------------------
+# Every ESF/PSF created in the CURRENT Mon-Sun week, with company / role / AM / recruiter /
+# spread and the Comtrak "Onboard Status" stage. One list, not two: the lock-up number already
+# counts forms at every stage, so splitting "accepted" from "still onboarding" into separate
+# totals would invite reading the tile as only the first one. The stage column is what lets a
+# reader tell them apart, and the rows sum to the tile by construction (same window, same
+# Status NOT LIKE '%Cancel%' filter as lockup_wk_sp).
+_lu_rows = []
+for _r0 in (q("lockup_detail") or []):
+    if not _r0.get("n"):
+        continue
+    _lu_rows.append({"dt": _r0.get("dt"), "n": _r0.get("n"), "c": _r0.get("c"),
+                     "j": _r0.get("j"), "a": _r0.get("a"), "r": _r0.get("r"),
+                     "s": rnd(_r0.get("s")), "ob": _r0.get("ob"),
+                     "x": _r0.get("x"), "sd": _r0.get("sd"), "t": _r0.get("t")})
+_lu_rows.sort(key=lambda z: -(z["s"] or 0))
+sc["lockup_detail"] = _lu_rows
+# Bar-vs-drill-through guard, same bar we hold the In/Out modals to. A mismatch means the
+# fixture and the aggregate were pulled at different times - publish the warning, not a
+# silently wrong modal.
+_lu_det = rnd(sum((z["s"] or 0) for z in _lu_rows))
+if _lu_rows and _lu_det != rnd(lockup_wk):
+    warnings.append(f"lock-up drill-through sums to ${_lu_det:,} but the tile reads "
+                    f"${rnd(lockup_wk):,} - re-pull lockup_detail; modal and tile disagree")
+
 if not feed_covers_week:
     warnings.append(f"ESF/PSF creates only through {max_create} (< week of {WK_MON}) — lock-up shows ${rnd(lockup_wk):,} so far this week; it fills in as Comtrak loads")
     if sc.get("lockup_target_note"):
         sc["lockup_target_note"] += f" · ESF feed through {max_create}"
-if snap_date and snap_spread is not None:
-    wd.setdefault("company", {})["weekly_spread"] = round(snap_spread, 2)
-    wd["company"]["weekly_spread_week"] = snap_date
-    warnings.append(f"company spread ${round(snap_spread):,} = latest settled week {snap_date} "
-                    f"({snap_n} AM rows) \u00b7 lags calendar ~1.5-2 wks by design")
+if spread_row:
+    wd.setdefault("company", {})["weekly_spread"] = round(n(spread_row.get("sp")), 2)
+    wd["company"]["weekly_spread_week"] = spread_row["wk"]
+    wd["company"]["weekly_spread_straight_time"] = round(n(spread_row.get("sp_st")), 2)
+    wd["company"]["weekly_spread_consultants"] = rnd(spread_row.get("cons"))
+    wd["company"]["weekly_spread_basis"] = ("Comtrak Raw \u2013 Spread (API), Office Manager rows "
+                                            "(every placement once at 100%), all hours types")
+    _ot = n(spread_row.get("sp")) - n(spread_row.get("sp_st"))
+    warnings.append(f"company spread ${round(n(spread_row.get('sp'))):,} = week of {spread_row['wk']} "
+                    f"({rnd(spread_row.get('cons'))} consultants, ${round(_ot):,} of it overtime) "
+                    f"\u00b7 straight time alone ${round(n(spread_row.get('sp_st'))):,}")
+    if snap_spread is not None and snap_date:
+        warnings.append(f"cross-check: AM Productivity Snapshot still reads {snap_date} at "
+                        f"${round(snap_spread):,} ({snap_n} AM rows) \u2014 retired as the tile source")
 else:
-    warnings.append("close_ratio_snapshot empty \u2014 company.weekly_spread CARRIED FORWARD "
-                    "from the previous file; do not treat the tile as current")
+    warnings.append(f"no publishable spread week ({spread_reason or 'spread_week returned no rows'}) "
+                    f"\u2014 company.weekly_spread CARRIED FORWARD; do not treat the tile as current")
 wd["fill_ratio"] = fill_ratio; wd["meetings"] = meetings; wd["subs"] = subs; wd["hours_util"] = hours_util; wd["raffle"] = rf
 if week_totals:
     wd["week_totals"] = week_totals
@@ -506,7 +644,7 @@ wd.setdefault("meta", {})["rebuilt_at"] = datetime.now(timezone.utc).isoformat()
 wd["meta"]["rebuild_source"] = "comtrak-notion-hybrid-sql"
 
 # ---- report ----
-print(f"as-of {TODAY} | week Monday {WK_MON} | ESF max create {max_create} | close ratio snapshot {fill_ratio.get('snapshot_date')} | subs window {sub_wks} wks")
+print(f"as-of {TODAY} | week Monday {WK_MON} | ESF max create {max_create} | close ratio snapshot {fill_ratio.get('snapshot_date')} | subs window {sub_wks} wks | spread week {spread_row['wk'] if spread_row else 'NONE'}")
 for w in warnings: print("WARN:", w)
 def g(o, path):
     for k in path.split("."):
@@ -517,6 +655,7 @@ for f in ["scorecard.net_new_starts","scorecard.avg_start_spread","scorecard.pen
           "scorecard.dumpin_count","scorecard.dumpin_spread","scorecard.lockup_spread","scorecard.lockup_spread_goal",
           "fill_ratio.company.closedReqs","fill_ratio.company.ratio",
           "week_totals.week_start","week_totals.meetings","week_totals.subs",
+          "company.weekly_spread","company.weekly_spread_week",
           "meetings.quarterly_pace","subs.weekly_avg","hours_util.current","hours_util.baseline","raffle.current_drawing_no"]:
     a, b = g(prev, f), g(wd, f)
     print(f"{'   ' if a==b else ' * '}{f}: {a} -> {b}")
