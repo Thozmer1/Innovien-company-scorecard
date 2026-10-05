@@ -192,7 +192,14 @@ function render(d){
     (p.avgOnPace===null?'':paceLine((p.avgOnPace?'Avg ≥ goal':'Avg below goal')+(p.avgPct!=null?` · ${p.avgPct}%`:''),p.avgOnPace));
   const lockSub =
     `<div class="goal">Lock-up goal ${lu.spreadGoal?fmtUsd(lu.spreadGoal):'—'}</div>`+
-    (lu.hitList?`<div class="goal" style="margin-top:3px">Hit list: <b>${lu.hitList.reqs}</b> req${lu.hitList.reqs===1?'':'s'} · ~${fmtUsd(lu.hitList.potentialSpread)} potential (${lu.hitList.openings} opening${lu.hitList.openings===1?'':'s'})</div>`:'')+
+    (lu.hitList?(()=>{const h=lu.hitList,pl=n=>n===1?'':'s',
+      // rate card = (bill-pay) x 40h x openings, summed per req. Say "rate card", not
+      // "potential": it is a ceiling, realized spread has run ~65-75% of it.
+      // "open seats" = remaining (req total minus already filled), not the req's headcount.
+      part=(h.ratedOpenings!=null&&h.ratedOpenings<h.openings)?` · rates on ${h.ratedOpenings}/${h.openings}`:'',
+      // when some reqs have no seat left, say so rather than letting the req count imply they do
+      worked=(h.reqsWithSeats!=null&&h.reqsWithSeats<h.reqs)?` (${h.reqsWithSeats} with seats open)`:'';
+      return `<div class="goal" style="margin-top:3px">Hit list: <b>${h.reqs}</b> req${pl(h.reqs)}${worked} · ${h.openings} open seat${pl(h.openings)} · ~${fmtUsd(h.potentialSpread)}/wk rate card${part}</div>`;})():'')+
     (lu.spreadOnPace===null?'':paceLine((lu.spreadOnPace?'At / above goal':'Below goal')+(lu.spreadPct!=null?` · ${lu.spreadPct}%`:''),lu.spreadOnPace));
   const dumpSub =
     `<div class="goal">${di.count} dump-ins · created this qtr, start by qtr end</div>`+
