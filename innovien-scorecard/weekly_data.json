@@ -8,7 +8,7 @@
     "baseline_week_start": "2026-03-23",
     "quarter_start": "2026-03-30",
     "quarter_end": "2026-06-28",
-    "rebuilt_at": "2026-10-02T00:46:30.482138+00:00",
+    "rebuilt_at": "2026-10-05T09:57:52.968294+00:00",
     "rebuild_source": "comtrak-notion-hybrid-sql",
     "partial_note": "2026-09-11: queries repointed to the columns the Comtrak API populates on every row \u2014 ESF/PSF 'Est Weekly Spread' (was 'Est Spread'/'Weekly Spread'), 'AM' (was 'Account Manager'), Contact Activity 'Owner' (was 'AM'), Recruiter Activity COALESCE(Employee, Record Id). Starts/pending/dump-in/lock-up/forecast/raffle rebuilt on the corrected columns. Close ratio, meetings, subs and hours still carried forward from 2026-09-10: their source tables lag (Close Ratio ends 8/26, Recruiter Activity 8/31, Hours 8/24)."
   },
@@ -312,7 +312,7 @@
     "pending_avg_spread": 1386,
     "pending_total_spread": 37428,
     "lockup_count": null,
-    "lockup_spread": 7280,
+    "lockup_spread": 0,
     "dumpin_count": 8,
     "dumpin_spread": 7280,
     "active_consultants": 279,
@@ -445,7 +445,7 @@
             "x": "Perm"
           }
         ],
-        "unplannedOut": 2353
+        "unplannedOut": 0
       },
       {
         "weekStart": "2026-10-05",
@@ -1120,8 +1120,8 @@
         "unplannedOut": 2353
       }
     ],
-    "lockup_spread_goal": 8945,
-    "lockup_target_note": "$93,926 to dump-in goal / 10.5 wks left (auto-paced)",
+    "lockup_spread_goal": 9121,
+    "lockup_target_note": "$86,646 to dump-in goal / 9.5 wks left (auto-paced) \u00b7 ESF feed through 2026-10-01",
     "forecast_next": {
       "label": "Q1 2027",
       "quarterStart": "2026-12-28",
@@ -2290,28 +2290,21 @@
     "advance_drawing": false
   },
   "fill_ratio": {
-    "as_of": "2026-10-02",
+    "as_of": "2026-10-05",
     "window_weeks": 13,
     "basis": "Comtrak Close Ratio (13wk) per AM, carried through verbatim; company = Closed-Reqs-weighted mean (snapshot has no filled/decided counts)",
     "snapshot_date": "2026-09-14",
     "company": {
-      "closedReqs": 61,
-      "ratio": 0.7648
+      "closedReqs": 58,
+      "ratio": 0.7535
     },
     "by_am": [
       {
         "name": "Jon Pack",
         "ratio": 1.0,
-        "closedReqs": 6,
+        "closedReqs": 5,
         "spread": 37771,
         "delta": 6838
-      },
-      {
-        "name": "Malia Graham",
-        "ratio": 1.0,
-        "closedReqs": 1,
-        "spread": 0,
-        "delta": 0
       },
       {
         "name": "Brie Branting",
@@ -2343,8 +2336,8 @@
       },
       {
         "name": "Riley Laverty",
-        "ratio": 0.7143,
-        "closedReqs": 6,
+        "ratio": 0.6667,
+        "closedReqs": 5,
         "spread": 15802,
         "delta": 2892
       },
@@ -2593,6 +2586,8 @@
     "meetings": 145,
     "meeting_ams": 17,
     "subs": 51,
-    "sub_recruiters": 16
+    "sub_recruiters": 16,
+    "carried_forward": true,
+    "carry_reason": "meetings feed stops at 2026-10-01"
   }
 }
