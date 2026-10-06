@@ -67,7 +67,11 @@
   #modal td{padding:6px;border-bottom:1px solid #f0f2f0}
   #modal td.num{text-align:right;font-variant-numeric:tabular-nums}
   #modal tr:hover td{background:#f7faf4}
-  .drill{cursor:pointer;border-bottom:1px dashed var(--green)}
+  #modal .sect{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:#8a8f8a;font-weight:700;padding:14px 0 6px;border-top:1px solid #e2e6e2;margin-top:10px}
+  #modal .sect:first-child{border-top:0;margin-top:0;padding-top:4px}
+  #modal .sect .n{font-weight:400;text-transform:none;letter-spacing:0;color:#a0a5a0}
+  #modal .empty{font-size:12px;color:#8a8f8a;padding:4px 0 8px}
+    .drill{cursor:pointer;border-bottom:1px dashed var(--green)}
   .drill:hover{color:var(--green)}
   .drill:focus-visible{outline:2px solid var(--green);outline-offset:2px}
   #modal .tag{display:inline-block;font-size:10px;padding:1px 6px;border-radius:3px;background:#fdf0d5;color:#8a6d1f}
@@ -382,9 +386,9 @@ function openLockup(lu){
     ? rows.length+(rows.length===1?' offer':' offers')+' · '+fcUsd(total)+' weekly spread'
       +(pend?' · '+pend+' still onboarding':'')
     : 'No offers locked up yet this week — ESFs appear here as they are created.';
-  let html='';
+  let html='<div class="sect">Counted in the lock-up <span class="n">&mdash; ESF / PSF created this week</span></div>';
   if(rows.length){
-    html='<table><thead><tr><th>Candidate</th><th>Company</th><th>Role</th><th>AM</th>'
+    html+='<table><thead><tr><th>Candidate</th><th>Company</th><th>Role</th><th>AM</th>'
       +'<th>Recruiter</th><th class="num">Weekly $</th><th>Stage</th></tr></thead><tbody>';
     rows.forEach(r=>{
       const perm = String(r.t||'')==='Perm' ? ' <span class="tag">perm</span>' : '';
@@ -394,6 +398,29 @@ function openLockup(lu){
         +'<td class="num">'+fcUsd(+r.s||0)+'</td><td>'+stage+'</td></tr>';
     });
     html+='</tbody></table>';
+  } else {
+    html+='<div class="empty">No start forms created yet this week.</div>';
+  }
+  // Bottom section: offers won this week with no start form yet. These are NOT in the lock-up
+  // number above - that is the whole point of showing them. Usually empty, which is healthy.
+  const offs=(lu && lu.offers)||[];
+  if(lu && lu.offers!=null){
+    const ot=offs.reduce((t,r)=>t+(+r.s||0),0);
+    html+='<div class="sect">Offers not yet on a start form'
+      +'<span class="n"> &mdash; accepted / extended this week'
+      +(offs.length?', ~'+fcUsd(ot)+' est, not counted above':'')+'</span></div>';
+    if(offs.length){
+      html+='<table><thead><tr><th>Candidate</th><th>Company</th><th>Role</th>'
+        +'<th>Recruiter</th><th class="num">Est $</th><th>Status</th></tr></thead><tbody>';
+      offs.forEach(r=>{
+        html+='<tr><td>'+esc(r.n)+'</td><td>'+esc(r.c)+'</td><td>'+esc(r.j)+'</td>'
+          +'<td>'+esc(r.r)+'</td><td class="num">'+fcUsd(+r.s||0)+'</td>'
+          +'<td><span class="tag">'+esc(r.st||'')+'</span></td></tr>';
+      });
+      html+='</tbody></table>';
+    } else {
+      html+='<div class="empty">None &mdash; every offer this week already has a start form.</div>';
+    }
   }
   document.getElementById('m-body').innerHTML=html;
   document.getElementById('modal').classList.add('open');
