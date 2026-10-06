@@ -8,7 +8,7 @@
     "baseline_week_start": "2026-03-23",
     "quarter_start": "2026-03-30",
     "quarter_end": "2026-06-28",
-    "rebuilt_at": "2026-10-05T20:51:25.978696+00:00",
+    "rebuilt_at": "2026-10-06T10:13:58.715657+00:00",
     "rebuild_source": "comtrak-notion-hybrid-sql",
     "partial_note": "2026-09-11: queries repointed to the columns the Comtrak API populates on every row \u2014 ESF/PSF 'Est Weekly Spread' (was 'Est Spread'/'Weekly Spread'), 'AM' (was 'Account Manager'), Contact Activity 'Owner' (was 'AM'), Recruiter Activity COALESCE(Employee, Record Id). Starts/pending/dump-in/lock-up/forecast/raffle rebuilt on the corrected columns. Close ratio, meetings, subs and hours still carried forward from 2026-09-10: their source tables lag (Close Ratio ends 8/26, Recruiter Activity 8/31, Hours 8/24)."
   },
@@ -2163,7 +2163,8 @@
         }
       ]
     },
-    "lockup_detail": []
+    "lockup_detail": [],
+    "lockup_offers": []
   },
   "raffle": {
     "threshold": 1250,
@@ -2326,68 +2327,160 @@
     "advance_drawing": false
   },
   "fill_ratio": {
-    "as_of": "2026-10-05",
+    "as_of": "2026-10-06",
     "window_weeks": 13,
-    "basis": "Comtrak Close Ratio (13wk) per AM, carried through verbatim; company = Closed-Reqs-weighted mean (snapshot has no filled/decided counts)",
+    "basis": "Comtrak Raw - Close Ratio Details, windowed on Status Date (the date the req moved to Closed); ratio = filled / (filled + lost + washed), pooled for the company tile",
+    "window_end": "2026-10-04",
     "snapshot_date": "2026-09-21",
+    "retired_basis": "AM Productivity Snapshot / Coverage Date - filled reqs carry a 2038-01-31 sentinel date and fell outside every window",
     "company": {
-      "closedReqs": 57,
-      "ratio": 0.7485
+      "closedReqs": 129,
+      "filled": 94,
+      "decided": 150,
+      "ratio": 0.6267
     },
     "by_am": [
       {
+        "name": "Jessica Evans",
+        "ratio": 1.0,
+        "closedReqs": 2,
+        "filled": 2,
+        "lost": 0,
+        "washed": 0,
+        "decided": 2,
+        "lastClose": "2026-08-04",
+        "spread": 0,
+        "delta": -654
+      },
+      {
         "name": "Jon Pack",
         "ratio": 1.0,
-        "closedReqs": 5,
+        "closedReqs": 14,
+        "filled": 15,
+        "lost": 0,
+        "washed": 0,
+        "decided": 15,
+        "lastClose": "2026-09-17",
         "spread": 38905,
         "delta": 1135
       },
       {
+        "name": "Malia Graham",
+        "ratio": 1.0,
+        "closedReqs": 2,
+        "filled": 1,
+        "lost": 0,
+        "washed": 0,
+        "decided": 1,
+        "lastClose": "2026-10-04",
+        "spread": 0,
+        "delta": 0
+      },
+      {
         "name": "Mollie Ferguson",
-        "ratio": 0.9231,
-        "closedReqs": 11,
+        "ratio": 0.8421,
+        "closedReqs": 15,
+        "filled": 16,
+        "lost": 0,
+        "washed": 3,
+        "decided": 19,
+        "lastClose": "2026-09-30",
         "spread": 125375,
         "delta": -1590
       },
       {
-        "name": "Brie Branting",
-        "ratio": 0.9167,
-        "closedReqs": 6,
-        "spread": 41859,
-        "delta": 9253
-      },
-      {
         "name": "Kelsie Laughlin",
-        "ratio": 0.8667,
-        "closedReqs": 14,
+        "ratio": 0.7778,
+        "closedReqs": 10,
+        "filled": 7,
+        "lost": 1,
+        "washed": 1,
+        "decided": 9,
+        "lastClose": "2026-08-24",
         "spread": 20264,
         "delta": -567
       },
       {
-        "name": "Stephen Denzel",
-        "ratio": 0.7273,
-        "closedReqs": 9,
-        "spread": 29857,
-        "delta": -3034
+        "name": "Shannon Johnson",
+        "ratio": 0.75,
+        "closedReqs": 5,
+        "filled": 3,
+        "lost": 0,
+        "washed": 1,
+        "decided": 4,
+        "lastClose": "2026-10-02",
+        "spread": 0,
+        "delta": 0
       },
       {
         "name": "Riley Laverty",
-        "ratio": 0.6667,
-        "closedReqs": 5,
+        "ratio": 0.7143,
+        "closedReqs": 7,
+        "filled": 5,
+        "lost": 2,
+        "washed": 0,
+        "decided": 7,
+        "lastClose": "2026-09-10",
         "spread": 15634,
         "delta": -168
       },
       {
+        "name": "Stephen Denzel",
+        "ratio": 0.6667,
+        "closedReqs": 23,
+        "filled": 18,
+        "lost": 6,
+        "washed": 3,
+        "decided": 27,
+        "lastClose": "2026-09-17",
+        "spread": 29857,
+        "delta": -3034
+      },
+      {
+        "name": "Brie Branting",
+        "ratio": 0.5455,
+        "closedReqs": 19,
+        "filled": 18,
+        "lost": 0,
+        "washed": 15,
+        "decided": 33,
+        "lastClose": "2026-09-14",
+        "spread": 41859,
+        "delta": 9253
+      },
+      {
+        "name": "Kollin Korell",
+        "ratio": 0.5,
+        "closedReqs": 5,
+        "filled": 3,
+        "lost": 1,
+        "washed": 2,
+        "decided": 6,
+        "lastClose": "2026-10-02",
+        "spread": 0,
+        "delta": 0
+      },
+      {
         "name": "Hannah Craig",
-        "ratio": 0.0,
-        "closedReqs": 3,
+        "ratio": 0.2222,
+        "closedReqs": 18,
+        "filled": 4,
+        "lost": 3,
+        "washed": 11,
+        "decided": 18,
+        "lastClose": "2026-09-10",
         "spread": 24250,
         "delta": -1310
       },
       {
         "name": "Mike Minnillo",
-        "ratio": 0.0,
-        "closedReqs": 4,
+        "ratio": 0.2222,
+        "closedReqs": 9,
+        "filled": 2,
+        "lost": 2,
+        "washed": 5,
+        "decided": 9,
+        "lastClose": "2026-09-10",
         "spread": 12126,
         "delta": 41
       }

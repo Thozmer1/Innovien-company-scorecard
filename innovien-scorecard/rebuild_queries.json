@@ -22,6 +22,15 @@
   "sql": "SELECT date(\"date:Create Ts:start\") AS dt, \"Contractor\" AS n, \"Customer\" AS c, \"Jobtitle\" AS j, \"AM\" AS a, \"Recruiter\" AS r, COALESCE(\"Est Weekly Spread\",0) AS s, \"Onboard Status\" AS ob, \"Status\" AS x, date(\"date:Start Date:start\") AS sd, 'Contract' AS t FROM \"collection://4f5bd217-8ccf-4989-b0a7-e7d09c4bf5b9\" WHERE \"Status\" NOT LIKE '%Cancel%' AND date(\"date:Create Ts:start\") BETWEEN date('now','-'||((strftime('%w','now')+6)%7)||' days') AND date('now','+'||(6-((strftime('%w','now')+6)%7))||' days') UNION ALL SELECT date(\"date:Create Ts:start\") AS dt, \"Candidate\" AS n, \"Customer\" AS c, \"Jobtitle\" AS j, \"AM\" AS a, \"Recruiter\" AS r, COALESCE(\"Est Weekly Spread\",0) AS s, \"Onboard Status\" AS ob, \"Status\" AS x, date(\"date:Start Date:start\") AS sd, 'Perm' AS t FROM \"collection://3f6a7bc2-85f3-40d7-9f7d-1d225be76153\" WHERE \"Status\" NOT LIKE '%Cancel%' AND date(\"date:Create Ts:start\") BETWEEN date('now','-'||((strftime('%w','now')+6)%7)||' days') AND date('now','+'||(6-((strftime('%w','now')+6)%7))||' days') ORDER BY s DESC"
  },
  {
+  "key": "lockup_offers",
+  "src": [
+   "collection://d5e911bf-1539-47b5-92ef-71162fb1981d",
+   "collection://4f5bd217-8ccf-4989-b0a7-e7d09c4bf5b9",
+   "collection://3f6a7bc2-85f3-40d7-9f7d-1d225be76153"
+  ],
+  "sql": "WITH off AS (SELECT \"candidate_id\" AS cid, \"jobdefinition_id\" AS reqid, upper(trim(\"Candidate\")) AS nm, \"Candidate\" AS n, \"Customer\" AS c, \"Job Title\" AS j, \"Set By\" AS r, MAX(date(\"date:Create Date:start\")) AS dt, MAX(COALESCE(\"Est Spread\",0)) AS s, MAX(CASE WHEN \"Submittal Status\"='Offer Accepted' THEN 'Offer Accepted' ELSE 'Offer Extended (Client)' END) AS st FROM \"collection://d5e911bf-1539-47b5-92ef-71162fb1981d\" WHERE \"Submittal Status\" IN ('Offer Extended (Client)','Offer Accepted') AND \"Customer\" NOT LIKE 'Innovien%' AND date(\"date:Create Date:start\") BETWEEN date('now','-'||((strftime('%w','now')+6)%7)||' days') AND date('now','+'||(6-((strftime('%w','now')+6)%7))||' days') GROUP BY cid, reqid), er AS (SELECT DISTINCT CAST(\"Jobdefinition Id\" AS TEXT) AS k FROM \"collection://4f5bd217-8ccf-4989-b0a7-e7d09c4bf5b9\" WHERE \"Status\" NOT LIKE '%Cancel%'), en AS (SELECT DISTINCT upper(trim(\"Contractor\")) AS k FROM \"collection://4f5bd217-8ccf-4989-b0a7-e7d09c4bf5b9\" WHERE \"Status\" NOT LIKE '%Cancel%'), pc AS (SELECT DISTINCT CAST(\"Candidate Id\" AS TEXT) AS k FROM \"collection://3f6a7bc2-85f3-40d7-9f7d-1d225be76153\" WHERE \"Status\" NOT LIKE '%Cancel%'), pn AS (SELECT DISTINCT upper(trim(\"Candidate\")) AS k FROM \"collection://3f6a7bc2-85f3-40d7-9f7d-1d225be76153\" WHERE \"Status\" NOT LIKE '%Cancel%') SELECT off.dt, off.n, off.c, off.j, off.r, off.s, off.st, off.reqid FROM off LEFT JOIN er ON er.k=off.reqid LEFT JOIN en ON en.k=off.nm LEFT JOIN pc ON pc.k=off.cid LEFT JOIN pn ON pn.k=off.nm WHERE er.k IS NULL AND en.k IS NULL AND pc.k IS NULL AND pn.k IS NULL ORDER BY off.s DESC"
+ },
+ {
   "key": "esf_forecast_in",
   "src": [
    "collection://4f5bd217-8ccf-4989-b0a7-e7d09c4bf5b9"
@@ -140,6 +149,13 @@
    "collection://8bd3abb0-321a-46f9-972d-8b32c79e3255"
   ],
   "sql": "SELECT \"AM\" AS am, \"Close Ratio (13wk)\" AS ratio, \"Closed Reqs (13wk)\" AS closed, \"Spread\" AS spread, \"Delta\" AS delta, date(\"date:Snapshot Date:start\") AS snap FROM \"collection://8bd3abb0-321a-46f9-972d-8b32c79e3255\" WHERE date(\"date:Snapshot Date:start\")=(SELECT MAX(date(\"date:Snapshot Date:start\")) FROM \"collection://8bd3abb0-321a-46f9-972d-8b32c79e3255\")"
+ },
+ {
+  "key": "close_ratio_statusdate",
+  "src": [
+   "collection://3ec114ca-e94f-4715-a46d-2150bf41cec0"
+  ],
+  "sql": "WITH z AS (SELECT \"Owner\" AS am, COALESCE(\"Filled\",0) AS f, COALESCE(\"Lost\",0) AS l, COALESCE(\"Washed\",0) AS w, CASE WHEN \"Status Date\" LIKE '____-__-__' THEN \"Status Date\" WHEN \"Status Date\" LIKE '__/__/__' THEN '20'||substr(\"Status Date\",7,2)||'-'||substr(\"Status Date\",1,2)||'-'||substr(\"Status Date\",4,2) ELSE NULL END AS sd FROM \"collection://3ec114ca-e94f-4715-a46d-2150bf41cec0\"), win AS (SELECT * FROM z WHERE sd IS NOT NULL AND sd BETWEEN date(date('now','weekday 0','-7 days'),'-90 days') AND date('now','weekday 0','-7 days')) SELECT am, COUNT(*) AS closed, SUM(f) AS filled, SUM(l) AS lost, SUM(w) AS washed, MAX(sd) AS last_close, date('now','weekday 0','-7 days') AS wend FROM win WHERE am IS NOT NULL AND am <> 'Unassigned' GROUP BY am UNION ALL SELECT '__TOTAL__', COUNT(*), SUM(f), SUM(l), SUM(w), MAX(sd), date('now','weekday 0','-7 days') FROM win WHERE am IS NOT NULL AND am <> 'Unassigned'"
  },
  {
   "key": "perm_rolloff",

@@ -268,10 +268,28 @@ if _nin_raw or _nout_raw:
     forecast_next = {"label": _lbl, "quarterStart": NQS.isoformat(),
                      "quarterEnd": (NQS + timedelta(days=90)).isoformat(), "weeks": _weeks}
 
-# ---- close ratio: AM Productivity Snapshot (the sanctioned source) ----
-# Close Ratio Details carries no usable close date (Status Date is legacy-only), so windowed
-# aggregates must NOT come from it. The snapshot's Close Ratio (13wk) is computed from a fresh
-# windowed ComTrak close-date pull. Snapshot Date sits 1-2 weeks back by design.
+# ---- close ratio: Comtrak Raw - Close Ratio Details, windowed on Status Date ----
+# Taylor, 2026-10-06: Status Date IS the close date - the day the req moved to Closed - and it is
+# now the basis for the 13-week window. This REVERSES the note that used to sit here ("Status
+# Date is legacy-only, windowed aggregates must NOT come from it"). That was true once; the field
+# has since been backfilled. Coverage by Create year: 2026 307 rows / 0 blank, 2025 545/30,
+# 2024 399/11 - complete for any window that matters. The 1,292 blanks are all 2017-2023 history.
+# Do not re-point this at Coverage Date.
+#
+# WHY IT CHANGED: the AM Productivity Snapshot windows on Coverage Date, and every req that
+# actually FILLED carries Coverage Date 2038-01-31 - a sentinel, not a date. A 2038 date never
+# falls inside a trailing 13 weeks, so the numerator was structurally pinned at zero while the
+# denominator collected washes. Company-wide, 2,533 closed reqs carry the sentinel vs 186 with a
+# real date, and 1,206 of the sentinel rows have Filled > 0. Hannah Craig read 0% on 3 closed
+# reqs when she had 4 fills in the window; Mike Minnillo likewise. Every AM was being scored off
+# roughly 7% of their own fills.
+#
+# Status Date is TEXT in two formats (ISO 2026-08-31 and legacy US 11/05/24) - the query
+# normalises both. Window ends the Sunday of the last COMPLETE week so the number holds steady
+# Mon-Sun rather than drifting daily.
+#
+# The snapshot is still read, for Spread / Delta only (Close Ratio Details carries neither), and
+# its ratio is kept as a cross-check warning. Never let it drive the tile again.
 # Taylor, 2026-09-23: the snapshot publishes ONLY "Close Ratio (13wk)" and "Closed Reqs (13wk)"
 # — there is no Filled/Washed/Lost breakdown in the table (schema checked). The old code invented
 # filled = round(ratio x closed) and decided = closed, then RE-DERIVED ratio = filled/decided.
@@ -281,14 +299,46 @@ if _nin_raw or _nout_raw:
 # RULE: carry Comtrak's ratio through untouched and never reconstruct a numerator from it.
 # Closed Reqs is displayed as its own column and used ONLY as the weight for the company tile.
 snap_rows = q("close_ratio_snapshot")
-by_am, snap_date = [], None
-for r in snap_rows:
-    am = r.get("am"); ratio = r.get("ratio"); closed = rnd(r.get("closed"))
-    snap_date = snap_date or r.get("snap")
-    if not am or am == "Unassigned" or ratio is None or closed <= 0: continue
-    by_am.append({"name": am, "ratio": round(float(ratio), 4), "closedReqs": closed,
-                  "_rw": float(ratio) * closed,
-                  "spread": rnd(r.get("spread")), "delta": rnd(r.get("delta"))})
+snap_date = next((r.get("snap") for r in snap_rows if r.get("snap")), None)
+_snap_sd = {r.get("am"): r for r in snap_rows if r.get("am")}
+
+_cr_rows = q("close_ratio_statusdate") or []
+_cr_total = next((r for r in _cr_rows if r.get("am") == "__TOTAL__"), None)
+_cr_ams = [r for r in _cr_rows if r.get("am") and r.get("am") != "__TOTAL__"]
+if not _cr_ams:
+    raise SystemExit("close_ratio_statusdate returned no AM rows - refusing to publish a blank "
+                     "close ratio. Re-pull the fixture.")
+# GROUP BY guard: the Notion connector splits and mis-attributes groups, and a per-AM list that
+# looks plausible can still be wrong. The __TOTAL__ row is an independent aggregate over the same
+# window - if the per-AM rows do not sum to it, the allocation is not trustworthy.
+if _cr_total:
+    for _k in ("closed", "filled", "lost", "washed"):
+        _sum = rnd(sum(n(r.get(_k)) for r in _cr_ams)); _tot = rnd(_cr_total.get(_k))
+        if _sum != _tot:
+            warnings.append(f"close ratio: per-AM {_k} sums to {_sum} but the independent total "
+                            f"reads {_tot} - connector GROUP BY split; ratios NOT trustworthy")
+_cr_window_end = (_cr_total or _cr_ams[0]).get("wend")
+
+by_am = []
+for r in _cr_ams:
+    am = r.get("am")
+    f, l, w = n(r.get("filled")), n(r.get("lost")), n(r.get("washed"))
+    dec = f + l + w
+    if dec <= 0:  # nothing decided in the window - no ratio exists, do not publish a 0
+        continue
+    _sn = _snap_sd.get(am) or {}
+    by_am.append({"name": am, "ratio": round(f / dec, 4), "closedReqs": rnd(r.get("closed")),
+                  "filled": rnd(f), "lost": rnd(l), "washed": rnd(w), "decided": rnd(dec),
+                  "_rw": f,  # merge_rows re-weights on the true numerator, not ratio x closed
+                  "lastClose": r.get("last_close"),
+                  "spread": rnd(_sn.get("spread")), "delta": rnd(_sn.get("delta"))})
+# Cross-check against the retired basis so a silent regression is visible in the log.
+for _r in by_am:
+    _sn = _snap_sd.get(_r["name"]) or {}
+    if _sn.get("ratio") is not None and abs(float(_sn["ratio"]) - _r["ratio"]) >= 0.25:
+        warnings.append(f"close ratio {_r['name']}: now {_r['ratio']:.0%} on {_r['decided']} "
+                        f"decided (Status Date) vs {float(_sn['ratio']):.0%} on the retired "
+                        f"Coverage-Date snapshot - expected, the snapshot missed filled reqs")
 # ---- latest-closed-week company spread (Comtrak Raw - Spread (API)) ----
 # Taylor, 2026-09-24: re-pointed from the AM Productivity Snapshot to the raw Spread mirror.
 # The snapshot lagged ~2 weeks AND had a five-week hole (nothing for 08-03..08-24), so the tile
@@ -335,22 +385,28 @@ snap_n = len([r for r in snap_rows if r.get("snap") == snap_date]) if snap_date 
 
 # A duplicate-spelling merge re-weights by Closed Reqs; a single-row AM keeps its exact source
 # ratio (x/x round-trips clean).
-by_am = merge_rows(by_am, ["closedReqs", "_rw"])
+# Duplicate-spelling merge. Unlike the old snapshot path we hold real counts, so a merge can
+# re-derive the ratio honestly from summed filled/decided instead of a weighted average of ratios.
+by_am = merge_rows(by_am, ["closedReqs", "filled", "lost", "washed", "decided", "_rw"])
 for r in by_am:
-    r["ratio"] = round(r["_rw"] / r["closedReqs"], 4) if r["closedReqs"] else 0
+    r["ratio"] = round(r["filled"] / r["decided"], 4) if r.get("decided") else 0
     r.pop("_rw", None)
 by_am.sort(key=lambda x: -x["ratio"])
-# Company tile = Closed-Reqs-weighted mean of the AM ratios. The snapshot carries no company
-# row and no filled/decided counts, so this is the only aggregate available; it is an
-# approximation of a true pooled ratio and must be labelled as a weighted average, not as
-# "filled / decided".
-cw = sum(x["ratio"] * x["closedReqs"] for x in by_am)
-cdec = sum(x["closedReqs"] for x in by_am)
+# Company tile is now a TRUE pooled ratio - total filled / total decided - not a weighted mean of
+# per-AM ratios. Close Ratio Details carries the counts, so the approximation is no longer needed.
+cfil = sum(x["filled"] for x in by_am)
+cdec = sum(x["decided"] for x in by_am)
 fill_ratio = {"as_of": TODAY.isoformat(), "window_weeks": 13,
-              "basis": "Comtrak Close Ratio (13wk) per AM, carried through verbatim; company = "
-                       "Closed-Reqs-weighted mean (snapshot has no filled/decided counts)",
+              "basis": "Comtrak Raw - Close Ratio Details, windowed on Status Date (the date the "
+                       "req moved to Closed); ratio = filled / (filled + lost + washed), pooled "
+                       "for the company tile",
+              "window_end": _cr_window_end,
               "snapshot_date": snap_date,
-              "company": {"closedReqs": rnd(cdec), "ratio": round(cw / cdec, 4) if cdec else 0},
+              "retired_basis": "AM Productivity Snapshot / Coverage Date - filled reqs carry a "
+                               "2038-01-31 sentinel date and fell outside every window",
+              "company": {"closedReqs": rnd(sum(x["closedReqs"] for x in by_am)),
+                          "filled": rnd(cfil), "decided": rnd(cdec),
+                          "ratio": round(cfil / cdec, 4) if cdec else 0},
               "by_am": by_am}
 
 # ---- meetings (13-wk) ----
@@ -603,6 +659,36 @@ for _r0 in (q("lockup_detail") or []):
                      "x": _r0.get("x"), "sd": _r0.get("sd"), "t": _r0.get("t")})
 _lu_rows.sort(key=lambda z: -(z["s"] or 0))
 sc["lockup_detail"] = _lu_rows
+
+# ---- offers accepted/extended this week with no ESF or PSF yet (Josh, 2026-10-06) -----------
+# Bottom half of the lock-up modal: what the team won this week that the lock-up number cannot
+# see because the start form has not been written.
+#
+# MATCHING: a candidate counts as "already has a form" on ANY of four keys, because no single one
+# is sufficient. PSF carries Candidate Id, which equals the submittal's candidate_id exactly.
+# ESF does NOT - its Contractor Id is an employee id minted at ESF creation (2189 vs 225617) - so
+# ESF matches on Jobdefinition Id, which does equal the submittal's req. Req id alone produces
+# false positives when a role is duplicated across reqs (Brad Miller was offered on Home Depot
+# 3296 and 2949 on the same day; the ESF landed on 2949), so name is matched too. Name alone
+# fails on spelling drift (submittal "Kimberly Troxler Black" vs ESF "Kimberly Troxer Black"),
+# which is why req id stays in. The four together resolved all 58 offers in an 8-week backtest.
+#
+# Internal Innovien reqs are filtered at source (Customer LIKE 'Innovien%') - recruiting for our
+# own seats runs through the same submittal pipeline and would otherwise dominate a short list
+# with $0-$38 "spread" rows.
+#
+# EXPECT THIS TO BE EMPTY MOST WEEKS. Offers convert to an ESF the same day almost without
+# exception; across 8 weeks exactly one genuine straggler existed. An empty bottom section is
+# the normal, healthy state - it does not mean the feed is broken.
+_off_rows = []
+for _r0 in (q("lockup_offers") or []):
+    if not _r0.get("n"):
+        continue
+    _off_rows.append({"dt": _r0.get("dt"), "n": _r0.get("n"), "c": _r0.get("c"),
+                      "j": _r0.get("j"), "r": _r0.get("r"), "s": rnd(_r0.get("s")),
+                      "st": _r0.get("st"), "req": _r0.get("reqid")})
+_off_rows.sort(key=lambda z: -(z["s"] or 0))
+sc["lockup_offers"] = _off_rows
 # Bar-vs-drill-through guard, same bar we hold the In/Out modals to. A mismatch means the
 # fixture and the aggregate were pulled at different times - publish the warning, not a
 # silently wrong modal.
@@ -644,7 +730,7 @@ wd.setdefault("meta", {})["rebuilt_at"] = datetime.now(timezone.utc).isoformat()
 wd["meta"]["rebuild_source"] = "comtrak-notion-hybrid-sql"
 
 # ---- report ----
-print(f"as-of {TODAY} | week Monday {WK_MON} | ESF max create {max_create} | close ratio snapshot {fill_ratio.get('snapshot_date')} | subs window {sub_wks} wks | spread week {spread_row['wk'] if spread_row else 'NONE'}")
+print(f"as-of {TODAY} | week Monday {WK_MON} | ESF max create {max_create} | close ratio thru {fill_ratio.get('window_end')} (Status Date) | subs window {sub_wks} wks | spread week {spread_row['wk'] if spread_row else 'NONE'}")
 for w in warnings: print("WARN:", w)
 def g(o, path):
     for k in path.split("."):
