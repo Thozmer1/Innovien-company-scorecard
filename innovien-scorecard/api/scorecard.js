@@ -42,6 +42,7 @@ export default async function handler(req, res) {
       weekly_subs: ["company","weeklySubGoal"], qtrly_meetings: ["company","qtrlyMeetingGoal"],
       fill_ratio: ["company","fillRatioGoal"], redeployed: ["company","redeployedGoal"], year_spread: ["company","yearSpreadGoal"],
       dumpin_spread: ["company","dumpinSpreadGoal"],
+      hours_util_goal: ["company","hoursUtilGoal"],
     };
     const qLabel = goals.quarterLabel;
     let goalsApplied = 0;
@@ -134,17 +135,59 @@ export default async function handler(req, res) {
       roster = null; // People DB unreachable → show all (current behavior)
     }
 
-    // ---- Hit List reqs (live from Comtrak Raw - Req Details) --------------------
-    // Open reqs sitting in the board's Hit List column. Count + total openings; metrics turns
-    // openings into "potential spread" using the current company avg start spread. Fail-open.
+    // ---- Hit List reqs (live from Comtrak Raw - Req Details (API)) ---------------
+    // Open reqs sitting in the board's Hit List column. We report count, openings, and a
+    // RATE-CARD spread computed per req from (Bill Rate - Pay Rate) x 40 x Openings.
+    //
+    // Why not openings x company avg start spread (the old method): that multiplier is
+    // quarter-to-date and moves on every start, so the tile swung ~80% on 2026-10-05 off three
+    // Lockheed placements while the hit list itself had not changed. Per-req rates are a
+    // property of the reqs on the board and move only when the board moves.
+    //
+    // Caveats worth knowing before quoting this number:
+    //  - 40 hrs/wk is an assumption; the req table carries no hours field.
+    //  - This is RATE CARD, not realized. Comparable ABM placements have landed at ~65-75% of
+    //    the nominal rate spread, so treat it as a ceiling.
+    //  - Reqs missing either rate contribute openings but no dollars; ratedOpenings says how
+    //    many of the openings are actually priced, so the UI can disclose partial coverage.
+    //  - Contract-Perm reqs carry no Perm Fee / salary here, so only the contract leg is counted.
+    // Fail-open: on any error the tile just omits the hit-list line.
     try {
       const hlRows = await queryAll(notion, DB.reqDetails, { and: [
         { property: "REQ Priority", rich_text: { equals: "Hitlist" } },
         { property: "Job Status", rich_text: { equals: "Open" } },
       ]});
-      let hlOpenings = 0;
-      for (const pg of hlRows) hlOpenings += (P.num(pg, "Openings") || 0);
-      data.hitList = { reqs: hlRows.length, openings: hlOpenings };
+      // Count REMAINING seats, not the req's total size. "Openings" is the original req
+      // headcount and "Filled" is how many are already placed against it - the dashboard's own
+      // fill ratio uses filled/openings, which only works if Openings is the total. Counting
+      // total openings double-counts seats already won: on 2026-10-05 that put GE Vernova 3271
+      // (4 openings, 3 filled) in at $5,120 for one winnable seat, and Home Depot 2949 (1
+      // opening, 2 filled) in at $1,400 for a seat that does not exist. 12 seats / $18,300
+      // became 7 seats / $11,300 once remaining was used - a 38% overstatement.
+      //
+      // Caveat: Filled appears to be cumulative over the req's life, not currently-on-assignment
+      // (2949 has filled > openings). Where a placement has since rolled off, remaining can
+      // therefore UNDERstate. Erring low is the right direction for a number labelled potential.
+      const HRS_PER_WEEK = 40;
+      let hlOpenings = 0, hlTotalOpenings = 0, hlRatedOpenings = 0, hlSpread = 0, hlReqsWithSeats = 0;
+      for (const pg of hlRows) {
+        const total = P.num(pg, "Openings") || 0;
+        const filled = P.num(pg, "Filled") || 0;
+        const open = Math.max(0, total - filled);   // remaining, never negative
+        const bill = P.num(pg, "Bill Rate");
+        const pay  = P.num(pg, "Pay Rate");
+        hlTotalOpenings += total;
+        hlOpenings += open;
+        if (open > 0) hlReqsWithSeats += 1;
+        if (open > 0 && bill > 0 && pay > 0 && bill > pay) {
+          hlSpread += (bill - pay) * HRS_PER_WEEK * open;
+          hlRatedOpenings += open;
+        }
+      }
+      data.hitList = { reqs: hlRows.length, reqsWithSeats: hlReqsWithSeats,
+                       openings: hlOpenings, totalOpenings: hlTotalOpenings,
+                       ratedOpenings: hlRatedOpenings, spread: Math.round(hlSpread),
+                       basis: "rate-card: (bill - pay) x 40h x REMAINING openings (total - filled)" };
     } catch (e) {
       data.hitList = null; // DB not shared / unreachable -> tile just omits the hit-list line
     }
