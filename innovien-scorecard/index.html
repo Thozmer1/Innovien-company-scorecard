@@ -62,7 +62,16 @@
   #modal .x{background:none;border:0;font-size:22px;line-height:1;color:#8a8f8a;cursor:pointer;padding:0 4px}
   #modal .x:hover{color:var(--gray)}
   #modal .bd{overflow:auto;padding:0 20px 16px}
-  #modal table{width:100%;border-collapse:collapse;font-size:12px}
+  /* border-collapse:collapse silently defeats position:sticky on <th> in Chrome, so the
+     drill-through headers were never actually pinning. separate + 0 spacing looks
+     identical here (every border is a single border-bottom) and makes sticky work. */
+  /* The page-wide table rule sets overflow:hidden (for its rounded corners). On a
+     drill-through that makes the TABLE the clipping context, which silently kills
+     position:sticky on the header - it had never actually pinned. border-collapse
+     is separate here for the same reason: collapse also defeats sticky in Chrome.
+     Visually identical, every border is a single border-bottom. */
+  #modal table{width:100%;border-collapse:separate;border-spacing:0;font-size:12px;
+    overflow:visible;border:0;border-radius:0}
   #modal th{position:sticky;top:0;background:#fff;text-align:left;padding:8px 6px;border-bottom:1px solid #e2e6e2;color:#8a8f8a;text-transform:uppercase;font-size:10px;letter-spacing:.5px}
   #modal td{padding:6px;border-bottom:1px solid #f0f2f0}
   #modal td.num{text-align:right;font-variant-numeric:tabular-nums}
@@ -75,6 +84,19 @@
   .drill:hover{color:var(--green)}
   .drill:focus-visible{outline:2px solid var(--green);outline-offset:2px}
   #modal .tag{display:inline-block;font-size:10px;padding:1px 6px;border-radius:3px;background:#fdf0d5;color:#8a6d1f}
+  /* AM filter bar inside the drill-through body - sticks above the sticky thead */
+  #modal .fbar{position:sticky;top:0;z-index:3;background:#fff;display:flex;align-items:center;
+    gap:9px;flex-wrap:wrap;padding:10px 0 9px;border-bottom:1px solid #e2e6e2}
+  #modal .fbar label{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:#8a8f8a;font-weight:700}
+  #modal .fbar select{font-family:inherit;font-size:12.5px;padding:5px 8px;border:1px solid #d6dbd6;
+    border-radius:5px;background:#fff;color:var(--ink);max-width:340px}
+  #modal .fbar select:focus-visible{outline:2px solid var(--green);outline-offset:1px}
+  #modal .fbar .fnote{font-size:11.5px;color:#8a8f8a}
+  #modal .fbar .fnote b{color:var(--ink)}
+  #modal .fbar button{font-family:inherit;font-size:11.5px;padding:4px 9px;border:1px solid #d6dbd6;
+    border-radius:5px;background:#fff;color:#5f645f;cursor:pointer}
+  #modal .fbar button:hover{border-color:var(--green);color:var(--green)}
+  #modal table.hasfbar th{top:41px}
   #modal .hd .acts{display:flex;align-items:center;gap:8px;flex:0 0 auto}
   #modal .exp{background:none;border:1px solid #d6dbd6;border-radius:4px;color:#5f645f;font-size:11px;
               font-weight:600;letter-spacing:.3px;padding:5px 10px;cursor:pointer;white-space:nowrap}
@@ -568,54 +590,112 @@ function openFcTile(weeks,kind,label){
   const isIn=kind==='in';
   const rows=[];
   weeks.forEach(w=>((isIn?w.inDetail:w.outDetail)||[]).forEach(r=>{
-    rows.push({wk:w.weekStart,past:!!w.isPast,n:r.n,c:r.c,a:r.a,r:r.r,s:+r.s||0,x:r.x});
+    rows.push({wk:w.weekStart,past:!!w.isPast,n:r.n,c:r.c,a:(r.a||'(unassigned)'),r:r.r,s:+r.s||0,x:r.x});
   }));
   rows.sort((x,y)=> x.wk===y.wk ? (y.s-x.s) : (x.wk<y.wk?-1:1));
-  const total=rows.reduce((t,r)=>t+r.s,0);
+  const grand=rows.reduce((t,r)=>t+r.s,0);
   const wkTxt=d=>{const z=new Date(d+'T00:00:00');return (z.getMonth()+1)+'/'+z.getDate();};
+  const money=v=>(isIn?'':'-')+fcUsd(v).replace('-','');
+
+  // Per-AM roll-up, biggest book first. Shown inside the dropdown so the split is
+  // readable without selecting anything.
+  const byAm=new Map();
+  rows.forEach(r=>{const g=byAm.get(r.a)||{n:0,s:0};g.n++;g.s+=r.s;byAm.set(r.a,g);});
+  const ams=[...byAm.entries()].sort((x,y)=>y[1].s-x[1].s);
 
   document.getElementById('m-title').textContent=
     (isIn?'Locked-up spread':'Planned attrition')+' — '+label;
-  document.getElementById('m-sub').textContent = rows.length
-    ? rows.length+(isIn?(rows.length===1?' start booked':' starts booked')
-                       :(rows.length===1?' placement rolling off':' placements rolling off'))
-      +' · '+(isIn?'':'-')+fcUsd(total).replace('-','')+' weekly spread · '
-      +new Set(rows.map(r=>r.wk)).size+' week'+(new Set(rows.map(r=>r.wk)).size===1?'':'s')
-    : 'No placement detail in this quarter yet.';
 
-  let html='';
-  if(rows.length){
-    html='<table><thead><tr><th>Week</th><th>Consultant</th><th>Client</th><th>AM</th>'
-      +(isIn?'<th>Recruiter</th>':'')
-      +'<th class="num">Weekly $'+(isIn?'':' out')+'</th><th>'+(isIn?'Status':'Still active')
-      +'</th></tr></thead><tbody>';
-    rows.forEach(r=>{
-      const last = !isIn && String(r.x||'').toUpperCase()==='Y'
-        ? '<span class="tag">still active</span>' : (isIn?esc(r.x||''):'');
-      html+='<tr><td>'+wkTxt(r.wk)+(r.past?'':' <span class="tag">fcst</span>')+'</td>'
-        +'<td>'+esc(r.n)+'</td><td>'+esc(r.c)+'</td><td>'+esc(r.a)+'</td>'
-        +(isIn?'<td>'+esc(r.r)+'</td>':'')
-        +'<td class="num">'+fcUsd(r.s)+'</td><td>'+last+'</td></tr>';
-    });
-    html+='</tbody><tfoot><tr><td colspan="'+(isIn?5:4)+'">Total — matches the tile'+(isIn?'':' (rows are amounts going out)')+'</td>'
-      +'<td class="num">'+(isIn?'':'-')+fcUsd(total).replace('-','')+'</td><td></td></tr></tfoot></table>';
-    if(!isIn){
-      html+='<div class="empty">Booked roll-off only. The amber estimated-unplanned-attrition '
-        +'allowance is a model, not placements, so it has no detail and is not included here.</div>';
+  function paint(am){
+    const show = am ? rows.filter(r=>r.a===am) : rows;
+    const sub  = show.reduce((t,r)=>t+r.s,0);
+    const noun = n=>isIn ? (n===1?'start booked':'starts booked')
+                         : (n===1?'placement rolling off':'placements rolling off');
+    document.getElementById('m-sub').textContent = rows.length
+      ? (am ? show.length+' of '+rows.length+' '+noun(show.length)+' · '+money(sub)
+              +' of '+money(grand)+' · '+am
+            : rows.length+' '+noun(rows.length)+' · '+money(grand)+' weekly spread · '
+              +new Set(rows.map(r=>r.wk)).size+' weeks')
+      : 'No placement detail in this quarter yet.';
+
+    let html='';
+    if(rows.length){
+      html='<div class="fbar"><label for="fc-am">Account manager</label>'
+        +'<select id="fc-am"><option value="">All AMs — '+rows.length+' · '+money(grand)+'</option>'
+        +ams.map(([k,g])=>'<option value="'+esc(k)+'"'+(k===am?' selected':'')+'>'
+            +esc(k)+' — '+g.n+' · '+money(g.s)+'</option>').join('')
+        +'</select>'
+        +(am?'<button id="fc-clear">Show all</button>':'')
+        +'<span class="fnote">'+(am
+            ? 'Filtered — the export below is <b>'+esc(am)+'</b> only.'
+            : ams.length+' AM'+(ams.length===1?'':'s')+' · pick one to filter the list and the export')
+        +'</span></div>';
     }
-  } else {
-    html='<div class="empty">Nothing booked in this quarter yet.</div>';
+    if(show.length){
+      html+='<table class="hasfbar"><thead><tr><th>Week</th><th>Consultant</th><th>Client</th><th>AM</th>'
+        +(isIn?'<th>Recruiter</th>':'')
+        +'<th class="num">Weekly $'+(isIn?'':' out')+'</th><th>'+(isIn?'Status':'Still active')
+        +'</th></tr></thead><tbody>';
+      show.forEach(r=>{
+        const last = !isIn && String(r.x||'').toUpperCase()==='Y'
+          ? '<span class="tag">still active</span>' : (isIn?esc(r.x||''):'');
+        html+='<tr><td>'+wkTxt(r.wk)+(r.past?'':' <span class="tag">fcst</span>')+'</td>'
+          +'<td>'+esc(r.n)+'</td><td>'+esc(r.c)+'</td><td>'+esc(r.a)+'</td>'
+          +(isIn?'<td>'+esc(r.r)+'</td>':'')
+          +'<td class="num">'+fcUsd(r.s)+'</td><td>'+last+'</td></tr>';
+      });
+      // When filtered the footer must NOT claim to match the tile - the tile is the
+      // all-AM number and someone checking the two against each other has to be able
+      // to see why they differ.
+      html+='</tbody><tfoot><tr><td colspan="'+(isIn?5:4)+'">'
+        +(am ? esc(am)+' subtotal — tile shows '+money(grand)+' across all AMs'
+             : 'Total — matches the tile'+(isIn?'':' (rows are amounts going out)'))
+        +'</td><td class="num">'+money(sub)+'</td><td></td></tr></tfoot></table>';
+      if(!isIn){
+        html+='<div class="empty">Booked roll-off only. The amber estimated-unplanned-attrition '
+          +'allowance is a model, not placements, so it has no detail and is not included here.</div>';
+      }
+    } else if(rows.length){
+      html+='<div class="empty">Nothing for '+esc(am)+' in this quarter.</div>';
+    } else {
+      html='<div class="empty">Nothing booked in this quarter yet.</div>';
+    }
+    document.getElementById('m-body').innerHTML=html;
+
+    // The export always mirrors exactly what is on screen, filter included.
+    setExport('innovien-'+slug(isIn?'locked-up-spread':'planned-attrition')+'-'+slug(label)
+                +(am?'-'+slug(am):'')+'.csv',
+      ['Week','Consultant','Client','AM'].concat(isIn?['Recruiter']:[])
+        .concat(['Weekly Spread',isIn?'Status':'Still Active']),
+      show.map(r=>[r.wk,r.n,r.c,r.a].concat(isIn?[r.r]:[])
+        .concat([csvNum(isIn?r.s:-r.s),
+                 isIn?(r.x||''):(String(r.x||'').toUpperCase()==='Y'?'Yes':'No')])));
+
+    fcSticky();
+    const sel=document.getElementById('fc-am');
+    if(sel) sel.onchange=()=>paint(sel.value||null);
+    const clr=document.getElementById('fc-clear');
+    if(clr) clr.onclick=()=>paint(null);
   }
-  document.getElementById('m-body').innerHTML=html;
 
-  setExport('innovien-'+slug(isIn?'locked-up-spread':'planned-attrition')+'-'+slug(label)+'.csv',
-    ['Week','Consultant','Client','AM'].concat(isIn?['Recruiter']:[])
-      .concat(['Weekly Spread',isIn?'Status':'Still Active']),
-    rows.map(r=>[r.wk,r.n,r.c,r.a].concat(isIn?[r.r]:[])
-      .concat([csvNum(isIn?r.s:-r.s), isIn?(r.x||''):(String(r.x||'').toUpperCase()==='Y'?'Yes':'No')])));
-
+  paint(null);
   document.getElementById('modal').classList.add('open');
+  // The modal is display:none until the line above, so anything measured before it
+  // reads 0. Re-sync once it is actually laid out.
+  requestAnimationFrame(fcSticky);
 }
+
+// The filter bar and the table head are both sticky inside the scrolling body.
+// Hard-coding the head's offset leaves a band that scrolled rows show through, and
+// the bar's height changes when its note wraps - so measure it as rendered.
+function fcSticky(){
+  const fb=document.querySelector('#modal .fbar');
+  const tb=document.querySelector('#modal table.hasfbar');
+  if(!fb||!tb) return;
+  const h=fb.getBoundingClientRect().height;
+  if(h>0) tb.querySelectorAll('thead th').forEach(th=>{th.style.top=h+'px';});
+}
+addEventListener('resize',fcSticky);
 
 function closeDetail(){document.getElementById('modal').classList.remove('open');setExport(null,null,null);}
 
