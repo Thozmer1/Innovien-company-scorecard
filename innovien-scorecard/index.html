@@ -75,6 +75,18 @@
   .drill:hover{color:var(--green)}
   .drill:focus-visible{outline:2px solid var(--green);outline-offset:2px}
   #modal .tag{display:inline-block;font-size:10px;padding:1px 6px;border-radius:3px;background:#fdf0d5;color:#8a6d1f}
+  #modal .hd .acts{display:flex;align-items:center;gap:8px;flex:0 0 auto}
+  #modal .exp{background:none;border:1px solid #d6dbd6;border-radius:4px;color:#5f645f;font-size:11px;
+              font-weight:600;letter-spacing:.3px;padding:5px 10px;cursor:pointer;white-space:nowrap}
+  #modal .exp:hover{border-color:var(--green);color:var(--green)}
+  #modal .exp:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+  #modal tfoot td{padding:8px 6px;border-top:2px solid #e2e6e2;font-weight:700;color:var(--ink)}
+  /* clickable quarter-total tiles - same dashed-underline affordance as the lock-up tile */
+  .fcsum .s.clk{cursor:pointer}
+  .fcsum .s.clk:hover{background:#f7faf4;border-color:var(--green)}
+  .fcsum .s.clk .v{border-bottom:1px dashed var(--green);display:inline-block}
+  .fcsum .s.clk:hover .v{color:var(--green)}
+  .fcsum .s.clk:focus-visible{outline:2px solid var(--green);outline-offset:2px}
   canvas#forecastChart{cursor:pointer}
   table{width:100%;border-collapse:collapse;font-size:13.5px;background:#fff;border:1px solid var(--lgray);border-radius:8px;overflow:hidden}
   th{background:var(--green);text-align:left;padding:8px 10px;font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.3px}
@@ -109,7 +121,7 @@
       <div class="qtoggle"><span class="qlabel" id="fc-qlabel"></span><button id="fc-prev" title="Previous quarter" hidden>&#9664;</button><button id="fc-next" title="Next quarter">&#9654;</button></div>
     </div>
     <div class="card"><canvas id="forecastChart" height="110"></canvas></div>
-    <div style="font-size:11px;color:#8a8f8a;margin-top:4px">Click any In or Out bar to see the placements behind it. Amber = estimated unplanned attrition (no detail).</div>
+    <div style="font-size:11px;color:#8a8f8a;margin-top:4px">Click any In or Out bar — or the Locked-up spread / Planned attrition tile below — to see the placements behind it, and export the list. Amber = estimated unplanned attrition (a modelled allowance, so no detail).</div>
     <div class="fcsum" id="fc-summary"></div>
   </section>
   <section class="page" data-page="goals">
@@ -141,7 +153,7 @@
 </main>
 <div id="modal" role="dialog" aria-modal="true">
   <div class="box">
-    <div class="hd"><div><h3 id="m-title"></h3><div class="sub" id="m-sub"></div></div><button class="x" id="m-close" aria-label="Close">&times;</button></div>
+    <div class="hd"><div><h3 id="m-title"></h3><div class="sub" id="m-sub"></div></div><div class="acts"><button class="exp" id="m-export" hidden>Export CSV</button><button class="x" id="m-close" aria-label="Close">&times;</button></div></div>
     <div class="bd" id="m-body"></div>
   </div>
 </div>
@@ -356,8 +368,8 @@ function openDetail(weeks,di,i){
     ? rows.length+(rows.length===1?' placement':' placements')+' · '+fcUsd(total)+' weekly spread'
     : 'No placement detail available for this week.';
   let html='';
+  const sorted=rows.slice().sort((x,y)=>(+y.s||0)-(+x.s||0));
   if(rows.length){
-    const sorted=rows.slice().sort((x,y)=>(+y.s||0)-(+x.s||0));
     html='<table><thead><tr><th>Consultant</th><th>Client</th><th>AM</th>'
       +(isIn?'<th>Recruiter</th>':'')+'<th class="num">Weekly $</th><th>'+(isIn?'Status':'')+'</th></tr></thead><tbody>';
     sorted.forEach(r=>{
@@ -369,6 +381,12 @@ function openDetail(weeks,di,i){
     html+='</tbody></table>';
   }
   document.getElementById('m-body').innerHTML=html;
+  setExport('innovien-'+(isIn?'in-the-door':'out-the-door')+'-week-'+w.weekStart+'.csv',
+    ['Week','Consultant','Client','AM'].concat(isIn?['Recruiter']:[])
+      .concat(['Weekly Spread',isIn?'Status':'Still Active']),
+    sorted.map(r=>[w.weekStart,r.n,r.c,r.a].concat(isIn?[r.r]:[])
+      .concat([csvNum(isIn?r.s:-r.s),
+               isIn?(r.x||''):(String(r.x||'').toUpperCase()==='Y'?'Yes':'No')])));
   document.getElementById('modal').classList.add('open');
 }
 function openLockup(lu){
@@ -423,10 +441,106 @@ function openLockup(lu){
     }
   }
   document.getElementById('m-body').innerHTML=html;
+  // One file, both sections, distinguished by the Section column - the bottom list is
+  // explicitly NOT in the lock-up total, so it must stay labelled in the export too.
+  setExport('innovien-weekly-lock-up-'+(lu.weekStart||'current')+'.csv',
+    ['Section','Candidate','Company','Role','AM','Recruiter','Weekly Spread','Stage','Type'],
+    rows.map(r=>['Counted in lock-up',r.n,r.c,r.j,r.a,r.r,csvNum(r.s),
+                 (r.ob||r.x||''),(r.t||'')])
+      .concat(offs.map(r=>['Offer, no start form yet',r.n,r.c,r.j,(r.a||''),r.r,csvNum(r.s),
+                           (r.st||''),''])));
   document.getElementById('modal').classList.add('open');
 }
 function esc(v){return String(v==null?'':v).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
-function closeDetail(){document.getElementById('modal').classList.remove('open');}
+
+/* ---- CSV export ---------------------------------------------------------
+   Every modal that shows a list calls setExport() with the exact rows it just
+   rendered, so what downloads is always what is on screen - never a re-query
+   that could drift from it. A modal with nothing to export hides the button. */
+let MODAL_CSV=null;
+function setExport(filename,headers,rows){
+  MODAL_CSV=(rows&&rows.length)?{filename:filename,headers:headers,rows:rows}:null;
+  const b=document.getElementById('m-export'); if(b) b.hidden=!MODAL_CSV;
+}
+function csvCell(v){
+  const t=String(v==null?'':v);
+  return /[",\r\n]/.test(t) ? '"'+t.replace(/"/g,'""')+'"' : t;
+}
+function csvText(headers,rows){
+  return [headers.map(csvCell).join(',')].concat(rows.map(r=>r.map(csvCell).join(','))).join('\r\n');
+}
+function slug(v){return String(v||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');}
+function doExport(){
+  if(!MODAL_CSV) return;
+  // Leading BOM: without it Excel mis-reads UTF-8 and mangles accented names.
+  const blob=new Blob(['﻿'+csvText(MODAL_CSV.headers,MODAL_CSV.rows)],
+                      {type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob), a=document.createElement('a');
+  a.href=url; a.download=MODAL_CSV.filename; a.style.display='none';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+// Plain number for CSV - spreadsheets should get 1340, not "$1,340".
+function csvNum(v){return Math.round(+v||0);}
+
+/* ---- quarter-total tile drill-through -----------------------------------
+   The Locked-up spread and Planned attrition tiles are plain sums of the weekly
+   bars, so this modal is every week's detail concatenated. The footer total is
+   shown on purpose: it must always equal the number on the tile face. */
+function openFcTile(weeks,kind,label){
+  const isIn=kind==='in';
+  const rows=[];
+  weeks.forEach(w=>((isIn?w.inDetail:w.outDetail)||[]).forEach(r=>{
+    rows.push({wk:w.weekStart,past:!!w.isPast,n:r.n,c:r.c,a:r.a,r:r.r,s:+r.s||0,x:r.x});
+  }));
+  rows.sort((x,y)=> x.wk===y.wk ? (y.s-x.s) : (x.wk<y.wk?-1:1));
+  const total=rows.reduce((t,r)=>t+r.s,0);
+  const wkTxt=d=>{const z=new Date(d+'T00:00:00');return (z.getMonth()+1)+'/'+z.getDate();};
+
+  document.getElementById('m-title').textContent=
+    (isIn?'Locked-up spread':'Planned attrition')+' — '+label;
+  document.getElementById('m-sub').textContent = rows.length
+    ? rows.length+(isIn?(rows.length===1?' start booked':' starts booked')
+                       :(rows.length===1?' placement rolling off':' placements rolling off'))
+      +' · '+(isIn?'':'-')+fcUsd(total).replace('-','')+' weekly spread · '
+      +new Set(rows.map(r=>r.wk)).size+' week'+(new Set(rows.map(r=>r.wk)).size===1?'':'s')
+    : 'No placement detail in this quarter yet.';
+
+  let html='';
+  if(rows.length){
+    html='<table><thead><tr><th>Week</th><th>Consultant</th><th>Client</th><th>AM</th>'
+      +(isIn?'<th>Recruiter</th>':'')
+      +'<th class="num">Weekly $'+(isIn?'':' out')+'</th><th>'+(isIn?'Status':'Still active')
+      +'</th></tr></thead><tbody>';
+    rows.forEach(r=>{
+      const last = !isIn && String(r.x||'').toUpperCase()==='Y'
+        ? '<span class="tag">still active</span>' : (isIn?esc(r.x||''):'');
+      html+='<tr><td>'+wkTxt(r.wk)+(r.past?'':' <span class="tag">fcst</span>')+'</td>'
+        +'<td>'+esc(r.n)+'</td><td>'+esc(r.c)+'</td><td>'+esc(r.a)+'</td>'
+        +(isIn?'<td>'+esc(r.r)+'</td>':'')
+        +'<td class="num">'+fcUsd(r.s)+'</td><td>'+last+'</td></tr>';
+    });
+    html+='</tbody><tfoot><tr><td colspan="'+(isIn?5:4)+'">Total — matches the tile'+(isIn?'':' (rows are amounts going out)')+'</td>'
+      +'<td class="num">'+(isIn?'':'-')+fcUsd(total).replace('-','')+'</td><td></td></tr></tfoot></table>';
+    if(!isIn){
+      html+='<div class="empty">Booked roll-off only. The amber estimated-unplanned-attrition '
+        +'allowance is a model, not placements, so it has no detail and is not included here.</div>';
+    }
+  } else {
+    html='<div class="empty">Nothing booked in this quarter yet.</div>';
+  }
+  document.getElementById('m-body').innerHTML=html;
+
+  setExport('innovien-'+slug(isIn?'locked-up-spread':'planned-attrition')+'-'+slug(label)+'.csv',
+    ['Week','Consultant','Client','AM'].concat(isIn?['Recruiter']:[])
+      .concat(['Weekly Spread',isIn?'Status':'Still Active']),
+    rows.map(r=>[r.wk,r.n,r.c,r.a].concat(isIn?[r.r]:[])
+      .concat([csvNum(isIn?r.s:-r.s), isIn?(r.x||''):(String(r.x||'').toUpperCase()==='Y'?'Yes':'No')])));
+
+  document.getElementById('modal').classList.add('open');
+}
+
+function closeDetail(){document.getElementById('modal').classList.remove('open');setExport(null,null,null);}
 
 function renderFcSummary(weeks,label){
   const el=document.getElementById('fc-summary'); if(!el) return;
@@ -438,16 +552,32 @@ function renderFcSummary(weeks,label){
   const unp=weeks.reduce((a,w)=>a+(w.unplannedOut||0),0);
   const unpW=weeks.filter(w=>(w.unplannedOut||0)>0).length;
   const net=lock-pout-unp;
-  const card=(sw,l,v,sub,cls)=>'<div class="s'+(cls||'')+'"><div class="l">'+
+  const card=(sw,l,v,sub,cls,id)=>'<div class="s'+(cls||'')+'"'+
+    (id?' id="'+id+'" role="button" tabindex="0" title="See the placements behind this number"':'')+
+    '><div class="l">'+
     (sw?'<i style="background:'+sw+'"></i>':'')+l+'</div><div class="v">'+v+
     '</div><div class="sub">'+sub+'</div></div>';
+  // Locked-up spread and Planned attrition are sums of per-placement detail, so they open.
+  // Unplanned is a modelled allowance and Net change is arithmetic on the other three -
+  // neither has a list behind it, so neither is clickable. (Josh, 2026-10-07)
+  const canIn = weeks.some(w=>(w.inDetail||[]).length);
+  const canOut= weeks.some(w=>(w.outDetail||[]).length);
   el.innerHTML =
-    card('#B0DD66','Locked-up spread',usd(lock),lockN+' start'+(lockN===1?'':'s')+' booked')+
-    card('#747777','Planned attrition','-'+usd(pout),poutN+' placement'+(poutN===1?'':'s'))+
+    card('#B0DD66','Locked-up spread',usd(lock),lockN+' start'+(lockN===1?'':'s')+' booked',
+         canIn?' clk':'', canIn?'fcs-in':'')+
+    card('#747777','Planned attrition','-'+usd(pout),poutN+' placement'+(poutN===1?'':'s'),
+         canOut?' clk':'', canOut?'fcs-out':'')+
     card('rgba(214,158,46,0.75)','Unplanned (est.)',unp?'-'+usd(unp):'—',
          unp?unpW+' wk'+(unpW===1?'':'s')+' x '+usd(unp/unpW):'not applied')+
     card('','Net change',(net<0?'-':'+')+usd(net),
          label+(unp?' · booked + est.':' · as booked today'),' net');
+  const bind=(id,kind)=>{
+    const n=document.getElementById(id); if(!n) return;
+    const go=()=>openFcTile(weeks,kind,label);
+    n.onclick=go;
+    n.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go();}};
+  };
+  bind('fcs-in','in'); bind('fcs-out','out');
 }
 function drawForecast(weeks){
   const ctx=document.getElementById('forecastChart'); if(chart1)chart1.destroy();
@@ -508,6 +638,7 @@ async function load(forceLive){
 document.getElementById('fc-next').onclick=()=>{FC.view='next';renderForecast();};
 document.getElementById('fc-prev').onclick=()=>{FC.view='cur';renderForecast();};
 document.getElementById('m-close').onclick=closeDetail;
+document.getElementById('m-export').onclick=doExport;
 document.getElementById('modal').onclick=e=>{if(e.target.id==='modal')closeDetail();};
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDetail();});
 nav(); load(false);
