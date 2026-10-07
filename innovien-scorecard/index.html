@@ -87,6 +87,54 @@
   .fcsum .s.clk .v{border-bottom:1px dashed var(--green);display:inline-block}
   .fcsum .s.clk:hover .v{color:var(--green)}
   .fcsum .s.clk:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+  /* ---- live raffle wheel (presentation mode) ---- */
+  #raffle-stage{position:fixed;inset:0;z-index:80;background:#1d2420;display:none;
+    flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:16px}
+  #raffle-stage.open{display:flex}
+  #raffle-stage .rs-top{position:absolute;top:14px;left:0;right:0;display:flex;align-items:center;
+    justify-content:space-between;padding:0 20px;color:#dfe6d8}
+  #raffle-stage .rs-ttl{font-size:17px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase}
+  #raffle-stage .rs-ttl span{color:var(--green)}
+  #raffle-stage .rs-note{font-size:12px;color:#9aa89a;margin-top:2px}
+  #raffle-stage .rs-btns{display:flex;gap:8px;align-items:center}
+  #raffle-stage button{font-family:inherit;cursor:pointer;border-radius:6px;border:1px solid #46514a;
+    background:#2a332d;color:#dfe6d8;font-size:13px;padding:7px 12px}
+  #raffle-stage button:hover{border-color:var(--green);color:var(--green)}
+  #raffle-stage button.go{background:var(--green);color:#1d2420;border-color:var(--green);
+    font-size:19px;font-weight:700;padding:13px 40px;letter-spacing:1.2px;text-transform:uppercase}
+  #raffle-stage button.go:hover{filter:brightness(1.08);color:#1d2420}
+  #raffle-stage button.go:disabled{opacity:.4;cursor:default;filter:none}
+  #raffle-stage button.ghost{font-size:12px;background:transparent;color:#8d9a8d}
+  .wheelwrap{position:relative;display:flex;align-items:center;justify-content:center}
+  #wheel{display:block;max-width:min(76vh,760px);max-height:76vh;width:100%;height:auto}
+  /* pointer sits at 12 o'clock and is what the winning slice stops under */
+  .wheelwrap .ptr{position:absolute;top:-4px;left:50%;transform:translateX(-50%);
+    width:0;height:0;border-left:17px solid transparent;border-right:17px solid transparent;
+    border-top:30px solid var(--green);filter:drop-shadow(0 2px 3px rgba(0,0,0,.5));z-index:2}
+  #confetti{position:fixed;inset:0;pointer-events:none;z-index:82;display:none}
+  #confetti.on{display:block}
+  #rs-winner{position:fixed;inset:0;z-index:83;display:none;align-items:center;justify-content:center;
+    background:rgba(16,22,18,.93);padding:20px}
+  #rs-winner.open{display:flex}
+  #rs-winner .w{text-align:center;max-width:860px;animation:wpop .45s cubic-bezier(.2,1.5,.4,1)}
+  @keyframes wpop{from{transform:scale(.8);opacity:0}to{transform:scale(1);opacity:1}}
+  #rs-winner .kicker{font-size:15px;letter-spacing:3px;text-transform:uppercase;color:var(--green);font-weight:700}
+  #rs-winner .nm{font-size:clamp(40px,8.5vw,104px);font-weight:800;color:#fff;line-height:1.05;margin:10px 0 6px}
+  #rs-winner .amt{font-size:clamp(22px,3.4vw,40px);font-weight:700;color:var(--green)}
+  #rs-winner .why{font-size:15px;color:#b9c4b6;margin-top:16px;line-height:1.6}
+  #rs-winner .why b{color:#e6ede2}
+  #rs-winner .audit{font-size:11px;color:#79867a;margin-top:14px;font-family:ui-monospace,Consolas,monospace}
+  #rs-winner .wbtns{margin-top:22px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  #rs-winner button{font-family:inherit;cursor:pointer;border-radius:6px;padding:10px 18px;font-size:14px;
+    border:1px solid #46514a;background:#2a332d;color:#dfe6d8}
+  #rs-winner button:hover{border-color:var(--green);color:var(--green)}
+  #rs-winner button.prime{background:var(--green);color:#1d2420;border-color:var(--green);font-weight:700}
+  .rafflebar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:14px 0 0}
+  .rafflebar button{font-family:inherit;cursor:pointer;background:var(--green);color:#2c2e2e;font-weight:700;
+    border:1px solid var(--green);border-radius:8px;padding:11px 22px;font-size:15px;letter-spacing:.4px}
+  .rafflebar button:hover{filter:brightness(1.06)}
+  .rafflebar button:disabled{background:#e7eae4;border-color:var(--lgray);color:#9aa09a;cursor:default;filter:none}
+  .rafflebar .hint{font-size:12.5px;color:var(--gray)}
   canvas#forecastChart{cursor:pointer}
   table{width:100%;border-collapse:collapse;font-size:13.5px;background:#fff;border:1px solid var(--lgray);border-radius:8px;overflow:hidden}
   th{background:var(--green);text-align:left;padding:8px 10px;font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.3px}
@@ -141,6 +189,7 @@
   </section>
   <section class="page" data-page="raffle">
     <div class="grid kpis" id="kpi-raffle"></div>
+    <div class="rafflebar" id="raffle-bar"></div>
     <h2 class="sec">Progress to Next Drawing</h2>
     <div class="card" id="raffle-progress"></div>
     <div class="grid two" style="margin-top:14px">
@@ -151,6 +200,33 @@
     <div class="card" id="raffle-intro" style="border-left:5px solid var(--green)"></div>
   </section>
 </main>
+<div id="raffle-stage" role="dialog" aria-modal="true" aria-label="Live raffle draw">
+  <div class="rs-top">
+    <div><div class="rs-ttl" id="rs-title"></div><div class="rs-note" id="rs-note"></div></div>
+    <div class="rs-btns">
+      <button id="rs-sound" title="Toggle sound">&#128266; Sound on</button>
+      <button id="rs-exit">Exit</button>
+    </div>
+  </div>
+  <div class="wheelwrap"><div class="ptr"></div><canvas id="wheel" width="760" height="760"></canvas></div>
+  <button class="go" id="rs-spin">Spin</button>
+  <button class="ghost" id="rs-legend-t"></button>
+</div>
+<canvas id="confetti"></canvas>
+<div id="rs-winner" role="dialog" aria-modal="true" aria-label="Raffle winner">
+  <div class="w">
+    <div class="kicker" id="rw-kicker"></div>
+    <div class="nm" id="rw-name"></div>
+    <div class="amt" id="rw-amt"></div>
+    <div class="why" id="rw-why"></div>
+    <div class="audit" id="rw-audit"></div>
+    <div class="wbtns">
+      <button class="prime" id="rw-done">Done</button>
+      <button id="rw-copy">Copy result</button>
+      <button id="rw-again">Re-spin (discards this result)</button>
+    </div>
+  </div>
+</div>
 <div id="modal" role="dialog" aria-modal="true">
   <div class="box">
     <div class="hd"><div><h3 id="m-title"></h3><div class="sub" id="m-sub"></div></div><div class="acts"><button class="exp" id="m-export" hidden>Export CSV</button><button class="x" id="m-close" aria-label="Close">&times;</button></div></div>
@@ -310,6 +386,7 @@ function render(d){
     {h:'Wkly Spread',r:1,f:r=>fmtUsd(r.weeklySpread)},{h:'AM',f:r=>r.amOwner},{h:'Recruiter',f:r=>r.recruiter||'—'},
     {h:'Started',r:1,f:r=>r.startDate?r.startDate.slice(5):'—'}]);
   }
+  renderRaffleBar(rf);
 
   FC.cur = sc.forecast || [];
   FC.next = (sc.forecastNext && sc.forecastNext.weeks && sc.forecastNext.weeks.length) ? sc.forecastNext : null;
@@ -623,6 +700,286 @@ function drawForecast(weeks){
       yCum:{position:'right',grid:{drawOnChartArea:false},title:{display:true,text:'Cumulative growth'},ticks:{callback:v=>'$'+(v/1000)+'k'}}}}});
 }
 
+/* =========================== LIVE RAFFLE ==================================
+   Drawn live in front of the team, so the rules here matter more than the
+   animation:
+     1. The winning ticket is chosen by crypto.getRandomValues BEFORE the wheel
+        moves, with rejection sampling so there is no modulo bias. The animation
+        is then aimed at that ticket. The spin never decides anything.
+     2. After the wheel stops, the slice actually under the pointer is recomputed
+        from the final rotation and compared to the ticket that was drawn. If they
+        ever disagree the result is withheld rather than announced wrong.
+     3. One slice per ticket, so the room can count why someone has better odds.
+        Slices are dealt round-robin so one person's tickets are spread around the
+        wheel instead of sitting in a block.
+   Nothing is stored: closing the stage clears the result. (Taylor, 2026-10-07)
+========================================================================== */
+const RAFFLE={rf:null,tickets:[],rot:0,spinning:false,result:null,sound:true,audio:null,raf:0};
+const TAU=Math.PI*2;
+
+// Unbiased integer in [0,n). Plain `% n` over-weights the low indices; rejecting
+// the ragged tail of the uint32 range removes that.
+function randIdx(n){
+  const a=new Uint32Array(1), lim=Math.floor(4294967296/n)*n;
+  let v; do{ crypto.getRandomValues(a); v=a[0]; }while(v>=lim);
+  return v%n;
+}
+// One ticket per slot earned, built from the drawing's own starts so every slice
+// knows which consultant earned it and in which role.
+function raffleTickets(rf){
+  const t=[];
+  (rf&&rf.currentMembers||[]).forEach(m=>{
+    if(m.am)        t.push({person:m.am,        role:'AM',        consultant:m.name, spread:m.spread});
+    if(m.recruiter) t.push({person:m.recruiter, role:'Recruiter', consultant:m.name, spread:m.spread});
+  });
+  return t;
+}
+function ticketCounts(tix){
+  const m=new Map(); tix.forEach(t=>m.set(t.person,(m.get(t.person)||0)+1)); return m;
+}
+// The tab's leaderboard is built server-side from the same starts. If our count
+// disagrees with it, something upstream is wrong and we do not run a live draw.
+function raffleMismatch(tix,leaderboard){
+  const mine=ticketCounts(tix), bad=[];
+  (leaderboard||[]).forEach(l=>{
+    const got=mine.get(l.name)||0;
+    if(got!==l.tickets) bad.push(`${l.name}: wheel ${got} vs leaderboard ${l.tickets}`);
+    mine.delete(l.name);
+  });
+  mine.forEach((v,k)=>bad.push(`${k}: ${v} on the wheel but absent from the leaderboard`));
+  return bad;
+}
+// Deal round-robin from the biggest holders, then repair any neighbours that ended
+// up matching. Round-robin alone clusters the biggest holder's last tickets at the
+// tail (the small holders run out first), and three of one name side by side reads
+// as a bug to a room watching a prize draw. The wheel is a circle, so position 0 and
+// the last position count as neighbours too. This is purely cosmetic - it cannot
+// change anyone's odds, because odds depend only on how MANY slices a person has.
+function spreadTickets(tix){
+  const by=new Map();
+  tix.forEach(t=>{ if(!by.has(t.person)) by.set(t.person,[]); by.get(t.person).push(t); });
+  const groups=[...by.values()].sort((a,b)=>b.length-a.length);
+  const out=[]; let placed=true;
+  while(placed){ placed=false; for(const g of groups){ if(g.length){ out.push(g.shift()); placed=true; } } }
+
+  const n=out.length, nm=i=>out[((i%n)+n)%n].person;
+  const clash=i=>nm(i)===nm(i-1)||nm(i)===nm(i+1);
+  for(let pass=0; pass<4; pass++){
+    let fixed=false;
+    for(let i=0;i<n;i++){
+      if(nm(i)!==nm(i+1)) continue;                 // i and its neighbour differ - fine
+      const a=(i+1)%n;
+      for(let k=1;k<n;k++){
+        const b=(a+k)%n;
+        if(nm(b)===nm(a)) continue;                 // same person, pointless
+        // the swap must not create a new clash at either end
+        if(nm(b)===nm(a-1)||nm(b)===nm(a+1)) continue;
+        if(nm(a)===nm(b-1)||nm(a)===nm(b+1)) continue;
+        const t=out[a]; out[a]=out[b]; out[b]=t; fixed=true; break;
+      }
+    }
+    if(!fixed) break;
+  }
+  return out;
+}
+// Slice i spans [i*step, (i+1)*step) measured clockwise from 12 o'clock, so the
+// index under the pointer is a pure function of the rotation.
+function landedIdx(rot,n){
+  const step=TAU/n;
+  return Math.floor(((((-rot)%TAU)+TAU)%TAU)/step)%n;
+}
+function rotationFor(idx,n,jitter){
+  const step=TAU/n;
+  return -(idx+0.5)*step + (jitter||0);
+}
+
+function beep(freq,dur,vol,type){
+  if(!RAFFLE.sound||!RAFFLE.audio) return;
+  const ac=RAFFLE.audio, o=ac.createOscillator(), g=ac.createGain();
+  o.type=type||'square'; o.frequency.value=freq;
+  o.connect(g); g.connect(ac.destination);
+  const t=ac.currentTime;
+  g.gain.setValueAtTime(vol,t); g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+  o.start(t); o.stop(t+dur+0.02);
+}
+function fanfare(){
+  if(!RAFFLE.sound||!RAFFLE.audio) return;
+  [[523,0],[659,110],[784,220],[1047,330]].forEach(([f,d])=>
+    setTimeout(()=>beep(f,0.34,0.11,'triangle'),d));
+}
+
+function drawWheel(){
+  const cv=document.getElementById('wheel'); if(!cv) return;
+  const g=cv.getContext('2d'), n=RAFFLE.tickets.length; if(!n) return;
+  const W=cv.width, R=W/2, step=TAU/n, rot=RAFFLE.rot;
+  const win=RAFFLE.result&&!RAFFLE.spinning ? RAFFLE.result.idx : -1;
+  g.clearRect(0,0,W,W);
+  g.save(); g.translate(R,R); g.rotate(rot);
+  const fs=Math.max(9,Math.min(20,520/n+6));
+  for(let i=0;i<n;i++){
+    const a0=-Math.PI/2+i*step;
+    g.beginPath(); g.moveTo(0,0); g.arc(0,0,R-8,a0,a0+step); g.closePath();
+    g.fillStyle = i===win ? '#FFD166' : (i%2 ? '#93c452' : '#B0DD66');
+    g.fill(); g.strokeStyle='rgba(29,36,32,.22)'; g.lineWidth=1; g.stroke();
+    // Radial labels read outward from the hub. On the left half of the SCREEN that
+    // would put them upside down, so those get rotated 180 degrees and right-aligned
+    // from the other end - the whole wheel stays readable from the back of the room
+    // at every rotation, not just at rest.
+    const mid=a0+step/2, flip=Math.cos(rot+mid)<0;
+    g.save(); g.rotate(mid); if(flip) g.rotate(Math.PI);
+    g.textAlign=flip?'left':'right'; g.textBaseline='middle';
+    g.fillStyle='#22301f'; g.font=(i===win?'800 ':'600 ')+fs+'px Calibri,Segoe UI,sans-serif';
+    g.fillText(RAFFLE.tickets[i].person, flip?-(R-22):(R-22), 0);
+    g.restore();
+  }
+  g.restore();
+  g.beginPath(); g.arc(R,R,R*0.165,0,TAU); g.fillStyle='#1d2420'; g.fill();
+  g.strokeStyle='#B0DD66'; g.lineWidth=3; g.stroke();
+  g.textAlign='center'; g.textBaseline='middle';
+  g.fillStyle='#B0DD66'; g.font='700 '+Math.round(R*0.11)+'px Calibri,Segoe UI,sans-serif';
+  g.fillText('$'+((RAFFLE.rf&&RAFFLE.rf.threshold)||1250).toLocaleString(),R,R-R*0.035);
+  g.fillStyle='#cfd9cb'; g.font='600 '+Math.round(R*0.045)+'px Calibri,Segoe UI,sans-serif';
+  g.fillText(n+' tickets',R,R+R*0.06);
+}
+
+function spinRaffle(){
+  if(RAFFLE.spinning||!RAFFLE.tickets.length) return;
+  const n=RAFFLE.tickets.length;
+  if(!RAFFLE.audio){
+    try{ RAFFLE.audio=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){}
+  }
+  if(RAFFLE.audio&&RAFFLE.audio.state==='suspended') RAFFLE.audio.resume();
+
+  // 1. pick the winner first - the animation is only ever aimed at this.
+  const idx=randIdx(n);
+  const step=TAU/n;
+  const jitter=(Math.random()-0.5)*step*0.7;      // stays well inside the slice
+  const target=rotationFor(idx,n,jitter);
+  const turns=6+randIdx(4);
+  const from=RAFFLE.rot;
+  const delta=turns*TAU+(((target-from)%TAU)+TAU)%TAU;
+  const DUR=8200;
+
+  RAFFLE.spinning=true; RAFFLE.result=null;
+  document.getElementById('rs-spin').disabled=true;
+  document.getElementById('rs-spin').textContent='Spinning…';
+  let lastTick=Math.floor(from/step), t0=null;
+
+  const frame=ts=>{
+    if(t0===null) t0=ts;
+    const t=Math.min(1,(ts-t0)/DUR);
+    const e=1-Math.pow(1-t,5);                     // fast off the line, long slow finish
+    RAFFLE.rot=from+delta*e;
+    const tick=Math.floor(RAFFLE.rot/step);
+    if(tick!==lastTick){ if(t>0.12||tick-lastTick<3) beep(1180,0.022,0.05); lastTick=tick; }
+    drawWheel();
+    if(t<1){ RAFFLE.raf=requestAnimationFrame(frame); return; }
+
+    // 2. recompute what the pointer is actually over and refuse to announce a
+    //    winner the wheel does not agree with.
+    RAFFLE.rot=from+delta;
+    const landed=landedIdx(RAFFLE.rot,n);
+    RAFFLE.spinning=false;
+    const btn=document.getElementById('rs-spin');
+    btn.disabled=false; btn.textContent='Spin again';
+    if(landed!==idx){
+      drawWheel();
+      alert('Raffle aborted: the wheel stopped on slice '+landed+' but the drawn ticket was '
+            +idx+'. Nothing has been awarded — please re-spin and report this.');
+      return;
+    }
+    RAFFLE.result={idx:idx,ticket:RAFFLE.tickets[idx],turns:turns};
+    drawWheel();
+    revealWinner();
+  };
+  RAFFLE.raf=requestAnimationFrame(frame);
+}
+
+function revealWinner(){
+  const r=RAFFLE.result, rf=RAFFLE.rf, n=RAFFLE.tickets.length;
+  const held=ticketCounts(RAFFLE.tickets).get(r.ticket.person)||1;
+  const earned=RAFFLE.tickets.filter(t=>t.person===r.ticket.person);
+  document.getElementById('rw-kicker').textContent='Drawing #'+rf.currentDrawingNo+' — Winner';
+  document.getElementById('rw-name').textContent=r.ticket.person;
+  document.getElementById('rw-amt').textContent='$'+(rf.threshold||1250).toLocaleString()+' Raffle';
+  document.getElementById('rw-why').innerHTML=
+    'Won on the ticket earned as <b>'+esc(r.ticket.role)+'</b> for <b>'+esc(r.ticket.consultant)+'</b>'
+    +' ('+fcUsd(r.ticket.spread)+'/wk).<br>Held <b>'+held+'</b> of <b>'+n+'</b> tickets — '
+    +((held/n)*100).toFixed(1)+'% of the wheel — from: '
+    +earned.map(t=>esc(t.consultant)+' ('+t.role.toLowerCase()+')').join(', ')+'.';
+  document.getElementById('rw-audit').textContent=
+    'ticket '+(r.idx+1)+' of '+n+' · crypto.getRandomValues · '+new Date().toLocaleString();
+  document.getElementById('rs-winner').classList.add('open');
+  fanfare(); confettiBurst();
+}
+
+function confettiBurst(){
+  const cv=document.getElementById('confetti'); if(!cv) return;
+  cv.width=innerWidth; cv.height=innerHeight; cv.classList.add('on');
+  const g=cv.getContext('2d'), cols=['#B0DD66','#FFD166','#ffffff','#93c452','#7fb3ff'];
+  const P=[...Array(180)].map(()=>({x:Math.random()*cv.width,y:-20-Math.random()*cv.height*0.5,
+    w:6+Math.random()*7,h:9+Math.random()*11,vy:2.2+Math.random()*3.4,vx:(Math.random()-0.5)*2.2,
+    a:Math.random()*TAU,va:(Math.random()-0.5)*0.26,c:cols[(Math.random()*cols.length)|0]}));
+  const t0=performance.now();
+  (function step(ts){
+    g.clearRect(0,0,cv.width,cv.height);
+    P.forEach(p=>{ p.x+=p.vx; p.y+=p.vy; p.a+=p.va;
+      g.save(); g.translate(p.x,p.y); g.rotate(p.a); g.fillStyle=p.c;
+      g.fillRect(-p.w/2,-p.h/2,p.w,p.h); g.restore(); });
+    if(ts-t0<5200) requestAnimationFrame(step);
+    else { g.clearRect(0,0,cv.width,cv.height); cv.classList.remove('on'); }
+  })(t0);
+}
+
+function openRaffleStage(){
+  const rf=RAFFLE.rf; if(!rf) return;
+  const tix=raffleTickets(rf);
+  const bad=raffleMismatch(tix,rf.leaderboard);
+  if(bad.length){
+    alert('Not opening the raffle — the wheel and the ticket leaderboard disagree:\n\n'
+          +bad.join('\n')+'\n\nFix the data before drawing live.');
+    return;
+  }
+  RAFFLE.tickets=spreadTickets(tix);
+  RAFFLE.rot=0; RAFFLE.result=null; RAFFLE.spinning=false;
+  const people=ticketCounts(RAFFLE.tickets).size;
+  document.getElementById('rs-title').innerHTML='$'+(rf.threshold||1250).toLocaleString()
+    +' Raffle — <span>Drawing #'+rf.currentDrawingNo+'</span>';
+  document.getElementById('rs-note').textContent=
+    RAFFLE.tickets.length+' tickets · '+people+' people · '
+    +(rf.currentReady ? 'all '+rf.batchSize+' qualifying starts in'
+                      : 'PREVIEW — drawing only '+rf.currentCount+'/'+rf.batchSize+' complete');
+  const top=[...ticketCounts(RAFFLE.tickets).entries()].sort((a,b)=>b[1]-a[1]).slice(0,3)
+    .map(([k,v])=>k+' '+v).join('  ·  ');
+  const lg=document.getElementById('rs-legend-t');
+  lg.textContent='Best odds: '+top; lg.style.pointerEvents='none'; lg.style.border='0';
+  const sp=document.getElementById('rs-spin'); sp.disabled=false; sp.textContent='Spin';
+  document.getElementById('raffle-stage').classList.add('open');
+  drawWheel();
+}
+function closeRaffleStage(){
+  cancelAnimationFrame(RAFFLE.raf);
+  RAFFLE.spinning=false; RAFFLE.result=null;          // nothing is stored, by design
+  document.getElementById('rs-winner').classList.remove('open');
+  document.getElementById('confetti').classList.remove('on');
+  document.getElementById('raffle-stage').classList.remove('open');
+}
+function renderRaffleBar(rf){
+  const el=document.getElementById('raffle-bar'); if(!el) return;
+  RAFFLE.rf=rf;
+  const tix=raffleTickets(rf);
+  if(!tix.length){
+    el.innerHTML='<span class="hint">No tickets in this drawing yet — the live wheel '
+      +'appears once the first qualifying start lands.</span>';
+    return;
+  }
+  const people=ticketCounts(tix).size;
+  el.innerHTML='<button id="rb-go">▶ Draw Drawing #'+rf.currentDrawingNo+' live</button>'
+    +'<span class="hint">'+tix.length+' tickets · '+people+' people · opens full screen for the room'
+    +(rf.currentReady?'':' · <b>preview only, drawing not complete</b>')+'</span>';
+  document.getElementById('rb-go').onclick=openRaffleStage;
+}
+
 async function load(forceLive){
   const banner=document.getElementById('banner');
   try{
@@ -639,8 +996,38 @@ document.getElementById('fc-next').onclick=()=>{FC.view='next';renderForecast();
 document.getElementById('fc-prev').onclick=()=>{FC.view='cur';renderForecast();};
 document.getElementById('m-close').onclick=closeDetail;
 document.getElementById('m-export').onclick=doExport;
+document.getElementById('rs-exit').onclick=closeRaffleStage;
+document.getElementById('rs-spin').onclick=spinRaffle;
+document.getElementById('rs-sound').onclick=function(){
+  RAFFLE.sound=!RAFFLE.sound;
+  this.innerHTML=RAFFLE.sound?'\uD83D\uDD0A Sound on':'\uD83D\uDD07 Sound off';
+};
+document.getElementById('rw-done').onclick=closeRaffleStage;
+document.getElementById('rw-again').onclick=function(){
+  document.getElementById('rs-winner').classList.remove('open');
+  document.getElementById('confetti').classList.remove('on');
+  RAFFLE.result=null; drawWheel();
+};
+document.getElementById('rw-copy').onclick=function(){
+  const r=RAFFLE.result; if(!r) return;
+  const rf=RAFFLE.rf, n=RAFFLE.tickets.length;
+  const held=ticketCounts(RAFFLE.tickets).get(r.ticket.person)||1;
+  const txt='$'+(rf.threshold||1250).toLocaleString()+' Raffle \u2014 Drawing #'+rf.currentDrawingNo
+    +'\nWinner: '+r.ticket.person
+    +'\nWinning ticket: '+r.ticket.role+' on '+r.ticket.consultant+' ('+fcUsd(r.ticket.spread)+'/wk)'
+    +'\nOdds: '+held+' of '+n+' tickets ('+((held/n)*100).toFixed(1)+'%)'
+    +'\nDrawn: '+new Date().toLocaleString();
+  const done=()=>{ this.textContent='Copied'; setTimeout(()=>this.textContent='Copy result',1600); };
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(done,()=>prompt('Copy the result:',txt));
+  } else prompt('Copy the result:',txt);
+};
 document.getElementById('modal').onclick=e=>{if(e.target.id==='modal')closeDetail();};
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDetail();});
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Escape') return;
+  if(document.getElementById('raffle-stage').classList.contains('open')) closeRaffleStage();
+  else closeDetail();
+});
 nav(); load(false);
 </script>
 </body>
