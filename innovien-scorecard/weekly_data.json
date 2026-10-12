@@ -8,17 +8,17 @@
     "baseline_week_start": "2026-03-23",
     "quarter_start": "2026-03-30",
     "quarter_end": "2026-06-28",
-    "rebuilt_at": "2026-10-08T17:35:01.064905+00:00",
+    "rebuilt_at": "2026-10-12T11:40:28.160100+00:00",
     "rebuild_source": "comtrak-notion-hybrid-sql",
     "partial_note": "2026-09-11: queries repointed to the columns the Comtrak API populates on every row \u2014 ESF/PSF 'Est Weekly Spread' (was 'Est Spread'/'Weekly Spread'), 'AM' (was 'Account Manager'), Contact Activity 'Owner' (was 'AM'), Recruiter Activity COALESCE(Employee, Record Id). Starts/pending/dump-in/lock-up/forecast/raffle rebuilt on the corrected columns. Close ratio, meetings, subs and hours still carried forward from 2026-09-10: their source tables lag (Close Ratio ends 8/26, Recruiter Activity 8/31, Hours 8/24)."
   },
   "company": {
-    "weekly_spread": 329002.1,
+    "weekly_spread": 312046.39,
     "qtr_start_spread": 330413.65,
     "year_total": 6594349.07,
-    "weekly_spread_week": "2026-09-21",
-    "weekly_spread_straight_time": 317281.49,
-    "weekly_spread_consultants": 294,
+    "weekly_spread_week": "2026-09-28",
+    "weekly_spread_straight_time": 299672.54,
+    "weekly_spread_consultants": 293,
     "weekly_spread_basis": "Comtrak Raw \u2013 Spread (API), Office Manager rows (every placement once at 100%), all hours types"
   },
   "by_am": [
@@ -306,13 +306,13 @@
     }
   ],
   "scorecard": {
-    "net_new_starts": 11,
-    "avg_start_spread": 1404,
-    "pending_count": 23,
-    "pending_avg_spread": 1264,
-    "pending_total_spread": 29083,
+    "net_new_starts": 12,
+    "avg_start_spread": 1374,
+    "pending_count": 22,
+    "pending_avg_spread": 1274,
+    "pending_total_spread": 28033,
     "lockup_count": null,
-    "lockup_spread": 4472,
+    "lockup_spread": 0,
     "dumpin_count": 14,
     "dumpin_spread": 13395,
     "active_consultants": 279,
@@ -323,7 +323,7 @@
         "weekStart": "2026-09-28",
         "plannedIn": 9711,
         "inCount": 5,
-        "plannedOut": 11345,
+        "plannedOut": 11344,
         "inDetail": [
           {
             "n": "Dwan Bryant",
@@ -434,7 +434,7 @@
             "n": "Kahlil Covington / 003208",
             "c": "Collins Aerospace",
             "a": "Mollie Ferguson",
-            "s": 524,
+            "s": 523,
             "x": "Y"
           },
           {
@@ -498,7 +498,7 @@
             "a": "Brie Branting",
             "r": "Jamie Houvig",
             "s": 1050,
-            "x": "Pending Payroll"
+            "x": "Complete"
           },
           {
             "n": "Phuong Khanh Nguyen",
@@ -547,7 +547,7 @@
             "x": "Perm"
           }
         ],
-        "unplannedOut": 2353
+        "unplannedOut": 0
       },
       {
         "weekStart": "2026-10-12",
@@ -650,7 +650,7 @@
         "weekStart": "2026-10-19",
         "plannedIn": 9051,
         "inCount": 7,
-        "plannedOut": 5132,
+        "plannedOut": 5137,
         "inDetail": [
           {
             "n": "Jayme Berstell",
@@ -728,7 +728,7 @@
             "n": "Muhammad Sabir / 3612",
             "c": "Accenture",
             "a": "Daniela Blesich",
-            "s": 958,
+            "s": 963,
             "x": "Y"
           },
           {
@@ -859,7 +859,7 @@
         "weekStart": "2026-11-02",
         "plannedIn": 1280,
         "inCount": 1,
-        "plannedOut": 3508,
+        "plannedOut": 3509,
         "inDetail": [
           {
             "n": "ROBERT CODY",
@@ -889,7 +889,7 @@
             "n": "Jacob Marynowski / 000052",
             "c": "ABM",
             "a": "Brie Branting",
-            "s": 535,
+            "s": 536,
             "x": "Y"
           }
         ],
@@ -908,7 +908,7 @@
         "weekStart": "2026-11-16",
         "plannedIn": 0,
         "inCount": 0,
-        "plannedOut": 5683,
+        "plannedOut": 5680,
         "inDetail": [],
         "outDetail": [
           {
@@ -922,7 +922,7 @@
             "n": "Ken Ptaszynski / 3636",
             "c": "Collins Aerospace",
             "a": "Jon Pack",
-            "s": 1249,
+            "s": 1246,
             "x": "Y"
           },
           {
@@ -1036,14 +1036,14 @@
         "weekStart": "2026-12-07",
         "plannedIn": 0,
         "inCount": 0,
-        "plannedOut": 11111,
+        "plannedOut": 11118,
         "inDetail": [],
         "outDetail": [
           {
             "n": "Robert Band / 000054",
             "c": "ABM",
             "a": "Brie Branting",
-            "s": 557,
+            "s": 556,
             "x": "Y"
           },
           {
@@ -1085,7 +1085,7 @@
             "n": "Caesar Nieves / 003709",
             "c": "Raytheon Technologies",
             "a": null,
-            "s": 908,
+            "s": 916,
             "x": "Y"
           },
           {
@@ -1182,8 +1182,8 @@
         "unplannedOut": 2353
       }
     ],
-    "lockup_spread_goal": 8948,
-    "lockup_target_note": "$85,003 to dump-in goal / 9.5 wks left (auto-paced)",
+    "lockup_spread_goal": 9474,
+    "lockup_target_note": "$80,531 to dump-in goal / 8.5 wks left (auto-paced) \u00b7 ESF feed through 2026-10-08",
     "forecast_next": {
       "label": "Q1 2027",
       "quarterStart": "2026-12-28",
@@ -1193,7 +1193,7 @@
           "weekStart": "2026-12-28",
           "plannedIn": 0,
           "inCount": 0,
-          "plannedOut": 67250,
+          "plannedOut": 67247,
           "inDetail": [],
           "outDetail": [
             {
@@ -1438,7 +1438,7 @@
               "n": "Jaysal Patel / 3423",
               "c": "Buckeye Partners",
               "a": "Stephen Denzel",
-              "s": 942,
+              "s": 940,
               "x": "Y"
             },
             {
@@ -1550,7 +1550,7 @@
               "n": "Pusp Bhatt / 001271",
               "c": "Raytheon Technologies",
               "a": "Mollie Ferguson",
-              "s": 1265,
+              "s": 1264,
               "x": "Y"
             },
             {
@@ -2008,7 +2008,7 @@
           "weekStart": "2027-02-22",
           "plannedIn": 0,
           "inCount": 0,
-          "plannedOut": 7196,
+          "plannedOut": 7195,
           "inDetail": [],
           "outDetail": [
             {
@@ -2022,7 +2022,7 @@
               "n": "Juan Vazquez Gomez / 3576",
               "c": "GE Aerospace",
               "a": "Kelsie Laughlin",
-              "s": 1136,
+              "s": 1135,
               "x": "Y"
             },
             {
@@ -2098,7 +2098,7 @@
           "weekStart": "2027-03-08",
           "plannedIn": 0,
           "inCount": 0,
-          "plannedOut": 5523,
+          "plannedOut": 5522,
           "inDetail": [],
           "outDetail": [
             {
@@ -2126,7 +2126,7 @@
               "n": "Ben Broide / 003137",
               "c": "Home Depot",
               "a": "Kelsie Laughlin",
-              "s": 976,
+              "s": 975,
               "x": "Y"
             }
           ],
@@ -2195,166 +2195,29 @@
           "weekStart": "2027-03-22",
           "plannedIn": 0,
           "inCount": 0,
-          "plannedOut": 0,
+          "plannedOut": 1276,
           "inDetail": [],
-          "outDetail": [],
+          "outDetail": [
+            {
+              "n": "Phuong Khanh Nguyen / 3735",
+              "c": "ABM",
+              "a": null,
+              "s": 1276,
+              "x": "Y"
+            }
+          ],
           "unplannedOut": 2353
         }
       ]
     },
-    "lockup_detail": [
-      {
-        "dt": "2026-10-08",
-        "n": "Valerie Kimbrough",
-        "c": "Oldcastle",
-        "j": "Application Project Manager",
-        "a": "Riley Laverty",
-        "r": "Merrimon McCartney",
-        "s": 1452,
-        "ob": "Onboarding Requirements Sent",
-        "x": "Pending Payroll",
-        "sd": "2026-10-26",
-        "t": "Contract"
-      },
-      {
-        "dt": "2026-10-06",
-        "n": "ROBERT CODY",
-        "c": "Leidos",
-        "j": "Sr. Network Engineer",
-        "a": "Hannah Craig",
-        "r": "Jamie Houvig",
-        "s": 1280,
-        "ob": "Onboarding Requirements Sent",
-        "x": "Pending Payroll",
-        "sd": "2026-11-02",
-        "t": "Contract"
-      },
-      {
-        "dt": "2026-10-07",
-        "n": "Faisal Rahmani",
-        "c": "Leidos",
-        "j": "Power BI Developer",
-        "a": "Hannah Craig",
-        "r": "Adam Williams",
-        "s": 920,
-        "ob": "Offer Letter Signed",
-        "x": "Pending Payroll",
-        "sd": "2026-10-19",
-        "t": "Contract"
-      },
-      {
-        "dt": "2026-10-06",
-        "n": "JOSHUA COVINGTON",
-        "c": "Leidos",
-        "j": "Network Automation Engineer (Cisco Catalyst) x2",
-        "a": "Hannah Craig",
-        "r": "Julia McDonald",
-        "s": 820,
-        "ob": "Offer Letter Signed",
-        "x": "Pending Payroll",
-        "sd": "2026-10-26",
-        "t": "Contract"
-      }
-    ],
+    "lockup_detail": [],
     "lockup_offers": []
   },
   "raffle": {
     "threshold": 1250,
     "batch_size": 15,
-    "current_drawing_no": 4,
+    "current_drawing_no": 5,
     "current_members": [
-      {
-        "name": "Omar Valadez",
-        "am": "Mollie Ferguson",
-        "recruiter": "Chelsea Navarro",
-        "spread": 1432
-      },
-      {
-        "name": "Michael Falchi",
-        "am": "Stephen Denzel",
-        "recruiter": "Jamie Houvig",
-        "spread": 1280
-      },
-      {
-        "name": "Afolabi Olomo",
-        "am": "Hannah Craig",
-        "recruiter": "Merrimon McCartney",
-        "spread": 1629
-      },
-      {
-        "name": "CARLOS AUSTIN",
-        "am": "Stephen Denzel",
-        "recruiter": "Jamie Houvig",
-        "spread": 1300
-      },
-      {
-        "name": "Luke Marvin",
-        "am": "Stephen Denzel",
-        "recruiter": "Jamie Houvig",
-        "spread": 1686
-      },
-      {
-        "name": "Lukus Anderson",
-        "am": "Kelsie Laughlin",
-        "recruiter": "Adam Williams",
-        "spread": 1550
-      },
-      {
-        "name": "Wayne Parks",
-        "am": "Riley Laverty",
-        "recruiter": "Mike Murphy",
-        "spread": 2184
-      },
-      {
-        "name": "Patrick McDonald",
-        "am": "Riley Laverty",
-        "recruiter": "Julia McDonald",
-        "spread": 1740
-      },
-      {
-        "name": "CARL EMBERGER",
-        "am": "Stephen Denzel",
-        "recruiter": "Brennan Lantz",
-        "spread": 1308
-      },
-      {
-        "name": "Satyin Kumra",
-        "am": "Jon Pack",
-        "recruiter": "Gloria Manley",
-        "spread": 1360
-      },
-      {
-        "name": "Jibin Jose",
-        "am": "Jon Pack",
-        "recruiter": "Mike Murphy",
-        "spread": 2224
-      },
-      {
-        "name": "LYNN WRIGHT",
-        "am": "Mollie Ferguson",
-        "recruiter": "Gloria Manley",
-        "spread": 1296
-      },
-      {
-        "name": "MATT HAMLET",
-        "am": "Stephen Denzel",
-        "recruiter": "Ryan Mickley",
-        "spread": 1408
-      },
-      {
-        "name": "Dwan Bryant",
-        "am": "Mollie Ferguson",
-        "recruiter": "Julia McDonald",
-        "spread": 1340
-      },
-      {
-        "name": "DEREK ALLEN",
-        "am": "Kollin Korell",
-        "recruiter": "Chelsea Navarro",
-        "spread": 3074
-      }
-    ],
-    "next_up": [
       {
         "name": "Jacob Myers",
         "am": "Kollin Korell",
@@ -2374,6 +2237,7 @@
         "spread": 1276
       }
     ],
+    "next_up": [],
     "accrual_start_date": "2026-06-09",
     "drawn_members": [
       "Bartholomew Baptista",
@@ -2420,22 +2284,37 @@
       "Anthony Bush",
       "Timothy Zimmer",
       "Becca Hallock-Wolff",
-      "SUHAIB CHOUDHRY"
+      "SUHAIB CHOUDHRY",
+      "Omar Valadez",
+      "Michael Falchi",
+      "Afolabi Olomo",
+      "CARLOS AUSTIN",
+      "Luke Marvin",
+      "Lukus Anderson",
+      "Wayne Parks",
+      "Patrick McDonald",
+      "CARL EMBERGER",
+      "Satyin Kumra",
+      "Jibin Jose",
+      "LYNN WRIGHT",
+      "MATT HAMLET",
+      "Dwan Bryant",
+      "DEREK ALLEN"
     ],
     "advance_drawing": false
   },
   "fill_ratio": {
-    "as_of": "2026-10-08",
+    "as_of": "2026-10-12",
     "window_weeks": 13,
     "basis": "Comtrak Raw - Close Ratio Details, windowed on Status Date (the date the req moved to Closed); ratio = filled / (filled + lost + washed), pooled for the company tile",
-    "window_end": "2026-10-04",
-    "snapshot_date": "2026-09-21",
+    "window_end": "2026-10-11",
+    "snapshot_date": "2026-09-28",
     "retired_basis": "AM Productivity Snapshot / Coverage Date - filled reqs carry a 2038-01-31 sentinel date and fell outside every window",
     "company": {
-      "closedReqs": 129,
-      "filled": 94,
+      "closedReqs": 130,
+      "filled": 93,
       "decided": 150,
-      "ratio": 0.6267
+      "ratio": 0.62
     },
     "by_am": [
       {
@@ -2448,19 +2327,19 @@
         "decided": 2,
         "lastClose": "2026-08-04",
         "spread": 0,
-        "delta": -654
+        "delta": 0
       },
       {
         "name": "Jon Pack",
         "ratio": 1.0,
-        "closedReqs": 14,
-        "filled": 15,
+        "closedReqs": 13,
+        "filled": 14,
         "lost": 0,
         "washed": 0,
-        "decided": 15,
-        "lastClose": "2026-09-17",
-        "spread": 38905,
-        "delta": 1135
+        "decided": 14,
+        "lastClose": "2026-10-05",
+        "spread": 35509,
+        "delta": -3396
       },
       {
         "name": "Malia Graham",
@@ -2476,15 +2355,15 @@
       },
       {
         "name": "Mollie Ferguson",
-        "ratio": 0.8421,
+        "ratio": 0.8333,
         "closedReqs": 15,
-        "filled": 16,
+        "filled": 15,
         "lost": 0,
         "washed": 3,
-        "decided": 19,
-        "lastClose": "2026-09-30",
-        "spread": 125375,
-        "delta": -1590
+        "decided": 18,
+        "lastClose": "2026-10-07",
+        "spread": 122501,
+        "delta": -2874
       },
       {
         "name": "Kelsie Laughlin",
@@ -2495,8 +2374,8 @@
         "washed": 1,
         "decided": 9,
         "lastClose": "2026-08-24",
-        "spread": 20264,
-        "delta": -567
+        "spread": 19644,
+        "delta": -621
       },
       {
         "name": "Shannon Johnson",
@@ -2519,32 +2398,32 @@
         "washed": 0,
         "decided": 7,
         "lastClose": "2026-09-10",
-        "spread": 15634,
-        "delta": -168
+        "spread": 15403,
+        "delta": -231
       },
       {
         "name": "Stephen Denzel",
-        "ratio": 0.6667,
-        "closedReqs": 23,
+        "ratio": 0.6429,
+        "closedReqs": 24,
         "filled": 18,
         "lost": 6,
-        "washed": 3,
-        "decided": 27,
-        "lastClose": "2026-09-17",
-        "spread": 31383,
-        "delta": -1508
+        "washed": 4,
+        "decided": 28,
+        "lastClose": "2026-10-06",
+        "spread": 30106,
+        "delta": -1277
       },
       {
         "name": "Brie Branting",
-        "ratio": 0.5455,
-        "closedReqs": 19,
-        "filled": 18,
+        "ratio": 0.5714,
+        "closedReqs": 20,
+        "filled": 20,
         "lost": 0,
         "washed": 15,
-        "decided": 33,
-        "lastClose": "2026-09-14",
-        "spread": 41714,
-        "delta": 8235
+        "decided": 35,
+        "lastClose": "2026-10-05",
+        "spread": 37109,
+        "delta": -4605
       },
       {
         "name": "Kollin Korell",
@@ -2555,8 +2434,8 @@
         "washed": 2,
         "decided": 6,
         "lastClose": "2026-10-02",
-        "spread": 0,
-        "delta": 0
+        "spread": 379,
+        "delta": 379
       },
       {
         "name": "Hannah Craig",
@@ -2567,75 +2446,70 @@
         "washed": 11,
         "decided": 18,
         "lastClose": "2026-09-10",
-        "spread": 24781,
-        "delta": -779
+        "spread": 23975,
+        "delta": -806
       },
       {
         "name": "Mike Minnillo",
-        "ratio": 0.2222,
+        "ratio": 0.125,
         "closedReqs": 9,
-        "filled": 2,
+        "filled": 1,
         "lost": 2,
         "washed": 5,
-        "decided": 9,
-        "lastClose": "2026-09-10",
-        "spread": 12126,
-        "delta": 41
+        "decided": 8,
+        "lastClose": "2026-10-07",
+        "spread": 10651,
+        "delta": -1475
       }
     ]
   },
   "meetings": {
-    "quarterly_pace": 1339,
+    "quarterly_pace": 1316,
     "by_am": [
       {
         "name": "Hannah Craig",
-        "count": 182,
-        "weekly_avg": 14.0
+        "count": 188,
+        "weekly_avg": 14.5
       },
       {
         "name": "Mollie Ferguson",
-        "count": 173,
-        "weekly_avg": 13.3
+        "count": 170,
+        "weekly_avg": 13.1
       },
       {
         "name": "Stephen Denzel",
-        "count": 138,
-        "weekly_avg": 10.6
+        "count": 140,
+        "weekly_avg": 10.8
       },
       {
         "name": "Riley Laverty",
-        "count": 136,
-        "weekly_avg": 10.5
+        "count": 133,
+        "weekly_avg": 10.2
       },
       {
         "name": "Brie Branting",
-        "count": 135,
-        "weekly_avg": 10.4
+        "count": 127,
+        "weekly_avg": 9.8
       },
       {
         "name": "Mike Minnillo",
-        "count": 123,
-        "weekly_avg": 9.5
+        "count": 117,
+        "weekly_avg": 9.0
       },
       {
         "name": "Kollin Korell",
-        "count": 119,
-        "weekly_avg": 9.2
-      },
-      {
-        "name": "Kelsie Laughlin",
         "count": 113,
         "weekly_avg": 8.7
       },
       {
-        "name": "Jon Pack",
-        "count": 90,
-        "weekly_avg": 6.9
+        "name": "Kelsie Laughlin",
+        "count": 112,
+        "weekly_avg": 8.6
       },
       {
-        "name": "Jessica Evans",
-        "count": 30,
-        "weekly_avg": 2.3
+        "name": "Jon Pack",
+        "count": 89,
+        "weekly_avg": 6.8
       },
       {
         "name": "Jesu Philip",
@@ -2643,7 +2517,17 @@
         "weekly_avg": 1.9
       },
       {
+        "name": "Jessica Evans",
+        "count": 24,
+        "weekly_avg": 1.8
+      },
+      {
         "name": "Abigail Brumbeloe",
+        "count": 15,
+        "weekly_avg": 1.2
+      },
+      {
+        "name": "Gwen Martin",
         "count": 15,
         "weekly_avg": 1.2
       },
@@ -2656,11 +2540,6 @@
         "name": "Kyle Kennedy",
         "count": 13,
         "weekly_avg": 1.0
-      },
-      {
-        "name": "Gwen Martin",
-        "count": 12,
-        "weekly_avg": 0.9
       },
       {
         "name": "Ty Thompson",
@@ -2691,77 +2570,77 @@
     "lookback_weeks": 13
   },
   "subs": {
-    "weekly_avg": 51.9,
+    "weekly_avg": 51.8,
     "by_recruiter": [
       {
         "name": "Gloria Manley",
-        "count": 57,
+        "count": 62,
         "weekly_avg": 5.2
       },
       {
-        "name": "Luke Reineke",
-        "count": 51,
-        "weekly_avg": 4.6
-      },
-      {
         "name": "Merrimon McCartney",
-        "count": 51,
-        "weekly_avg": 4.6
-      },
-      {
-        "name": "Julia McDonald",
-        "count": 49,
-        "weekly_avg": 4.5
+        "count": 56,
+        "weekly_avg": 4.7
       },
       {
         "name": "Adam Williams",
-        "count": 48,
-        "weekly_avg": 4.4
+        "count": 54,
+        "weekly_avg": 4.5
+      },
+      {
+        "name": "Julia McDonald",
+        "count": 54,
+        "weekly_avg": 4.5
+      },
+      {
+        "name": "Luke Reineke",
+        "count": 54,
+        "weekly_avg": 4.5
       },
       {
         "name": "Jamie Houvig",
-        "count": 45,
+        "count": 49,
         "weekly_avg": 4.1
       },
       {
         "name": "Jordan Foote",
-        "count": 44,
+        "count": 48,
         "weekly_avg": 4.0
       },
       {
+        "name": "Brandon Dowdell",
+        "count": 47,
+        "weekly_avg": 3.9
+      },
+      {
         "name": "Brennan Lantz",
-        "count": 43,
+        "count": 47,
         "weekly_avg": 3.9
       },
       {
         "name": "Mike Murphy",
-        "count": 43,
-        "weekly_avg": 3.9
-      },
-      {
-        "name": "Brandon Dowdell",
-        "count": 42,
+        "count": 46,
         "weekly_avg": 3.8
       },
       {
         "name": "Ryan Mickley",
-        "count": 38,
-        "weekly_avg": 3.5
+        "count": 40,
+        "weekly_avg": 3.3
       },
       {
         "name": "Ben Dorsey",
-        "count": 31,
-        "weekly_avg": 2.8
+        "count": 36,
+        "weekly_avg": 3.0
       },
       {
         "name": "Chelsea Navarro",
-        "count": 14,
-        "weekly_avg": 1.3
+        "count": 15,
+        "weekly_avg": 1.2
       },
       {
         "name": "Monika DuVarney",
-        "count": 14,
-        "weekly_avg": 1.3
+        "count": 15,
+        "weekly_avg": 1.2
       },
       {
         "name": "Daley Bell",
@@ -2784,30 +2663,30 @@
         "weekly_avg": 0.0
       }
     ],
-    "lookback_weeks": 11
+    "lookback_weeks": 12
   },
   "hours_util": {
-    "current": 37.4,
+    "current": 37.3,
     "baseline": 37.5,
     "current_label": "Q4-to-date",
     "baseline_label": "Goal",
-    "current_consultant_weeks": 256,
+    "current_consultant_weeks": 258,
     "current_weeks": 1,
     "baseline_weeks": null,
     "by_week": [
       {
         "week": "2026-09-28",
-        "avg": 37.4,
-        "consultants": 256
+        "avg": 37.3,
+        "consultants": 258
       }
     ]
   },
   "week_totals": {
-    "week_start": "2026-09-28",
-    "week_end": "2026-10-04",
-    "meetings": 123,
-    "meeting_ams": 14,
-    "subs": 57,
+    "week_start": "2026-10-05",
+    "week_end": "2026-10-11",
+    "meetings": 62,
+    "meeting_ams": 10,
+    "subs": 53,
     "sub_recruiters": 18
   }
 }
