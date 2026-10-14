@@ -8,7 +8,7 @@
     "baseline_week_start": "2026-03-23",
     "quarter_start": "2026-03-30",
     "quarter_end": "2026-06-28",
-    "rebuilt_at": "2026-10-13T11:43:58.999524+00:00",
+    "rebuilt_at": "2026-10-14T10:34:52.303601+00:00",
     "rebuild_source": "comtrak-notion-hybrid-sql",
     "partial_note": "2026-09-11: queries repointed to the columns the Comtrak API populates on every row \u2014 ESF/PSF 'Est Weekly Spread' (was 'Est Spread'/'Weekly Spread'), 'AM' (was 'Account Manager'), Contact Activity 'Owner' (was 'AM'), Recruiter Activity COALESCE(Employee, Record Id). Starts/pending/dump-in/lock-up/forecast/raffle rebuilt on the corrected columns. Close ratio, meetings, subs and hours still carried forward from 2026-09-10: their source tables lag (Close Ratio ends 8/26, Recruiter Activity 8/31, Hours 8/24)."
   },
@@ -308,13 +308,13 @@
   "scorecard": {
     "net_new_starts": 14,
     "avg_start_spread": 1349,
-    "pending_count": 20,
-    "pending_avg_spread": 1282,
-    "pending_total_spread": 25634,
+    "pending_count": 21,
+    "pending_avg_spread": 1346,
+    "pending_total_spread": 28265,
     "lockup_count": null,
-    "lockup_spread": 0,
-    "dumpin_count": 14,
-    "dumpin_spread": 13395,
+    "lockup_spread": 2630,
+    "dumpin_count": 15,
+    "dumpin_spread": 16026,
     "active_consultants": 279,
     "redeployed": null,
     "available_bench": null,
@@ -350,19 +350,19 @@
             "x": "Complete"
           },
           {
-            "n": "Jacob Myers",
-            "c": "Lockheed Martin",
-            "a": "Kollin Korell",
-            "r": "Luke Reineke",
-            "s": 2313,
-            "x": "Complete"
-          },
-          {
             "n": "GREGORY WURM",
             "c": "Lockheed Martin",
             "a": "Kollin Korell",
             "r": "Merrimon McCartney",
             "s": 2184,
+            "x": "Complete"
+          },
+          {
+            "n": "Jacob Myers",
+            "c": "Lockheed Martin",
+            "a": "Kollin Korell",
+            "r": "Luke Reineke",
+            "s": 2313,
             "x": "Complete"
           }
         ],
@@ -549,19 +549,19 @@
         "plannedOut": 3150,
         "inDetail": [
           {
-            "n": "Tyler Logan",
-            "c": "Community Health Systems",
-            "a": "Kelsie Laughlin",
-            "r": "Brennan Lantz",
-            "s": 1579,
-            "x": "Complete"
-          },
-          {
             "n": "Brad Miller",
             "c": "Home Depot",
             "a": "Brie Branting",
             "r": "Julia McDonald",
             "s": 820,
+            "x": "Complete"
+          },
+          {
+            "n": "Tyler Logan",
+            "c": "Community Health Systems",
+            "a": "Kelsie Laughlin",
+            "r": "Brennan Lantz",
+            "s": 1579,
             "x": "Complete"
           },
           {
@@ -628,19 +628,43 @@
         "plannedOut": 3823,
         "inDetail": [
           {
+            "n": "Destiny Miller-Griffin",
+            "c": "Collins Aerospace",
+            "a": "Mollie Ferguson",
+            "r": "Julia McDonald",
+            "s": 424,
+            "x": "Pending Payroll"
+          },
+          {
+            "n": "Faisal Rahmani",
+            "c": "Leidos",
+            "a": "Hannah Craig",
+            "r": "Adam Williams",
+            "s": 920,
+            "x": "Pending Payroll"
+          },
+          {
+            "n": "JAMES TAYLOR",
+            "c": "ABM",
+            "a": "Brie Branting",
+            "r": "Ben Dorsey",
+            "s": 1137,
+            "x": "Pending Payroll"
+          },
+          {
+            "n": "Jamaisha Ervin",
+            "c": "Leidos",
+            "a": "Hannah Craig",
+            "r": "Mike Murphy",
+            "s": 1086,
+            "x": "Pending Payroll"
+          },
+          {
             "n": "Jayme Berstell",
             "c": "Lockheed Martin",
             "a": "Kollin Korell",
             "r": "Luke Reineke",
             "s": 2634,
-            "x": "Pending Payroll"
-          },
-          {
-            "n": "Stephen Donahue",
-            "c": "Pratt & Whitney",
-            "a": "Mollie Ferguson",
-            "r": "Merrimon McCartney",
-            "s": 1574,
             "x": "Pending Payroll"
           },
           {
@@ -660,35 +684,11 @@
             "x": "Pending Payroll"
           },
           {
-            "n": "Destiny Miller-Griffin",
-            "c": "Collins Aerospace",
+            "n": "Stephen Donahue",
+            "c": "Pratt & Whitney",
             "a": "Mollie Ferguson",
-            "r": "Julia McDonald",
-            "s": 424,
-            "x": "Pending Payroll"
-          },
-          {
-            "n": "Jamaisha Ervin",
-            "c": "Leidos",
-            "a": "Hannah Craig",
-            "r": "Mike Murphy",
-            "s": 1086,
-            "x": "Pending Payroll"
-          },
-          {
-            "n": "JAMES TAYLOR",
-            "c": "ABM",
-            "a": "Brie Branting",
-            "r": "Ben Dorsey",
-            "s": 1137,
-            "x": "Pending Payroll"
-          },
-          {
-            "n": "Faisal Rahmani",
-            "c": "Leidos",
-            "a": "Hannah Craig",
-            "r": "Adam Williams",
-            "s": 920,
+            "r": "Merrimon McCartney",
+            "s": 1574,
             "x": "Pending Payroll"
           },
           {
@@ -755,19 +755,19 @@
             "x": "Pending Payroll"
           },
           {
+            "n": "JOSHUA COVINGTON",
+            "c": "Leidos",
+            "a": "Hannah Craig",
+            "r": "Julia McDonald",
+            "s": 820,
+            "x": "Pending Payroll"
+          },
+          {
             "n": "Joshua Hill",
             "c": "Lockheed Martin",
             "a": "Kollin Korell",
             "r": "Merrimon McCartney",
             "s": 2820,
-            "x": "Pending Payroll"
-          },
-          {
-            "n": "Varlee Kelleh",
-            "c": "Community Health Systems",
-            "a": "Kelsie Laughlin",
-            "r": "Brennan Lantz",
-            "s": 1506,
             "x": "Pending Payroll"
           },
           {
@@ -779,19 +779,19 @@
             "x": "Pending Payroll"
           },
           {
-            "n": "JOSHUA COVINGTON",
-            "c": "Leidos",
-            "a": "Hannah Craig",
-            "r": "Julia McDonald",
-            "s": 820,
-            "x": "Pending Payroll"
-          },
-          {
             "n": "Valerie Kimbrough",
             "c": "Oldcastle",
             "a": "Riley Laverty",
             "r": "Merrimon McCartney",
             "s": 1452,
+            "x": "Pending Payroll"
+          },
+          {
+            "n": "Varlee Kelleh",
+            "c": "Community Health Systems",
+            "a": "Kelsie Laughlin",
+            "r": "Brennan Lantz",
+            "s": 1506,
             "x": "Pending Payroll"
           }
         ],
@@ -864,10 +864,18 @@
       },
       {
         "weekStart": "2026-11-02",
-        "plannedIn": 1280,
-        "inCount": 1,
+        "plannedIn": 3910,
+        "inCount": 2,
         "plannedOut": 1868,
         "inDetail": [
+          {
+            "n": "Michael Gryzlo",
+            "c": "Lockheed Martin",
+            "a": "Kollin Korell",
+            "r": "Ryan Mickley",
+            "s": 2630,
+            "x": "Pending Payroll"
+          },
           {
             "n": "ROBERT CODY",
             "c": "Leidos",
@@ -1183,7 +1191,7 @@
       }
     ],
     "lockup_spread_goal": 9474,
-    "lockup_target_note": "$80,531 to dump-in goal / 8.5 wks left (auto-paced) \u00b7 ESF feed through 2026-10-08",
+    "lockup_target_note": "$80,531 to dump-in goal / 8.5 wks left (auto-paced)",
     "forecast_next": {
       "label": "Q1 2027",
       "quarterStart": "2026-12-28",
@@ -2203,7 +2211,21 @@
         }
       ]
     },
-    "lockup_detail": [],
+    "lockup_detail": [
+      {
+        "dt": "2026-10-13",
+        "n": "Michael Gryzlo",
+        "c": "Lockheed Martin",
+        "j": "Environmental Test Engineer",
+        "a": "Kollin Korell",
+        "r": "Ryan Mickley",
+        "s": 2630,
+        "ob": "Onboarding Requirements Sent",
+        "x": "Pending Payroll",
+        "sd": "2026-11-02",
+        "t": "Contract"
+      }
+    ],
     "lockup_offers": []
   },
   "raffle": {
@@ -2303,7 +2325,7 @@
     "advance_drawing": false
   },
   "fill_ratio": {
-    "as_of": "2026-10-13",
+    "as_of": "2026-10-14",
     "window_weeks": 13,
     "basis": "Comtrak Raw - Close Ratio Details, windowed on Status Date (the date the req moved to Closed); ratio = filled / (filled + lost + washed), pooled for the company tile",
     "window_end": "2026-10-11",
