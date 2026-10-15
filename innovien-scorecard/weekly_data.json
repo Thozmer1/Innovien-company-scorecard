@@ -8,16 +8,16 @@
     "baseline_week_start": "2026-03-23",
     "quarter_start": "2026-03-30",
     "quarter_end": "2026-06-28",
-    "rebuilt_at": "2026-10-14T10:34:52.303601+00:00",
+    "rebuilt_at": "2026-10-15T11:26:29.170736+00:00",
     "rebuild_source": "comtrak-notion-hybrid-sql",
     "partial_note": "2026-09-11: queries repointed to the columns the Comtrak API populates on every row \u2014 ESF/PSF 'Est Weekly Spread' (was 'Est Spread'/'Weekly Spread'), 'AM' (was 'Account Manager'), Contact Activity 'Owner' (was 'AM'), Recruiter Activity COALESCE(Employee, Record Id). Starts/pending/dump-in/lock-up/forecast/raffle rebuilt on the corrected columns. Close ratio, meetings, subs and hours still carried forward from 2026-09-10: their source tables lag (Close Ratio ends 8/26, Recruiter Activity 8/31, Hours 8/24)."
   },
   "company": {
-    "weekly_spread": 312046.39,
+    "weekly_spread": 312901.39,
     "qtr_start_spread": 330413.65,
     "year_total": 6594349.07,
     "weekly_spread_week": "2026-09-28",
-    "weekly_spread_straight_time": 299672.54,
+    "weekly_spread_straight_time": 300527.54,
     "weekly_spread_consultants": 293,
     "weekly_spread_basis": "Comtrak Raw \u2013 Spread (API), Office Manager rows (every placement once at 100%), all hours types"
   },
@@ -306,11 +306,11 @@
     }
   ],
   "scorecard": {
-    "net_new_starts": 14,
-    "avg_start_spread": 1349,
-    "pending_count": 21,
-    "pending_avg_spread": 1346,
-    "pending_total_spread": 28265,
+    "net_new_starts": 15,
+    "avg_start_spread": 1330,
+    "pending_count": 20,
+    "pending_avg_spread": 1360,
+    "pending_total_spread": 27209,
     "lockup_count": null,
     "lockup_spread": 2630,
     "dumpin_count": 15,
@@ -350,30 +350,23 @@
             "x": "Complete"
           },
           {
-            "n": "GREGORY WURM",
-            "c": "Lockheed Martin",
-            "a": "Kollin Korell",
-            "r": "Merrimon McCartney",
-            "s": 2184,
-            "x": "Complete"
-          },
-          {
             "n": "Jacob Myers",
             "c": "Lockheed Martin",
             "a": "Kollin Korell",
             "r": "Luke Reineke",
             "s": 2313,
             "x": "Complete"
+          },
+          {
+            "n": "GREGORY WURM",
+            "c": "Lockheed Martin",
+            "a": "Kollin Korell",
+            "r": "Merrimon McCartney",
+            "s": 2184,
+            "x": "Complete"
           }
         ],
         "outDetail": [
-          {
-            "n": "Jon Sedey / 3600",
-            "c": "UDC",
-            "a": "Daniela Blesich",
-            "s": 1096,
-            "x": "Y"
-          },
           {
             "n": "Gabrielle Dotson / 3166",
             "c": "Raytheon Technologies",
@@ -400,7 +393,7 @@
             "c": "Harmoni Towers",
             "a": "Jon Pack",
             "s": 1050,
-            "x": "Y"
+            "x": "N"
           },
           {
             "n": "Gerald Peppers / 00000004",
@@ -415,6 +408,13 @@
             "a": "Mollie Ferguson",
             "s": 1286,
             "x": "N"
+          },
+          {
+            "n": "Jon Sedey / 3600",
+            "c": "UDC",
+            "a": "Daniela Blesich",
+            "s": 1096,
+            "x": "Y"
           },
           {
             "n": "Sierra Gurley / 3583",
@@ -544,18 +544,10 @@
       },
       {
         "weekStart": "2026-10-12",
-        "plannedIn": 5831,
-        "inCount": 5,
-        "plannedOut": 3150,
+        "plannedIn": 4439,
+        "inCount": 4,
+        "plannedOut": 2150,
         "inDetail": [
-          {
-            "n": "Brad Miller",
-            "c": "Home Depot",
-            "a": "Brie Branting",
-            "r": "Julia McDonald",
-            "s": 820,
-            "x": "Complete"
-          },
           {
             "n": "Tyler Logan",
             "c": "Community Health Systems",
@@ -565,12 +557,12 @@
             "x": "Complete"
           },
           {
-            "n": "Eduardo Cesario",
-            "c": "ABM",
+            "n": "Brad Miller",
+            "c": "Home Depot",
             "a": "Brie Branting",
-            "r": "Ben Dorsey",
-            "s": 1392,
-            "x": "Pending Payroll"
+            "r": "Julia McDonald",
+            "s": 820,
+            "x": "Complete"
           },
           {
             "n": "WAYNE SANCHEZ",
@@ -578,7 +570,7 @@
             "a": "Brie Branting",
             "r": "Jamie Houvig",
             "s": 1056,
-            "x": "Pending Payroll"
+            "x": "Complete"
           },
           {
             "n": "Craig Spencer",
@@ -605,13 +597,6 @@
             "x": "Y"
           },
           {
-            "n": "Michelle Heaton / 3617",
-            "c": "Raytheon Technologies",
-            "a": "Mollie Ferguson",
-            "s": 1000,
-            "x": "Y"
-          },
-          {
             "n": "Kahlil Covington / 003208",
             "c": "Collins Aerospace",
             "a": "Mollie Ferguson",
@@ -623,48 +608,16 @@
       },
       {
         "weekStart": "2026-10-19",
-        "plannedIn": 11278,
-        "inCount": 10,
+        "plannedIn": 8644,
+        "inCount": 9,
         "plannedOut": 3823,
         "inDetail": [
           {
-            "n": "Destiny Miller-Griffin",
-            "c": "Collins Aerospace",
+            "n": "Stephen Donahue",
+            "c": "Pratt & Whitney",
             "a": "Mollie Ferguson",
-            "r": "Julia McDonald",
-            "s": 424,
-            "x": "Pending Payroll"
-          },
-          {
-            "n": "Faisal Rahmani",
-            "c": "Leidos",
-            "a": "Hannah Craig",
-            "r": "Adam Williams",
-            "s": 920,
-            "x": "Pending Payroll"
-          },
-          {
-            "n": "JAMES TAYLOR",
-            "c": "ABM",
-            "a": "Brie Branting",
-            "r": "Ben Dorsey",
-            "s": 1137,
-            "x": "Pending Payroll"
-          },
-          {
-            "n": "Jamaisha Ervin",
-            "c": "Leidos",
-            "a": "Hannah Craig",
-            "r": "Mike Murphy",
-            "s": 1086,
-            "x": "Pending Payroll"
-          },
-          {
-            "n": "Jayme Berstell",
-            "c": "Lockheed Martin",
-            "a": "Kollin Korell",
-            "r": "Luke Reineke",
-            "s": 2634,
+            "r": "Merrimon McCartney",
+            "s": 1574,
             "x": "Pending Payroll"
           },
           {
@@ -684,11 +637,35 @@
             "x": "Pending Payroll"
           },
           {
-            "n": "Stephen Donahue",
-            "c": "Pratt & Whitney",
+            "n": "Destiny Miller-Griffin",
+            "c": "Collins Aerospace",
             "a": "Mollie Ferguson",
-            "r": "Merrimon McCartney",
-            "s": 1574,
+            "r": "Julia McDonald",
+            "s": 424,
+            "x": "Pending Payroll"
+          },
+          {
+            "n": "Jamaisha Ervin",
+            "c": "Leidos",
+            "a": "Hannah Craig",
+            "r": "Mike Murphy",
+            "s": 1086,
+            "x": "Pending Payroll"
+          },
+          {
+            "n": "JAMES TAYLOR",
+            "c": "ABM",
+            "a": "Brie Branting",
+            "r": "Ben Dorsey",
+            "s": 1137,
+            "x": "Pending Payroll"
+          },
+          {
+            "n": "Faisal Rahmani",
+            "c": "Leidos",
+            "a": "Hannah Craig",
+            "r": "Adam Williams",
+            "s": 920,
             "x": "Pending Payroll"
           },
           {
@@ -742,10 +719,18 @@
       },
       {
         "weekStart": "2026-10-26",
-        "plannedIn": 9644,
-        "inCount": 6,
-        "plannedOut": 7661,
+        "plannedIn": 13670,
+        "inCount": 8,
+        "plannedOut": 7131,
         "inDetail": [
+          {
+            "n": "Eduardo Cesario",
+            "c": "ABM",
+            "a": "Brie Branting",
+            "r": "Ben Dorsey",
+            "s": 1392,
+            "x": "Pending Payroll"
+          },
           {
             "n": "Cristion Oliphant",
             "c": "Lockheed Martin",
@@ -755,11 +740,11 @@
             "x": "Pending Payroll"
           },
           {
-            "n": "JOSHUA COVINGTON",
-            "c": "Leidos",
-            "a": "Hannah Craig",
-            "r": "Julia McDonald",
-            "s": 820,
+            "n": "Jayme Berstell",
+            "c": "Lockheed Martin",
+            "a": "Kollin Korell",
+            "r": "Luke Reineke",
+            "s": 2634,
             "x": "Pending Payroll"
           },
           {
@@ -771,11 +756,27 @@
             "x": "Pending Payroll"
           },
           {
+            "n": "Varlee Kelleh",
+            "c": "Community Health Systems",
+            "a": "Kelsie Laughlin",
+            "r": "Brennan Lantz",
+            "s": 1506,
+            "x": "Pending Payroll"
+          },
+          {
             "n": "Sarah Richani",
             "c": "GE Vernova",
             "a": "Brie Branting",
             "r": "Chelsea Navarro",
             "s": 506,
+            "x": "Pending Payroll"
+          },
+          {
+            "n": "JOSHUA COVINGTON",
+            "c": "Leidos",
+            "a": "Hannah Craig",
+            "r": "Julia McDonald",
+            "s": 820,
             "x": "Pending Payroll"
           },
           {
@@ -785,24 +786,9 @@
             "r": "Merrimon McCartney",
             "s": 1452,
             "x": "Pending Payroll"
-          },
-          {
-            "n": "Varlee Kelleh",
-            "c": "Community Health Systems",
-            "a": "Kelsie Laughlin",
-            "r": "Brennan Lantz",
-            "s": 1506,
-            "x": "Pending Payroll"
           }
         ],
         "outDetail": [
-          {
-            "n": "Chetan Shrestha / 3432",
-            "c": "Fulton Bank",
-            "a": "Admin Admin",
-            "s": 530,
-            "x": "Y"
-          },
           {
             "n": "Tonya Lars / 2919",
             "c": "NCR Atleos",
@@ -869,19 +855,19 @@
         "plannedOut": 1868,
         "inDetail": [
           {
-            "n": "Michael Gryzlo",
-            "c": "Lockheed Martin",
-            "a": "Kollin Korell",
-            "r": "Ryan Mickley",
-            "s": 2630,
-            "x": "Pending Payroll"
-          },
-          {
             "n": "ROBERT CODY",
             "c": "Leidos",
             "a": "Hannah Craig",
             "r": "Jamie Houvig",
             "s": 1280,
+            "x": "Pending Payroll"
+          },
+          {
+            "n": "Michael Gryzlo",
+            "c": "Lockheed Martin",
+            "a": "Kollin Korell",
+            "r": "Ryan Mickley",
+            "s": 2630,
             "x": "Pending Payroll"
           }
         ],
@@ -907,9 +893,17 @@
         "weekStart": "2026-11-09",
         "plannedIn": 0,
         "inCount": 0,
-        "plannedOut": 0,
+        "plannedOut": 1000,
         "inDetail": [],
-        "outDetail": [],
+        "outDetail": [
+          {
+            "n": "Michelle Heaton / 3617",
+            "c": "Raytheon Technologies",
+            "a": "Mollie Ferguson",
+            "s": 1000,
+            "x": "Y"
+          }
+        ],
         "unplannedOut": 2353
       },
       {
@@ -920,17 +914,17 @@
         "inDetail": [],
         "outDetail": [
           {
-            "n": "Ketan Patel / 3640",
-            "c": "Collins Aerospace",
-            "a": "Jon Pack",
-            "s": 1384,
-            "x": "Y"
-          },
-          {
             "n": "Ken Ptaszynski / 3636",
             "c": "Collins Aerospace",
             "a": "Jon Pack",
             "s": 1244,
+            "x": "Y"
+          },
+          {
+            "n": "Ketan Patel / 3640",
+            "c": "Collins Aerospace",
+            "a": "Jon Pack",
+            "s": 1384,
             "x": "Y"
           },
           {
@@ -954,7 +948,7 @@
         "weekStart": "2026-11-23",
         "plannedIn": 0,
         "inCount": 0,
-        "plannedOut": 5633,
+        "plannedOut": 3947,
         "inDetail": [],
         "outDetail": [
           {
@@ -969,13 +963,6 @@
             "c": "Collins Aerospace",
             "a": "Admin Admin",
             "s": 1104,
-            "x": "Y"
-          },
-          {
-            "n": "Luke Marvin / 003707",
-            "c": "Geisinger",
-            "a": null,
-            "s": 1686,
             "x": "Y"
           },
           {
@@ -1048,10 +1035,10 @@
         "inDetail": [],
         "outDetail": [
           {
-            "n": "Robert Band / 000054",
+            "n": "Colton Dempsey / 000053",
             "c": "ABM",
             "a": "Brie Branting",
-            "s": 555,
+            "s": 441,
             "x": "Y"
           },
           {
@@ -1062,10 +1049,10 @@
             "x": "Y"
           },
           {
-            "n": "Colton Dempsey / 000053",
+            "n": "Robert Band / 000054",
             "c": "ABM",
             "a": "Brie Branting",
-            "s": 441,
+            "s": 555,
             "x": "Y"
           },
           {
@@ -1076,24 +1063,17 @@
             "x": "Y"
           },
           {
-            "n": "Daniel Bauer / 003647",
-            "c": "Pratt & Whitney",
-            "a": "Mollie Ferguson",
-            "s": 1650,
-            "x": "Y"
-          },
-          {
-            "n": "Shivam Patel / 1298",
-            "c": "Pratt & Whitney",
-            "a": "Mollie Ferguson",
-            "s": 1111,
-            "x": "Y"
-          },
-          {
             "n": "Caesar Nieves / 003709",
             "c": "Raytheon Technologies",
             "a": null,
             "s": 920,
+            "x": "Y"
+          },
+          {
+            "n": "Daniel Bauer / 003647",
+            "c": "Pratt & Whitney",
+            "a": "Mollie Ferguson",
+            "s": 1650,
             "x": "Y"
           },
           {
@@ -1104,10 +1084,10 @@
             "x": "Y"
           },
           {
-            "n": "William Baltus / 00005",
+            "n": "Shivam Patel / 1298",
             "c": "Pratt & Whitney",
-            "a": null,
-            "s": 800,
+            "a": "Mollie Ferguson",
+            "s": 1111,
             "x": "Y"
           },
           {
@@ -1115,6 +1095,13 @@
             "c": "Pratt & Whitney",
             "a": null,
             "s": 1104,
+            "x": "Y"
+          },
+          {
+            "n": "William Baltus / 00005",
+            "c": "Pratt & Whitney",
+            "a": null,
+            "s": 800,
             "x": "Y"
           },
           {
@@ -1722,6 +1709,27 @@
               "x": "Y"
             },
             {
+              "n": "Drake Robertson / 000059",
+              "c": "ABM",
+              "a": "Brie Branting",
+              "s": 557,
+              "x": "Y"
+            },
+            {
+              "n": "Dylan Mueller / 003670",
+              "c": "Foundation Risk Partners",
+              "a": "Jon Pack",
+              "s": 830,
+              "x": "Y"
+            },
+            {
+              "n": "IAN GODSHALL / 003671",
+              "c": "ABM",
+              "a": "Brie Branting",
+              "s": 1160,
+              "x": "Y"
+            },
+            {
               "n": "Nicole Casas / 00000000002",
               "c": "Oldcastle",
               "a": "Riley Laverty",
@@ -1733,27 +1741,6 @@
               "c": "Collins Aerospace",
               "a": "Jon Pack",
               "s": 1140,
-              "x": "Y"
-            },
-            {
-              "n": "Drake Robertson / 000059",
-              "c": "ABM",
-              "a": "Brie Branting",
-              "s": 557,
-              "x": "Y"
-            },
-            {
-              "n": "IAN GODSHALL / 003671",
-              "c": "ABM",
-              "a": "Brie Branting",
-              "s": 1160,
-              "x": "Y"
-            },
-            {
-              "n": "Dylan Mueller / 003670",
-              "c": "Foundation Risk Partners",
-              "a": "Jon Pack",
-              "s": 830,
               "x": "Y"
             },
             {
@@ -1788,17 +1775,17 @@
           "inDetail": [],
           "outDetail": [
             {
-              "n": "Stephanie Leonard / 003679",
-              "c": "Community Health Systems",
-              "a": "Kelsie Laughlin",
-              "s": 1140,
-              "x": "Y"
-            },
-            {
               "n": "DENNIS NGO / 003680",
               "c": "Community Health Systems",
               "a": "Kelsie Laughlin",
               "s": 1072,
+              "x": "Y"
+            },
+            {
+              "n": "Stephanie Leonard / 003679",
+              "c": "Community Health Systems",
+              "a": "Kelsie Laughlin",
+              "s": 1140,
               "x": "Y"
             },
             {
@@ -1809,17 +1796,17 @@
               "x": "Y"
             },
             {
-              "n": "Sreeja Manikonda / 001233",
-              "c": "Collins Aerospace",
-              "a": "Mollie Ferguson",
-              "s": 3260,
-              "x": "Y"
-            },
-            {
               "n": "Sankar \"Sunny\" Ponnar / 1288",
               "c": "Collins Aerospace",
               "a": "#N/A",
               "s": 2510,
+              "x": "Y"
+            },
+            {
+              "n": "Sreeja Manikonda / 001233",
+              "c": "Collins Aerospace",
+              "a": "Mollie Ferguson",
+              "s": 3260,
               "x": "Y"
             },
             {
@@ -1836,7 +1823,7 @@
           "weekStart": "2027-01-25",
           "plannedIn": 0,
           "inCount": 0,
-          "plannedOut": 6343,
+          "plannedOut": 8029,
           "inDetail": [],
           "outDetail": [
             {
@@ -1847,13 +1834,6 @@
               "x": "Y"
             },
             {
-              "n": "Robert Crowder-Zink / 003682",
-              "c": "Community Health Systems",
-              "a": "Kelsie Laughlin",
-              "s": 750,
-              "x": "Y"
-            },
-            {
               "n": "Christopher Sanchez / 003686",
               "c": "ABM",
               "a": "Brie Branting",
@@ -1861,10 +1841,24 @@
               "x": "Y"
             },
             {
+              "n": "Robert Crowder-Zink / 003682",
+              "c": "Community Health Systems",
+              "a": "Kelsie Laughlin",
+              "s": 750,
+              "x": "Y"
+            },
+            {
               "n": "Alexander Brown / 2549",
               "c": "GE Vernova",
               "a": "Flint Stephens",
               "s": 799,
+              "x": "Y"
+            },
+            {
+              "n": "Luke Marvin / 003707",
+              "c": "Geisinger",
+              "a": null,
+              "s": 1686,
               "x": "Y"
             },
             {
@@ -1906,10 +1900,10 @@
               "x": "Y"
             },
             {
-              "n": "Kobe Somuah / 003695",
+              "n": "Jonathan Shumate / 003691",
               "c": "ABM",
               "a": "Brie Branting",
-              "s": 1012,
+              "s": 1044,
               "x": "Y"
             },
             {
@@ -1920,10 +1914,10 @@
               "x": "Y"
             },
             {
-              "n": "Jonathan Shumate / 003691",
+              "n": "Kobe Somuah / 003695",
               "c": "ABM",
               "a": "Brie Branting",
-              "s": 1044,
+              "s": 1012,
               "x": "Y"
             }
           ],
@@ -1975,17 +1969,17 @@
               "x": "Y"
             },
             {
-              "n": "Travis Griffin / 003700",
-              "c": "ABM",
-              "a": "Brie Branting",
-              "s": 1214,
-              "x": "Y"
-            },
-            {
               "n": "Kyle Nichols / 003701",
               "c": "ABM",
               "a": "Brie Branting",
               "s": 1206,
+              "x": "Y"
+            },
+            {
+              "n": "Travis Griffin / 003700",
+              "c": "ABM",
+              "a": "Brie Branting",
+              "s": 1214,
               "x": "Y"
             },
             {
@@ -2072,17 +2066,17 @@
           "inDetail": [],
           "outDetail": [
             {
-              "n": "Sucharitha Muppidi / 003715",
-              "c": "Aflac",
-              "a": null,
-              "s": 916,
-              "x": "Y"
-            },
-            {
               "n": "GEORGE ALLEN / 3603",
               "c": "Geisinger",
               "a": null,
               "s": 1056,
+              "x": "Y"
+            },
+            {
+              "n": "Sucharitha Muppidi / 003715",
+              "c": "Aflac",
+              "a": null,
+              "s": 916,
               "x": "Y"
             },
             {
@@ -2148,10 +2142,10 @@
               "x": "Y"
             },
             {
-              "n": "Terry Mozelle / 2155",
+              "n": "Dominic Barnes / 3449",
               "c": "Kyndryl",
-              "a": "Mollie Ferguson",
-              "s": 338,
+              "a": "Jon Pack",
+              "s": 367,
               "x": "Y"
             },
             {
@@ -2162,10 +2156,10 @@
               "x": "Y"
             },
             {
-              "n": "Dominic Barnes / 3449",
+              "n": "Terry Mozelle / 2155",
               "c": "Kyndryl",
-              "a": "Jon Pack",
-              "s": 367,
+              "a": "Mollie Ferguson",
+              "s": 338,
               "x": "Y"
             },
             {
@@ -2325,7 +2319,7 @@
     "advance_drawing": false
   },
   "fill_ratio": {
-    "as_of": "2026-10-14",
+    "as_of": "2026-10-15",
     "window_weeks": 13,
     "basis": "Comtrak Raw - Close Ratio Details, windowed on Status Date (the date the req moved to Closed); ratio = filled / (filled + lost + washed), pooled for the company tile",
     "window_end": "2026-10-11",
@@ -2485,42 +2479,42 @@
     ]
   },
   "meetings": {
-    "quarterly_pace": 1326,
+    "quarterly_pace": 1348,
     "by_am": [
       {
         "name": "Hannah Craig",
-        "count": 187,
-        "weekly_avg": 14.4
+        "count": 188,
+        "weekly_avg": 14.5
       },
       {
         "name": "Mollie Ferguson",
-        "count": 168,
-        "weekly_avg": 12.9
-      },
-      {
-        "name": "Riley Laverty",
-        "count": 144,
-        "weekly_avg": 11.1
+        "count": 171,
+        "weekly_avg": 13.2
       },
       {
         "name": "Stephen Denzel",
-        "count": 142,
-        "weekly_avg": 10.9
+        "count": 147,
+        "weekly_avg": 11.3
+      },
+      {
+        "name": "Riley Laverty",
+        "count": 141,
+        "weekly_avg": 10.8
       },
       {
         "name": "Brie Branting",
-        "count": 127,
+        "count": 128,
         "weekly_avg": 9.8
       },
       {
-        "name": "Mike Minnillo",
-        "count": 116,
-        "weekly_avg": 8.9
+        "name": "Kelsie Laughlin",
+        "count": 117,
+        "weekly_avg": 9.0
       },
       {
-        "name": "Kelsie Laughlin",
-        "count": 112,
-        "weekly_avg": 8.6
+        "name": "Mike Minnillo",
+        "count": 115,
+        "weekly_avg": 8.8
       },
       {
         "name": "Kollin Korell",
@@ -2529,8 +2523,8 @@
       },
       {
         "name": "Jon Pack",
-        "count": 89,
-        "weekly_avg": 6.8
+        "count": 93,
+        "weekly_avg": 7.2
       },
       {
         "name": "Jesu Philip",
@@ -2539,18 +2533,18 @@
       },
       {
         "name": "Jessica Evans",
-        "count": 24,
-        "weekly_avg": 1.8
+        "count": 22,
+        "weekly_avg": 1.7
       },
       {
         "name": "Abigail Brumbeloe",
-        "count": 15,
-        "weekly_avg": 1.2
+        "count": 19,
+        "weekly_avg": 1.5
       },
       {
         "name": "Gwen Martin",
-        "count": 16,
-        "weekly_avg": 1.2
+        "count": 19,
+        "weekly_avg": 1.5
       },
       {
         "name": "Riley Caines",
@@ -2559,13 +2553,13 @@
       },
       {
         "name": "Kyle Kennedy",
-        "count": 13,
-        "weekly_avg": 1.0
+        "count": 14,
+        "weekly_avg": 1.1
       },
       {
         "name": "Ty Thompson",
-        "count": 7,
-        "weekly_avg": 0.5
+        "count": 8,
+        "weekly_avg": 0.6
       },
       {
         "name": "Daley Bell",
@@ -2687,26 +2681,31 @@
     "lookback_weeks": 12
   },
   "hours_util": {
-    "current": 37.3,
+    "current": 37.2,
     "baseline": 37.5,
     "current_label": "Q4-to-date",
     "baseline_label": "Goal",
-    "current_consultant_weeks": 258,
-    "current_weeks": 1,
+    "current_consultant_weeks": 523,
+    "current_weeks": 2,
     "baseline_weeks": null,
     "by_week": [
       {
         "week": "2026-09-28",
+        "avg": 37.1,
+        "consultants": 261
+      },
+      {
+        "week": "2026-10-05",
         "avg": 37.3,
-        "consultants": 258
+        "consultants": 262
       }
     ]
   },
   "week_totals": {
     "week_start": "2026-10-05",
     "week_end": "2026-10-11",
-    "meetings": 73,
-    "meeting_ams": 11,
+    "meetings": 74,
+    "meeting_ams": 12,
     "subs": 53,
     "sub_recruiters": 18
   }
