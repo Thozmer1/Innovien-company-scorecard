@@ -490,7 +490,11 @@ function openDetail(weeks,di,i){
 }
 function openLockup(lu){
   const rows=(lu && lu.detail)||[];
-  const total=rows.reduce((t,r)=>t+(+r.s||0),0);
+  // Take the total from the tile, never by re-adding the rounded rows below: each row is
+  // rounded for display, so summing them can land a dollar off the tile and make the modal
+  // look like it disagrees with the card the user just clicked (2026-10-16, $8,880 vs $8,881).
+  const total=(lu && lu.spread!=null) ? +lu.spread
+                                      : rows.reduce((t,r)=>t+(+r.s||0),0);
   const d=lu.weekStart?new Date(lu.weekStart+'T00:00:00'):null;
   const wkTxt=d?((d.getMonth()+1)+'/'+d.getDate()):'this week';
   document.getElementById('m-title').textContent='Weekly lock-up — week of '+wkTxt;
