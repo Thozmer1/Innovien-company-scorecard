@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Innovien — Weekly Stretch Scorecard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root{
+    --green:#B0DD66; --gray:#747777; --lgray:#C4C4C4; --ink:#2c2e2e; --bg:#f4f6f1; --card:#ffffff;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Calibri,'Segoe UI',system-ui,sans-serif;color:var(--ink);background:var(--bg)}
+  header{background:var(--green);padding:14px 22px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+  header h1{margin:0;font-size:20px;font-weight:700;letter-spacing:.2px}
+  header .meta{font-size:12px;color:#3a3c3c}
+  .banner{background:#fff4d6;border-bottom:1px solid var(--lgray);color:#7a5b00;padding:8px 22px;font-size:13px;display:none}
+  nav{display:flex;gap:4px;background:var(--gray);padding:0 14px;flex-wrap:wrap}
+  nav button{background:transparent;border:none;color:#fff;padding:11px 16px;font-size:14px;font-family:inherit;cursor:pointer;border-bottom:3px solid transparent}
+  nav button.active{background:var(--bg);color:var(--ink);border-bottom:3px solid var(--green);border-radius:6px 6px 0 0;font-weight:700}
+  main{padding:18px 22px 40px;max-width:1180px;margin:0 auto}
+  .page{display:none} .page.active{display:block}
+  .grid{display:grid;gap:14px}
+  .kpis{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
+  /* Scorecard tab: force all 6 tiles onto one row on desktop */
+  #kpi-scorecard{grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}
+  #kpi-scorecard .card{padding:11px 12px;min-width:0}
+  #kpi-scorecard .kpi .val{font-size:22px}
+  #kpi-scorecard .kpi .label{font-size:10px;letter-spacing:.2px}
+  #kpi-scorecard .kpi .goal{font-size:10.5px}
+  #kpi-scorecard .pace{font-size:10.5px;padding:2px 7px}
+  @media(max-width:1000px){#kpi-scorecard{grid-template-columns:repeat(3,1fr)}}
+  @media(max-width:600px){#kpi-scorecard{grid-template-columns:repeat(2,1fr)}}
+  .card{background:var(--card);border:1px solid var(--lgray);border-radius:10px;padding:14px 16px}
+  .kpi .label{font-size:12px;color:var(--gray);text-transform:uppercase;letter-spacing:.4px;font-weight:600}
+  .kpi .val{font-size:30px;font-weight:700;margin:6px 0 2px;line-height:1}
+  .kpi .goal{font-size:12px;color:var(--gray)}
+  .pace{display:inline-block;margin-top:8px;font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px;color:#2c2e2e}
+  .pace.on{background:var(--green)} .pace.off{background:var(--lgray)}
+  .bar{height:7px;background:#eef0ea;border-radius:999px;margin-top:9px;overflow:hidden}
+  .bar>i{display:block;height:100%;background:var(--green)}
+  h2.sec{font-size:15px;margin:24px 0 8px;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid var(--green);padding-bottom:5px}
+  .sechead{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin:24px 0 8px;border-bottom:2px solid var(--green);padding-bottom:5px}
+  .sechead h2.sec{margin:0;border:0;padding:0;flex:1}
+  .qtoggle{display:flex;align-items:center;gap:6px;flex:0 0 auto}
+  .fcsum{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+  .fcsum .s{flex:1 1 150px;min-width:140px;background:var(--card);border:1px solid #e3e7e0;border-radius:6px;padding:8px 10px}
+  .fcsum .s .l{font-size:10.5px;color:var(--gray);text-transform:uppercase;letter-spacing:.4px;font-weight:600;display:flex;align-items:center;gap:6px}
+  .fcsum .s .l i{width:9px;height:9px;border-radius:2px;flex:0 0 auto}
+  .fcsum .s .v{font-size:19px;font-weight:700;color:var(--ink);margin-top:2px}
+  .fcsum .s .sub{font-size:11px;color:var(--gray)}
+  .fcsum .s.net{background:#f7faf3;border-color:#d4e2c2}
+  .qtoggle button{font:600 12px Calibri,sans-serif;color:var(--gray);background:#fff;border:1px solid #cfd4cf;border-radius:4px;padding:5px 10px;cursor:pointer;white-space:nowrap}
+  .qtoggle button:hover{background:#f2f7ec;border-color:var(--green)}
+  .qtoggle .qlabel{font:600 11px Calibri,sans-serif;color:#8a8f8a;text-transform:uppercase;letter-spacing:.5px}
+  #modal{position:fixed;inset:0;background:rgba(20,24,20,.45);display:none;align-items:center;justify-content:center;z-index:50;padding:20px}
+  #modal.open{display:flex}
+  #modal .box{background:#fff;border-radius:6px;max-width:860px;width:100%;max-height:82vh;display:flex;flex-direction:column;box-shadow:0 12px 40px rgba(0,0,0,.3)}
+  #modal .hd{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:16px 20px;border-bottom:2px solid var(--green)}
+  #modal .hd h3{margin:0;font-size:15px;color:var(--gray);text-transform:uppercase;letter-spacing:.5px}
+  #modal .hd .sub{font-size:12px;color:#8a8f8a;margin-top:4px}
+  #modal .x{background:none;border:0;font-size:22px;line-height:1;color:#8a8f8a;cursor:pointer;padding:0 4px}
+  #modal .x:hover{color:var(--gray)}
+  #modal .bd{overflow:auto;padding:0 20px 16px}
+  /* border-collapse:collapse silently defeats position:sticky on <th> in Chrome, so the
+     drill-through headers were never actually pinning. separate + 0 spacing looks
+     identical here (every border is a single border-bottom) and makes sticky work. */
+  /* The page-wide table rule sets overflow:hidden (for its rounded corners). On a
+     drill-through that makes the TABLE the clipping context, which silently kills
+     position:sticky on the header - it had never actually pinned. border-collapse
+     is separate here for the same reason: collapse also defeats sticky in Chrome.
+     Visually identical, every border is a single border-bottom. */
+  #modal table{width:100%;border-collapse:separate;border-spacing:0;font-size:12px;
+    overflow:visible;border:0;border-radius:0}
+  #modal th{position:sticky;top:0;background:#fff;text-align:left;padding:8px 6px;border-bottom:1px solid #e2e6e2;color:#8a8f8a;text-transform:uppercase;font-size:10px;letter-spacing:.5px}
+  #modal td{padding:6px;border-bottom:1px solid #f0f2f0}
+  #modal td.num{text-align:right;font-variant-numeric:tabular-nums}
+  #modal tr:hover td{background:#f7faf4}
+  #modal .sect{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:#8a8f8a;font-weight:700;padding:14px 0 6px;border-top:1px solid #e2e6e2;margin-top:10px}
+  #modal .sect:first-child{border-top:0;margin-top:0;padding-top:4px}
+  #modal .sect .n{font-weight:400;text-transform:none;letter-spacing:0;color:#a0a5a0}
+  #modal .empty{font-size:12px;color:#8a8f8a;padding:4px 0 8px}
+    .drill{cursor:pointer;border-bottom:1px dashed var(--green)}
+  .drill:hover{color:var(--green)}
+  .drill:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+  #modal .tag{display:inline-block;font-size:10px;padding:1px 6px;border-radius:3px;background:#fdf0d5;color:#8a6d1f}
+  /* AM filter bar inside the drill-through body - sticks above the sticky thead */
+  #modal .fbar{position:sticky;top:0;z-index:3;background:#fff;display:flex;align-items:center;
+    gap:9px;flex-wrap:wrap;padding:10px 0 9px;border-bottom:1px solid #e2e6e2}
+  #modal .fbar label{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:#8a8f8a;font-weight:700}
+  #modal .fbar select{font-family:inherit;font-size:12.5px;padding:5px 8px;border:1px solid #d6dbd6;
+    border-radius:5px;background:#fff;color:var(--ink);max-width:340px}
+  #modal .fbar select:focus-visible{outline:2px solid var(--green);outline-offset:1px}
+  #modal .fbar .fnote{font-size:11.5px;color:#8a8f8a}
+  #modal .fbar .fnote b{color:var(--ink)}
+  #modal .fbar button{font-family:inherit;font-size:11.5px;padding:4px 9px;border:1px solid #d6dbd6;
+    border-radius:5px;background:#fff;color:#5f645f;cursor:pointer}
+  #modal .fbar button:hover{border-color:var(--green);color:var(--green)}
+  #modal table.hasfbar th{top:41px}
+  #modal .hd .acts{display:flex;align-items:center;gap:8px;flex:0 0 auto}
+  #modal .exp{background:none;border:1px solid #d6dbd6;border-radius:4px;color:#5f645f;font-size:11px;
+              font-weight:600;letter-spacing:.3px;padding:5px 10px;cursor:pointer;white-space:nowrap}
+  #modal .exp:hover{border-color:var(--green);color:var(--green)}
+  #modal .exp:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+  #modal tfoot td{padding:8px 6px;border-top:2px solid #e2e6e2;font-weight:700;color:var(--ink)}
+  /* clickable quarter-total tiles - same dashed-underline affordance as the lock-up tile */
+  .fcsum .s.clk{cursor:pointer}
+  .fcsum .s.clk:hover{background:#f7faf4;border-color:var(--green)}
+  .fcsum .s.clk .v{border-bottom:1px dashed var(--green);display:inline-block}
+  .fcsum .s.clk:hover .v{color:var(--green)}
+  .fcsum .s.clk:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+  /* ---- live raffle wheel (presentation mode) ---- */
+  #raffle-stage{position:fixed;inset:0;z-index:80;background:#1d2420;display:none;
+    flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:16px}
+  #raffle-stage.open{display:flex}
+  #raffle-stage .rs-top{position:absolute;top:14px;left:0;right:0;display:flex;align-items:center;
+    justify-content:space-between;padding:0 20px;color:#dfe6d8}
+  #raffle-stage .rs-ttl{font-size:17px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase}
+  #raffle-stage .rs-ttl span{color:var(--green)}
+  #raffle-stage .rs-note{font-size:12px;color:#9aa89a;margin-top:2px}
+  #raffle-stage .rs-btns{display:flex;gap:8px;align-items:center}
+  #raffle-stage button{font-family:inherit;cursor:pointer;border-radius:6px;border:1px solid #46514a;
+    background:#2a332d;color:#dfe6d8;font-size:13px;padding:7px 12px}
+  #raffle-stage button:hover{border-color:var(--green);color:var(--green)}
+  #raffle-stage button.go{background:var(--green);color:#1d2420;border-color:var(--green);
+    font-size:19px;font-weight:700;padding:13px 40px;letter-spacing:1.2px;text-transform:uppercase}
+  #raffle-stage button.go:hover{filter:brightness(1.08);color:#1d2420}
+  #raffle-stage button.go:disabled{opacity:.4;cursor:default;filter:none}
+  #raffle-stage button.ghost{font-size:12px;background:transparent;color:#8d9a8d}
+  .wheelwrap{position:relative;display:flex;align-items:center;justify-content:center}
+  #wheel{display:block;max-width:min(76vh,760px);max-height:76vh;width:100%;height:auto}
+  /* pointer sits at 12 o'clock and is what the winning slice stops under */
+  .wheelwrap .ptr{position:absolute;top:-4px;left:50%;transform:translateX(-50%);
+    width:0;height:0;border-left:17px solid transparent;border-right:17px solid transparent;
+    border-top:30px solid var(--green);filter:drop-shadow(0 2px 3px rgba(0,0,0,.5));z-index:2}
+  #confetti{position:fixed;inset:0;pointer-events:none;z-index:82;display:none}
+  #confetti.on{display:block}
+  #rs-winner{position:fixed;inset:0;z-index:83;display:none;align-items:center;justify-content:center;
+    background:rgba(16,22,18,.93);padding:20px}
+  #rs-winner.open{display:flex}
+  #rs-winner .w{text-align:center;max-width:860px;animation:wpop .45s cubic-bezier(.2,1.5,.4,1)}
+  @keyframes wpop{from{transform:scale(.8);opacity:0}to{transform:scale(1);opacity:1}}
+  #rs-winner .kicker{font-size:15px;letter-spacing:3px;text-transform:uppercase;color:var(--green);font-weight:700}
+  #rs-winner .nm{font-size:clamp(40px,8.5vw,104px);font-weight:800;color:#fff;line-height:1.05;margin:10px 0 6px}
+  #rs-winner .amt{font-size:clamp(22px,3.4vw,40px);font-weight:700;color:var(--green)}
+  #rs-winner .why{font-size:15px;color:#b9c4b6;margin-top:16px;line-height:1.6}
+  #rs-winner .why b{color:#e6ede2}
+  #rs-winner .audit{font-size:11px;color:#79867a;margin-top:14px;font-family:ui-monospace,Consolas,monospace}
+  #rs-winner .wbtns{margin-top:22px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  #rs-winner button{font-family:inherit;cursor:pointer;border-radius:6px;padding:10px 18px;font-size:14px;
+    border:1px solid #46514a;background:#2a332d;color:#dfe6d8}
+  #rs-winner button:hover{border-color:var(--green);color:var(--green)}
+  #rs-winner button.prime{background:var(--green);color:#1d2420;border-color:var(--green);font-weight:700}
+  .rafflebar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:14px 0 0}
+  .rafflebar button{font-family:inherit;cursor:pointer;background:var(--green);color:#2c2e2e;font-weight:700;
+    border:1px solid var(--green);border-radius:8px;padding:11px 22px;font-size:15px;letter-spacing:.4px}
+  .rafflebar button:hover{filter:brightness(1.06)}
+  .rafflebar button:disabled{background:#e7eae4;border-color:var(--lgray);color:#9aa09a;cursor:default;filter:none}
+  .rafflebar .hint{font-size:12.5px;color:var(--gray)}
+  canvas#forecastChart{cursor:pointer}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;background:#fff;border:1px solid var(--lgray);border-radius:8px;overflow:hidden}
+  th{background:var(--green);text-align:left;padding:8px 10px;font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.3px}
+  td{padding:7px 10px;border-top:1px solid #eef0ea}
+  tr:nth-child(even) td{background:#fafbf8}
+  td.r,th.r{text-align:right}
+  .chip{font-size:11px;font-weight:700;padding:2px 7px;border-radius:999px;background:var(--green)}
+  .chip.gray{background:var(--lgray)}
+  .two{grid-template-columns:1fr 1fr} .three{grid-template-columns:repeat(3,1fr)}
+  #goals-tables table{font-size:12px}
+  #goals-tables th{font-size:10.5px;padding:6px 7px} #goals-tables td{padding:5px 7px}
+  @media(max-width:920px){#goals-tables{grid-template-columns:1fr}}
+  @media(max-width:760px){.two,.three{grid-template-columns:1fr}}
+  .muted{color:var(--gray);font-size:12.5px}
+  footer{padding:14px 22px;color:var(--gray);font-size:11.5px;text-align:center}
+  .refresh{background:#fff;border:1px solid #8fbf3f;color:#3a5a10;border-radius:6px;padding:5px 12px;font-size:12px;cursor:pointer;font-family:inherit}
+</style>
+</head>
+<body>
+<header>
+  <div><h1>Innovien · Weekly Stretch Scorecard</h1><div class="meta" id="meta">Loading…</div></div>
+  <button class="refresh" onclick="load(true)">↻ Refresh live data</button>
+</header>
+<div class="banner" id="banner"></div>
+<nav id="nav"></nav>
+<main>
+  <section class="page active" data-page="scorecard">
+    <h2 class="sec">Stretch Scorecard</h2>
+    <div class="grid kpis" id="kpi-scorecard"></div>
+    <div class="sechead">
+      <h2 class="sec" id="fc-title">Weekly Spread In &amp; Out — In the Door vs Out the Door (quarter weeks; growth vs baseline)</h2>
+      <div class="qtoggle"><span class="qlabel" id="fc-qlabel"></span><button id="fc-prev" title="Previous quarter" hidden>&#9664;</button><button id="fc-next" title="Next quarter">&#9654;</button></div>
+    </div>
+    <div class="card"><canvas id="forecastChart" height="110"></canvas></div>
+    <div style="font-size:11px;color:#8a8f8a;margin-top:4px">Click any In or Out bar — or the Locked-up spread / Planned attrition tile below — to see the placements behind it, and export the list. Amber = estimated unplanned attrition (a modelled allowance, so no detail).</div>
+    <div class="fcsum" id="fc-summary"></div>
+  </section>
+  <section class="page" data-page="goals">
+    <h2 class="sec">Consultant Hours Utilization</h2>
+    <div style="display:flex;gap:16px;align-items:stretch;flex-wrap:wrap;margin-top:6px">
+      <div id="kpi-hours" style="flex:0 0 320px;max-width:360px"></div>
+      <div class="card" style="flex:1 1 440px;min-width:300px"><canvas id="hoursChart" height="120"></canvas></div>
+    </div>
+    <h2 class="sec" style="margin-top:16px">Last Complete Week</h2>
+    <div class="grid kpis" id="kpi-week" style="margin-top:6px"></div>
+    <h2 class="sec" style="margin-top:16px">Company Pace &amp; Detail</h2>
+    <div class="grid three" id="goals-tables" style="margin-top:6px">
+      <div><div id="kpi-mtg"></div><h2 class="sec">AM Meeting Avg (13 Wk)</h2><div id="tbl-ammtg"></div></div>
+      <div><div id="kpi-sub"></div><h2 class="sec">Recruiter Sub Avg (13 Wk)</h2><div id="tbl-recsub"></div></div>
+      <div><div id="kpi-fill"></div><h2 class="sec">AM Close Ratio (13 Wk)</h2><div id="tbl-amfill"></div></div>
+    </div>
+  </section>
+  <section class="page" data-page="raffle">
+    <div class="grid kpis" id="kpi-raffle"></div>
+    <div class="rafflebar" id="raffle-bar"></div>
+    <h2 class="sec">Progress to Next Drawing</h2>
+    <div class="card" id="raffle-progress"></div>
+    <div class="grid two" style="margin-top:14px">
+      <div><h2 class="sec">Ticket Leaderboard — This Drawing</h2><div id="tbl-tickets"></div></div>
+      <div><h2 class="sec">This Drawing's Starts</h2><div id="tbl-qual"></div></div>
+    </div>
+    <h2 class="sec" style="margin-top:24px">How It Works</h2>
+    <div class="card" id="raffle-intro" style="border-left:5px solid var(--green)"></div>
+  </section>
+</main>
+<div id="raffle-stage" role="dialog" aria-modal="true" aria-label="Live raffle draw">
+  <div class="rs-top">
+    <div><div class="rs-ttl" id="rs-title"></div><div class="rs-note" id="rs-note"></div></div>
+    <div class="rs-btns">
+      <button id="rs-sound" title="Toggle sound">&#128266; Sound on</button>
+      <button id="rs-exit">Exit</button>
+    </div>
+  </div>
+  <div class="wheelwrap"><div class="ptr"></div><canvas id="wheel" width="760" height="760"></canvas></div>
+  <button class="go" id="rs-spin">Spin</button>
+  <button class="ghost" id="rs-legend-t"></button>
+</div>
+<canvas id="confetti"></canvas>
+<div id="rs-winner" role="dialog" aria-modal="true" aria-label="Raffle winner">
+  <div class="w">
+    <div class="kicker" id="rw-kicker"></div>
+    <div class="nm" id="rw-name"></div>
+    <div class="amt" id="rw-amt"></div>
+    <div class="why" id="rw-why"></div>
+    <div class="audit" id="rw-audit"></div>
+    <div class="wbtns">
+      <button class="prime" id="rw-done">Done</button>
+      <button id="rw-copy">Copy result</button>
+      <button id="rw-again">Re-spin (discards this result)</button>
+    </div>
+  </div>
+</div>
+<div id="modal" role="dialog" aria-modal="true">
+  <div class="box">
+    <div class="hd"><div><h3 id="m-title"></h3><div class="sub" id="m-sub"></div></div><div class="acts"><button class="exp" id="m-export" hidden>Export CSV</button><button class="x" id="m-close" aria-label="Close">&times;</button></div></div>
+    <div class="bd" id="m-body"></div>
+  </div>
+</div>
+<footer>
+  Source-linked: every figure is computed live from the Comtrak-fed Notion databases
+  (Active Contracts · ESF Pipeline · PSF Pipeline · Recruiter Daily Activity · AM Weekly Activity · Open Reqs · Placement Events · Innovien Next).
+  Goals are read live from the Notion <b>Company Goals</b> database (fallback <code>goals.json</code>). · <span id="rowcounts"></span>
+</footer>
+
+<script>
+const SAMPLE = {"meta":{"asOf":"2026-06-17","quarterLabel":"Q2 2026","baselineWeekStart":"2026-03-23","quarterStart":"2026-03-30","quarterEnd":"2026-06-28","lookbackWeeks":13},"scorecard":{"weeklySpread":{"actual":323781.28,"goal":364000,"pct":89,"onPace":false,"fmt":"usd"},"netNewStarts":{"actual":86,"goal":101,"pct":85,"onPace":false,"fmt":"int"},"avgStartSpread":{"actual":1167,"goal":1000,"pct":117,"onPace":true,"fmt":"usd"},"pendingStarts":{"count":15,"avgSpread":1162,"totalSpread":17428,"avgGoal":1300,"avgPct":89,"avgOnPace":false},"weeklyLockUp":{"count":0,"spread":6027,"countGoal":10,"spreadGoal":10893,"countPct":0,"countOnPace":false,"spreadPct":55,"spreadOnPace":false,"weekStart":"2026-06-15"},"dumpIn":{"count":81,"spread":94847,"spreadGoal":95033,"spreadPct":100,"spreadOnPace":false},"activeConsultants":279,"redeployed":{"actual":5,"goal":12,"pct":42,"onPace":false,"fmt":"int"},"availableBench":19,"forecast":[{"weekStart":"2026-03-30","plannedIn":11158,"plannedOut":25316,"net":-14158,"cumNet":-14158,"isPast":true},{"weekStart":"2026-04-06","plannedIn":7073,"plannedOut":4415,"net":2658,"cumNet":-11500,"isPast":true},{"weekStart":"2026-04-13","plannedIn":4076,"plannedOut":2599,"net":1477,"cumNet":-10023,"isPast":true},{"weekStart":"2026-04-20","plannedIn":11499,"plannedOut":5353,"net":6146,"cumNet":-3877,"isPast":true},{"weekStart":"2026-04-27","plannedIn":4993,"plannedOut":13754,"net":-8761,"cumNet":-12638,"isPast":true},{"weekStart":"2026-05-04","plannedIn":11328,"plannedOut":1253,"net":10075,"cumNet":-2563,"isPast":true},{"weekStart":"2026-05-11","plannedIn":2711,"plannedOut":4981,"net":-2270,"cumNet":-4833,"isPast":true},{"weekStart":"2026-05-18","plannedIn":4726,"plannedOut":6726,"net":-2000,"cumNet":-6833,"isPast":true},{"weekStart":"2026-05-25","plannedIn":6160,"plannedOut":5896,"net":264,"cumNet":-6569,"isPast":true},{"weekStart":"2026-06-01","plannedIn":18670,"plannedOut":11063,"net":7607,"cumNet":1038,"isPast":true},{"weekStart":"2026-06-08","plannedIn":12028,"plannedOut":4104,"net":7924,"cumNet":8962,"isPast":true},{"weekStart":"2026-06-15","plannedIn":10518,"plannedOut":3437,"net":7081,"cumNet":16043,"isPast":true},{"weekStart":"2026-06-22","plannedIn":6470,"plannedOut":2337,"net":4133,"cumNet":20176,"isPast":false}]},"goalTracking":{"weeklySubAvg":{"actual":580,"goal":495,"pct":117,"onPace":true,"fmt":"int","note":"3/recruiter/wk · 15 recruiters · wk 11 of 13","weeksElapsed":11,"weeksInQuarter":13},"qtrlyMeetingPace":{"actual":1285,"goal":1540,"pct":83,"onPace":false,"fmt":"int","note":"10/AM/wk · 14 AMs · wk 11 of 13","weeksElapsed":11,"weeksInQuarter":13},"fillRatio":{"actual":0.516,"goal":0.6,"pct":86,"onPace":false,"fmt":"pct"},"amMeetingAvg":[{"name":"Mollie Ferguson","weeklyAvg":16.5,"total":214,"goal":10},{"name":"Kollin Korell","weeklyAvg":11.5,"total":150,"goal":10},{"name":"Kelsie Laughlin","weeklyAvg":11.5,"total":150,"goal":10},{"name":"Hannah Craig","weeklyAvg":11.2,"total":146,"goal":10},{"name":"Brie Branting","weeklyAvg":10.8,"total":141,"goal":10},{"name":"Riley Laverty","weeklyAvg":10.7,"total":139,"goal":10},{"name":"Mike Minnillo","weeklyAvg":10.4,"total":135,"goal":10},{"name":"Stephen Denzel","weeklyAvg":9.5,"total":124,"goal":10},{"name":"Daniela Blesich","weeklyAvg":9.3,"total":121,"goal":10},{"name":"Jon Pack","weeklyAvg":8.4,"total":109,"goal":10},{"name":"Johnna Fusco","weeklyAvg":6.6,"total":86,"goal":10},{"name":"Jessica Evans","weeklyAvg":6.4,"total":83,"goal":10},{"name":"Cristina Murto","weeklyAvg":2.7,"total":35,"goal":10},{"name":"Craig Coates","weeklyAvg":2.1,"total":27,"goal":10},{"name":"Jesu Philip","weeklyAvg":0.5,"total":7,"goal":10},{"name":"Josh Mastel","weeklyAvg":0.1,"total":1,"goal":10}],"recruiterSubAvg":[{"name":"Gloria Manley","weeklyAvg":5,"total":65,"goal":4},{"name":"Jamie Houvig","weeklyAvg":4.5,"total":58,"goal":4},{"name":"Merrimon McCartney","weeklyAvg":4.3,"total":56,"goal":4},{"name":"Jordan Foote","weeklyAvg":3.8,"total":50,"goal":4},{"name":"Brandon Dowdell","weeklyAvg":3.7,"total":48,"goal":4},{"name":"Dan Bostock","weeklyAvg":3.6,"total":47,"goal":4},{"name":"Julia McDonald","weeklyAvg":3.6,"total":47,"goal":4},{"name":"Brennan Lantz","weeklyAvg":3.5,"total":45,"goal":4},{"name":"Luke Reineke","weeklyAvg":3.5,"total":45,"goal":4},{"name":"Monika DuVarney","weeklyAvg":3.3,"total":43,"goal":4},{"name":"Ben Dorsey","weeklyAvg":3.1,"total":40,"goal":4},{"name":"Mike Murphy","weeklyAvg":3.1,"total":40,"goal":4},{"name":"Ryan Mickley","weeklyAvg":3.1,"total":40,"goal":4},{"name":"Adam Williams","weeklyAvg":2.8,"total":36,"goal":4},{"name":"Chelsea Navarro","weeklyAvg":1.8,"total":23,"goal":4}],"amFillRatio":[{"name":"Malia Graham","ratio":1,"filled":1,"openings":1,"goal":0.6},{"name":"Mollie Ferguson","ratio":1,"filled":23,"openings":23,"goal":0.6},{"name":"Victoria Bonilla","ratio":1,"filled":1,"openings":1,"goal":0.6},{"name":"Johnna Fusco","ratio":1,"filled":1,"openings":1,"goal":0.6},{"name":"Jon Pack","ratio":0.714,"filled":10,"openings":14,"goal":0.6},{"name":"Brie Branting","ratio":0.7,"filled":7,"openings":10,"goal":0.6},{"name":"Hannah Craig","ratio":0.6,"filled":6,"openings":10,"goal":0.6},{"name":"Kelsie Laughlin","ratio":0.556,"filled":5,"openings":9,"goal":0.6},{"name":"Mike Minnillo","ratio":0.529,"filled":9,"openings":17,"goal":0.6},{"name":"Stephen Denzel","ratio":0.429,"filled":6,"openings":14,"goal":0.6},{"name":"Daniela Blesich","ratio":0.2,"filled":1,"openings":5,"goal":0.6},{"name":"Cristina Murto","ratio":0.2,"filled":1,"openings":5,"goal":0.6},{"name":"Riley Laverty","ratio":0.111,"filled":1,"openings":9,"goal":0.6},{"name":"Kollin Korell","ratio":0,"filled":0,"openings":24,"goal":0.6},{"name":"Josh Mastel","ratio":0,"filled":0,"openings":1,"goal":0.6},{"name":"Shannon Johnson","ratio":0,"filled":0,"openings":1,"goal":0.6}]},"raffle":{"mode":"curated","threshold":1250,"batchSize":15,"currentDrawingNo":2,"currentCount":1,"currentReady":false,"startsToCurrentDrawing":14,"totalTickets":2,"leaderboard":[{"name":"Hannah Craig","tickets":1,"asAM":1,"asRecruiter":0},{"name":"Gloria Manley","tickets":1,"asAM":0,"asRecruiter":1}],"currentMembers":[{"name":"Abba-Joseph Awano","am":"Hannah Craig","recruiter":"Gloria Manley","spread":1267}],"nextCount":0,"startsToNextDrawing":15,"nextUp":[]},"openReqHealth":{"totalOpen":0,"aging":{"<=14d":0,"15-45d":0,"46-90d":0,">90d":0},"reqsNoFill":0,"totOpenings":0,"totFilled":0},"rowCounts":{"activeContracts":0,"recruiterDaily":0,"amWeekly":0,"openReqs":0,"placementEvents":0,"innovienNext":28,"esf":0,"psf":0,"goals":15},"goalsApplied":15,"weeklyDataWeekEnding":"2026-06-01","generatedAt":"2026-06-17T10:21:31.675Z","sample":true};
+const PAGES=[["scorecard","Stretch Scorecard"],["goals","Goal Tracking"],["raffle","$1,250 Raffle"]];
+const fmtUsd=n=>"$"+Math.round(n).toLocaleString();
+const fmt={usd:fmtUsd,int:n=>Math.round(n).toLocaleString(),dec:n=>(+n).toFixed(1),pct:n=>(n*100).toFixed(1)+"%"};
+let chart1;
+let chart2;
+let FC={cur:[],next:null,view:'cur',label:'',nextLabel:''};
+
+function nav(){const n=document.getElementById('nav');n.innerHTML='';PAGES.forEach(([id,label],i)=>{const b=document.createElement('button');b.textContent=label;b.className=i===0?'active':'';b.onclick=()=>{document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.dataset.page===id));};n.appendChild(b);});}
+
+function kpiCard(label,k){
+  if(!k) return '';
+  const f=fmt[k.fmt]||fmt.int;
+  const pace = k.onPace===null?'' : `<span class="pace ${k.onPace?'on':'off'}">${k.onPace?'On / ahead of goal':'Below goal'}${k.pct!=null?' · '+k.pct+'%':''}</span>`;
+  const barpct = k.pct!=null?Math.min(100,k.pct):0;
+  const bar = k.goal?`<div class="bar"><i style="width:${barpct}%"></i></div>`:'';
+  const goal = k.goal!=null?`<div class="goal">Goal: ${f(k.goal)}</div>`:'';
+  const note = k.note?`<div class="goal" style="opacity:.7;font-size:.82em;margin-top:-2px">${k.note}</div>`:'';
+  return `<div class="card kpi"><div class="label">${label}</div><div class="val">${f(k.actual)}</div>${goal}${note}${bar}${pace}</div>`;
+}
+function plainCard(label,val,sub){return `<div class="card kpi"><div class="label">${label}</div><div class="val">${val}</div><div class="goal">${sub||''}</div></div>`;}
+function paceLine(text,onPace){const cls=onPace===null?'':(onPace?'on':'off');return `<span class="pace ${cls}" style="margin-top:6px">${text}</span>`;}
+function multiCard(label,mainVal,subHtml){return `<div class="card kpi"><div class="label">${label}</div><div class="val">${mainVal}</div>${subHtml}</div>`;}
+
+function table(rows,cols){
+  let h='<table><tr>'+cols.map(c=>`<th class="${c.r?'r':''}">${c.h}</th>`).join('')+'</tr>';
+  rows.forEach(r=>{h+='<tr>'+cols.map(c=>`<td class="${c.r?'r':''}">${c.f(r)}</td>`).join('')+'</tr>';});
+  return h+'</table>';
+}
+
+function render(d){
+  document.getElementById('meta').textContent =
+    `${d.meta.quarterLabel} · ${d.meta.quarterStart} – ${d.meta.quarterEnd} · baseline ref wk ${d.meta.baselineWeekStart?.slice(5)} · as of ${d.meta.asOf}`;
+  // nav + hours label follow goals.json's quarterLabel, so the quarter roll needs no HTML edit
+  const _navGoals=document.querySelectorAll('nav button')[1];
+  if(_navGoals&&d.meta.quarterLabel) _navGoals.textContent=`${d.meta.quarterLabel} Goal Tracking`;
+  document.getElementById('rowcounts').textContent =
+    `Rows: ${d.rowCounts.activeContracts} contracts · ${d.rowCounts.openReqs} reqs · ${d.rowCounts.placementEvents} placement events`;
+  const sc=d.scorecard;
+  const p=sc.pendingStarts, lu=sc.weeklyLockUp, di=sc.dumpIn;
+  const wk='<span class="goal" style="font-size:12px;font-weight:400"> /wk</span>';
+  const pendingSub =
+    `<div class="goal">${p.count.toLocaleString()} open form${p.count===1?'':'s'} awaiting confirmation · all dates (live ESF/PSF)</div>`+
+    `<div class="goal">Total ${fmtUsd(p.totalSpread)}/wk${p.avgGoal?` · avg goal ${fmtUsd(p.avgGoal)}`:''}</div>`+
+    (p.avgOnPace===null?'':paceLine((p.avgOnPace?'Avg ≥ goal':'Avg below goal')+(p.avgPct!=null?` · ${p.avgPct}%`:''),p.avgOnPace));
+  const lockSub =
+    `<div class="goal">Lock-up goal ${lu.spreadGoal?fmtUsd(lu.spreadGoal):'—'}</div>`+
+    (lu.hitList?(()=>{const h=lu.hitList,pl=n=>n===1?'':'s',
+      // rate card = (bill-pay) x 40h x openings, summed per req. Say "rate card", not
+      // "potential": it is a ceiling, realized spread has run ~65-75% of it.
+      // "open seats" = remaining (req total minus already filled), not the req's headcount.
+      part=(h.ratedOpenings!=null&&h.ratedOpenings<h.openings)?` · rates on ${h.ratedOpenings}/${h.openings}`:'',
+      // when some reqs have no seat left, say so rather than letting the req count imply they do
+      worked=(h.reqsWithSeats!=null&&h.reqsWithSeats<h.reqs)?` (${h.reqsWithSeats} with seats open)`:'';
+      return `<div class="goal" style="margin-top:3px">Hit list: <b>${h.reqs}</b> req${pl(h.reqs)}${worked} · ${h.openings} open seat${pl(h.openings)} · ~${fmtUsd(h.potentialSpread)}/wk rate card${part}</div>`;})():'')+
+    (lu.spreadOnPace===null?'':paceLine((lu.spreadOnPace?'At / above goal':'Below goal')+(lu.spreadPct!=null?` · ${lu.spreadPct}%`:''),lu.spreadOnPace));
+  const dumpSub =
+    `<div class="goal">${di.count} dump-ins · created this qtr, start by qtr end</div>`+
+    `<div class="goal">Goal ${di.spreadGoal?fmtUsd(di.spreadGoal):'—'}</div>`+
+    (di.spreadOnPace===null||di.spreadOnPace===undefined?'':paceLine((di.spreadOnPace?'At / above goal':'Below goal')+(di.spreadPct!=null?` · ${di.spreadPct}%`:''),di.spreadOnPace));
+  document.getElementById('kpi-scorecard').innerHTML =
+    kpiCard('Company Spread',sc.weeklySpread)+
+    kpiCard('Net New Starts · Qtr',sc.netNewStarts)+
+    kpiCard('Avg Weekly Spread / New Start',sc.avgStartSpread)+
+    multiCard('Pending Start Avg Spread',fmtUsd(p.avgSpread)+wk,pendingSub)+
+    multiCard('Weekly Lock-Up',(lu.detail?`<span class="drill" id="lu-drill" role="button" tabindex="0" title="See the offers behind this number">${fmtUsd(lu.spread)}</span>`:fmtUsd(lu.spread))+wk,lockSub)+
+    multiCard('Total Dump-In Spread',fmtUsd(di.spread),dumpSub);
+  // bind after innerHTML: the span above is recreated on every render
+  const _lud=document.getElementById('lu-drill');
+  if(_lud){ _lud.onclick=()=>openLockup(lu);
+            _lud.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openLockup(lu);}}; }
+
+  const gt=d.goalTracking;
+  document.getElementById('kpi-mtg').innerHTML = kpiCard('Meeting Pace · QTD',gt.qtrlyMeetingPace);
+  document.getElementById('kpi-sub').innerHTML = kpiCard('Sub Pace · QTD',gt.weeklySubAvg);
+  document.getElementById('kpi-fill').innerHTML = kpiCard('Close Ratio · 13 Wk',gt.fillRatio);
+  document.getElementById('kpi-hours').innerHTML = kpiCard('Avg Hrs / Wk / Consultant · '+(gt.hoursUtil&&gt.hoursUtil.periodLabel||((d.meta.quarterLabel||'').split(' ')[0]+'-to-date')),gt.hoursUtil);
+  const wt=gt.weekTotals;
+  document.getElementById('kpi-week').innerHTML = wt
+    ? kpiCard('Total Subs · Week',wt.subs)+kpiCard('Total Meetings · Week',wt.meetings)
+    : '<div class="card kpi"><div class="label">Last Complete Week</div><div class="val">—</div><div class="goal">week totals unavailable in this build</div></div>';
+  drawHoursChart(gt.hoursUtil);
+  document.getElementById('tbl-ammtg').innerHTML = table(gt.amMeetingAvg,[
+    {h:'Account Manager',f:r=>r.name},{h:'Wkly Avg',r:1,f:r=>r.weeklyAvg.toFixed(1)},
+    {h:'Goal',r:1,f:r=>r.goal??'—'},{h:'',r:1,f:r=>`<span class="chip ${r.goal&&r.weeklyAvg>=r.goal?'':'gray'}">${r.goal&&r.weeklyAvg>=r.goal?'✓':'·'}</span>`}]);
+  document.getElementById('tbl-recsub').innerHTML = table(gt.recruiterSubAvg,[
+    {h:'Recruiter',f:r=>r.name},{h:'Wkly Avg',r:1,f:r=>r.weeklyAvg.toFixed(1)},
+    {h:'Goal',r:1,f:r=>r.goal??'—'},{h:'',r:1,f:r=>`<span class="chip ${r.goal&&r.weeklyAvg>=r.goal?'':'gray'}">${r.goal&&r.weeklyAvg>=r.goal?'✓':'·'}</span>`}]);
+  // Both columns come straight from the AM Productivity Snapshot (Comtrak's own Close Ratio
+  // (13wk) / Closed Reqs (13wk)). Do not add a Filled or Decided column: the snapshot carries
+  // no such counts and any shown here would be reverse-engineered from the ratio.
+  document.getElementById('tbl-amfill').innerHTML = table(gt.amFillRatio,[
+    {h:'Account Manager',f:r=>r.name},
+    {h:'Closed Reqs',r:1,f:r=>(r.closedReqs!=null?r.closedReqs:(r.decided!=null?r.decided:(r.openings!=null?r.openings:'—')))},
+    {h:'Close Ratio',r:1,f:r=>(r.ratio*100).toFixed(0)+'%'},{h:'',r:1,f:r=>`<span class="chip ${r.goal&&r.ratio>=r.goal?'':'gray'}">${r.goal&&r.ratio>=r.goal?'✓':'·'}</span>`}]);
+
+  const rf=d.raffle;
+  if(rf.mode==='curated'){
+    const ready=rf.currentReady, nu=rf.nextUp[0];
+    document.getElementById('raffle-intro').innerHTML =
+      `<div class="label">How the $${rf.threshold.toLocaleString()} Raffle works</div>`+
+      `<div style="margin-top:6px;font-size:14px;line-height:1.5">A <b>qualifying start</b> has a weekly spread of <b>$${rf.threshold.toLocaleString()}+</b>. Every <b>${rf.batchSize}</b> qualifying starts triggers a drawing — the <b>Account Manager and Recruiter each earn one ticket per start</b>, so a full drawing has <b>${rf.batchSize*2} tickets</b>. New $${rf.threshold.toLocaleString()} starts accrue toward the next drawing.</div>`;
+    document.getElementById('kpi-raffle').innerHTML =
+      plainCard('Drawing #'+rf.currentDrawingNo, ready?'READY':rf.currentCount+' / '+rf.batchSize, ready?'15 starts locked in':'building')+
+      plainCard('Tickets in Drawing', rf.totalTickets.toLocaleString(), 'AM + recruiter per start')+
+      plainCard('Toward Next Drawing', rf.nextCount+' / '+rf.batchSize, `new $${rf.threshold.toLocaleString()} starts`)+
+      plainCard('Next Up', nu?nu.name:'—', nu?(fmtUsd(nu.spread)+'/wk · '+nu.am):'awaiting first start');
+    const pctc=Math.round((rf.currentCount/rf.batchSize)*100);
+    const toGo=(rf.startsToCurrentDrawing!=null?rf.startsToCurrentDrawing:(rf.batchSize-rf.currentCount));
+    document.getElementById('raffle-progress').innerHTML =
+      `<div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px">`+
+      `<b style="font-size:16px">${rf.currentCount} / ${rf.batchSize} ${ready?'— Drawing #'+rf.currentDrawingNo+' READY to draw':'toward Drawing #'+rf.currentDrawingNo}</b>`+
+      `<span class="muted">${ready?('all '+rf.batchSize+' qualifying starts in'):(toGo+' more qualifying start'+(toGo===1?'':'s')+' to complete it')}</span></div>`+
+      `<div class="bar" style="height:18px;margin-top:10px"><i style="width:${pctc}%"></i></div>`+
+      (rf.nextCount?`<div class="muted" style="margin-top:6px">${rf.nextCount} already qualified for the next drawing: ${rf.nextUp.map(n=>n.name).join(', ')}</div>`:'');
+    const lb=rf.leaderboard.map((x,i)=>({...x,rank:i+1}));
+    document.getElementById('tbl-tickets').innerHTML = table(lb,[
+      {h:'#',f:r=>r.rank},{h:'Name',f:r=>r.name},{h:'Tickets',r:1,f:r=>`<b>${r.tickets}</b>`},
+      {h:'as AM',r:1,f:r=>r.asAM||'—'},{h:'as Rec',r:1,f:r=>r.asRecruiter||'—'}]);
+    document.getElementById('tbl-qual').innerHTML = table(rf.currentMembers,[
+      {h:'Consultant',f:r=>r.name},{h:'Wkly Spread',r:1,f:r=>fmtUsd(r.spread)},
+      {h:'AM',f:r=>r.am},{h:'Recruiter',f:r=>r.recruiter||'—'}]);
+  } else {
+  document.getElementById('raffle-intro').innerHTML =
+    `<div class="label">How the $${rf.threshold.toLocaleString()} Raffle works</div>`+
+    `<div style="margin-top:6px;font-size:14px;line-height:1.5">A <b>qualifying start</b> is any placement with a weekly spread of <b>$${rf.threshold.toLocaleString()}+</b>. Every <b>${rf.batchSize}</b> qualifying starts triggers a drawing — the <b>Account Manager and Recruiter each earn one ticket per qualifying start</b>, so each drawing has <b>${rf.batchSize*2} tickets</b>. Running total since ${rf.programStart}.</div>`;
+  document.getElementById('kpi-raffle').innerHTML =
+    plainCard('Qualifying Starts', rf.qualifyingCount.toLocaleString(), `≥ $${rf.threshold.toLocaleString()}/wk · started`)+
+    plainCard('Drawings Earned', rf.drawingsEarned.toLocaleString(), `1 per ${rf.batchSize} qualifying starts`)+
+    plainCard('Tickets In Play', rf.totalTickets.toLocaleString(), 'AM + recruiter per start')+
+    plainCard('On Deck', rf.onDeckCount.toLocaleString(), 'pending qualifying (future-dated)');
+  document.getElementById('raffle-progress').innerHTML =
+    `<div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px">`+
+    `<b style="font-size:16px">${rf.towardNext} / ${rf.batchSize} toward Drawing #${rf.drawingsEarned+1}</b>`+
+    `<span class="muted">${rf.startsToNext} more qualifying start${rf.startsToNext===1?'':'s'} to trigger the next drawing</span></div>`+
+    `<div class="bar" style="height:18px;margin-top:10px"><i style="width:${rf.progressPct}%"></i></div>`+
+    `<div class="muted" style="margin-top:6px">${rf.drawingsEarned*rf.batchSize*2} tickets already earned across ${rf.drawingsEarned} completed drawing${rf.drawingsEarned===1?'':'s'}.</div>`;
+  const lb=rf.leaderboard.map((x,i)=>({...x,rank:i+1}));
+  document.getElementById('tbl-tickets').innerHTML = table(lb,[
+    {h:'#',f:r=>r.rank},{h:'Name',f:r=>r.name},{h:'Tickets',r:1,f:r=>`<b>${r.tickets}</b>`},
+    {h:'as AM',r:1,f:r=>r.asAM||'—'},{h:'as Rec',r:1,f:r=>r.asRecruiter||'—'}]);
+  document.getElementById('tbl-qual').innerHTML = table(rf.qualifyingList,[
+    {h:'Consultant',f:r=>r.consultant||'—'},{h:'Client',f:r=>r.client||'—'},
+    {h:'Wkly Spread',r:1,f:r=>fmtUsd(r.weeklySpread)},{h:'AM',f:r=>r.amOwner},{h:'Recruiter',f:r=>r.recruiter||'—'},
+    {h:'Started',r:1,f:r=>r.startDate?r.startDate.slice(5):'—'}]);
+  }
+  renderRaffleBar(rf);
+
+  FC.cur = sc.forecast || [];
+  FC.next = (sc.forecastNext && sc.forecastNext.weeks && sc.forecastNext.weeks.length) ? sc.forecastNext : null;
+  FC.label = (d.meta && d.meta.quarterLabel) ? d.meta.quarterLabel : 'This quarter';
+  FC.nextLabel = FC.next ? (FC.next.label || 'Next quarter') : '';
+  FC.view = 'cur';
+  renderForecast();
+}
+function drawHoursChart(hu){
+  const ctx=document.getElementById('hoursChart'); if(!ctx) return;
+  if(chart2){chart2.destroy(); chart2=null;}
+  if(!hu||!Array.isArray(hu.byWeek)||!hu.byWeek.length) return;
+  const base=hu.goal;
+  const labels=hu.byWeek.map(w=>w.week.slice(5));
+  const vals=hu.byWeek.map(w=>w.avg);
+  const colors=vals.map(v=>v>=base?'#B0DD66':'#747777');
+  // inline plugin: value label on each bar + a small "YTD" tag on the baseline line
+  const hoursValueLabels={id:'hoursValueLabels',afterDatasetsDraw(chart){const{ctx}=chart;ctx.save();
+    ctx.font='700 11px Calibri, sans-serif';ctx.fillStyle='#3a3a3a';ctx.textAlign='center';ctx.textBaseline='bottom';
+    chart.getDatasetMeta(0).data.forEach((el,i)=>{const raw=chart.data.datasets[0].data[i]; if(raw==null)return; ctx.fillText((+raw).toFixed(1), el.x, el.y-3);});
+    const y=chart.scales.y.getPixelForValue(base);
+    ctx.font='700 9px Calibri, sans-serif';ctx.fillStyle='#3a5a10';ctx.textAlign='right';ctx.textBaseline='bottom';
+    ctx.fillText('Goal '+base, chart.chartArea.right-2, y-2);
+    ctx.restore();}};
+  chart2=new Chart(ctx,{plugins:[hoursValueLabels],data:{labels,datasets:[
+    {type:'bar',label:'Avg hrs / consultant',data:vals,backgroundColor:colors,order:2},
+    {type:'line',label:'YTD 2026 avg ('+base+')',data:labels.map(()=>base),borderColor:'#3a5a10',borderDash:[6,4],borderWidth:2,pointRadius:0,fill:false,order:1}
+  ]},options:{responsive:true,layout:{padding:{top:14}},plugins:{legend:{display:false},
+    tooltip:{callbacks:{label:c=>c.dataset.label+': '+(+c.raw).toFixed(1)+' hrs'}}},
+    scales:{y:{suggestedMin:0,title:{display:true,text:'Avg hrs / wk / consultant'}}}}});
+}
+function renderForecast(){
+  const showNext = FC.view==='next' && FC.next;
+  const weeks = showNext ? FC.next.weeks : FC.cur;
+  const t=document.getElementById('fc-title'), ql=document.getElementById('fc-qlabel');
+  const bn=document.getElementById('fc-next'), bp=document.getElementById('fc-prev');
+  if(t) t.innerHTML = showNext
+    ? 'Weekly Spread In &amp; Out — '+FC.nextLabel+' Outlook (as currently booked in Comtrak)'
+    : 'Weekly Spread In &amp; Out — In the Door vs Out the Door (quarter weeks; growth vs baseline)';
+  if(ql) ql.textContent = showNext ? FC.nextLabel : FC.label;
+  if(bn) bn.hidden = showNext || !FC.next;
+  if(bp) bp.hidden = !showNext;
+  renderFcSummary(weeks, showNext ? FC.nextLabel : FC.label);
+  drawForecast(weeks);
+}
+function fcUsd(v){return (v<0?'-$':'$')+Math.abs(Math.round(v)).toLocaleString();}
+function openDetail(weeks,di,i){
+  const w=weeks[i]; if(!w) return;
+  const isIn = di===0;
+  const rows=(isIn ? w.inDetail : w.outDetail) || [];
+  const total=rows.reduce((t,r)=>t+(+r.s||0),0);
+  const d=new Date(w.weekStart+'T00:00:00');
+  const wkTxt=(d.getMonth()+1)+'/'+d.getDate();
+  document.getElementById('m-title').textContent=(isIn?'In the door':'Out the door')+' — week of '+wkTxt;
+  document.getElementById('m-sub').textContent = rows.length
+    ? rows.length+(rows.length===1?' placement':' placements')+' · '+fcUsd(total)+' weekly spread'
+    : 'No placement detail available for this week.';
+  let html='';
+  const sorted=rows.slice().sort((x,y)=>(+y.s||0)-(+x.s||0));
+  if(rows.length){
+    html='<table><thead><tr><th>Consultant</th><th>Client</th><th>AM</th>'
+      +(isIn?'<th>Recruiter</th>':'')+'<th class="num">Weekly $</th><th>'+(isIn?'Status':'')+'</th></tr></thead><tbody>';
+    sorted.forEach(r=>{
+      const flag = !isIn && String(r.x||'').toUpperCase()==='Y' ? '<span class="tag">still active</span>' : '';
+      html+='<tr><td>'+esc(r.n)+'</td><td>'+esc(r.c)+'</td><td>'+esc(r.a)+'</td>'
+        +(isIn?'<td>'+esc(r.r)+'</td>':'')
+        +'<td class="num">'+fcUsd(+r.s||0)+'</td><td>'+(isIn?esc(r.x||''):flag)+'</td></tr>';
+    });
+    html+='</tbody></table>';
+  }
+  document.getElementById('m-body').innerHTML=html;
+  setExport('innovien-'+(isIn?'in-the-door':'out-the-door')+'-week-'+w.weekStart+'.csv',
+    ['Week','Consultant','Client','AM'].concat(isIn?['Recruiter']:[])
+      .concat(['Weekly Spread',isIn?'Status':'Still Active']),
+    sorted.map(r=>[w.weekStart,r.n,r.c,r.a].concat(isIn?[r.r]:[])
+      .concat([csvNum(isIn?r.s:-r.s),
+               isIn?(r.x||''):(String(r.x||'').toUpperCase()==='Y'?'Yes':'No')])));
+  document.getElementById('modal').classList.add('open');
+}
+function openLockup(lu){
+  const rows=(lu && lu.detail)||[];
+  // Take the total from the tile, never by re-adding the rounded rows below: each row is
+  // rounded for display, so summing them can land a dollar off the tile and make the modal
+  // look like it disagrees with the card the user just clicked (2026-10-16, $8,880 vs $8,881).
+  const total=(lu && lu.spread!=null) ? +lu.spread
+                                      : rows.reduce((t,r)=>t+(+r.s||0),0);
+  const d=lu.weekStart?new Date(lu.weekStart+'T00:00:00'):null;
+  const wkTxt=d?((d.getMonth()+1)+'/'+d.getDate()):'this week';
+  document.getElementById('m-title').textContent='Weekly lock-up — week of '+wkTxt;
+  // DONE = the form has cleared onboarding and posted. Everything else is an offer that is
+  // signed but still moving through onboarding - already counted in the tile, not yet a start.
+  const done=r=>String(r.ob||'').toLowerCase()==='clear to start'
+                && String(r.x||'').toLowerCase().indexOf('complete')>-1;
+  const pend=rows.filter(r=>!done(r)).length;
+  document.getElementById('m-sub').textContent = rows.length
+    ? rows.length+(rows.length===1?' offer':' offers')+' · '+fcUsd(total)+' weekly spread'
+      +(pend?' · '+pend+' still onboarding':'')
+    : 'No offers locked up yet this week — ESFs appear here as they are created.';
+  let html='<div class="sect">Counted in the lock-up <span class="n">&mdash; ESF / PSF created this week</span></div>';
+  if(rows.length){
+    html+='<table><thead><tr><th>Candidate</th><th>Company</th><th>Role</th><th>AM</th>'
+      +'<th>Recruiter</th><th class="num">Weekly $</th><th>Stage</th></tr></thead><tbody>';
+    rows.forEach(r=>{
+      const perm = String(r.t||'')==='Perm' ? ' <span class="tag">perm</span>' : '';
+      const stage = done(r) ? esc(r.ob||'') : '<span class="tag">'+esc(r.ob||r.x||'pending')+'</span>';
+      html+='<tr><td>'+esc(r.n)+perm+'</td><td>'+esc(r.c)+'</td><td>'+esc(r.j)+'</td>'
+        +'<td>'+esc(r.a)+'</td><td>'+esc(r.r)+'</td>'
+        +'<td class="num">'+fcUsd(+r.s||0)+'</td><td>'+stage+'</td></tr>';
+    });
+    html+='</tbody></table>';
+  } else {
+    html+='<div class="empty">No start forms created yet this week.</div>';
+  }
+  // Bottom section: offers won this week with no start form yet. These are NOT in the lock-up
+  // number above - that is the whole point of showing them. Usually empty, which is healthy.
+  const offs=(lu && lu.offers)||[];
+  if(lu && lu.offers!=null){
+    const ot=offs.reduce((t,r)=>t+(+r.s||0),0);
+    html+='<div class="sect">Offers not yet on a start form'
+      +'<span class="n"> &mdash; accepted / extended this week'
+      +(offs.length?', ~'+fcUsd(ot)+' est, not counted above':'')+'</span></div>';
+    if(offs.length){
+      html+='<table><thead><tr><th>Candidate</th><th>Company</th><th>Role</th>'
+        +'<th>Recruiter</th><th class="num">Est $</th><th>Status</th></tr></thead><tbody>';
+      offs.forEach(r=>{
+        html+='<tr><td>'+esc(r.n)+'</td><td>'+esc(r.c)+'</td><td>'+esc(r.j)+'</td>'
+          +'<td>'+esc(r.r)+'</td><td class="num">'+fcUsd(+r.s||0)+'</td>'
+          +'<td><span class="tag">'+esc(r.st||'')+'</span></td></tr>';
+      });
+      html+='</tbody></table>';
+    } else {
+      html+='<div class="empty">None &mdash; every offer this week already has a start form.</div>';
+    }
+  }
+  document.getElementById('m-body').innerHTML=html;
+  // One file, both sections, distinguished by the Section column - the bottom list is
+  // explicitly NOT in the lock-up total, so it must stay labelled in the export too.
+  setExport('innovien-weekly-lock-up-'+(lu.weekStart||'current')+'.csv',
+    ['Section','Candidate','Company','Role','AM','Recruiter','Weekly Spread','Stage','Type'],
+    rows.map(r=>['Counted in lock-up',r.n,r.c,r.j,r.a,r.r,csvNum(r.s),
+                 (r.ob||r.x||''),(r.t||'')])
+      .concat(offs.map(r=>['Offer, no start form yet',r.n,r.c,r.j,(r.a||''),r.r,csvNum(r.s),
+                           (r.st||''),''])));
+  document.getElementById('modal').classList.add('open');
+}
+function esc(v){return String(v==null?'':v).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+/* ---- CSV export ---------------------------------------------------------
+   Every modal that shows a list calls setExport() with the exact rows it just
+   rendered, so what downloads is always what is on screen - never a re-query
+   that could drift from it. A modal with nothing to export hides the button. */
+let MODAL_CSV=null;
+function setExport(filename,headers,rows){
+  MODAL_CSV=(rows&&rows.length)?{filename:filename,headers:headers,rows:rows}:null;
+  const b=document.getElementById('m-export'); if(b) b.hidden=!MODAL_CSV;
+}
+function csvCell(v){
+  const t=String(v==null?'':v);
+  return /[",\r\n]/.test(t) ? '"'+t.replace(/"/g,'""')+'"' : t;
+}
+function csvText(headers,rows){
+  return [headers.map(csvCell).join(',')].concat(rows.map(r=>r.map(csvCell).join(','))).join('\r\n');
+}
+function slug(v){return String(v||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');}
+function doExport(){
+  if(!MODAL_CSV) return;
+  // Leading BOM: without it Excel mis-reads UTF-8 and mangles accented names.
+  const blob=new Blob(['﻿'+csvText(MODAL_CSV.headers,MODAL_CSV.rows)],
+                      {type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob), a=document.createElement('a');
+  a.href=url; a.download=MODAL_CSV.filename; a.style.display='none';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+// Plain number for CSV - spreadsheets should get 1340, not "$1,340".
+function csvNum(v){return Math.round(+v||0);}
+
+/* ---- quarter-total tile drill-through -----------------------------------
+   The Locked-up spread and Planned attrition tiles are plain sums of the weekly
+   bars, so this modal is every week's detail concatenated. The footer total is
+   shown on purpose: it must always equal the number on the tile face. */
+function openFcTile(weeks,kind,label){
+  const isIn=kind==='in';
+  const rows=[];
+  weeks.forEach(w=>((isIn?w.inDetail:w.outDetail)||[]).forEach(r=>{
+    rows.push({wk:w.weekStart,past:!!w.isPast,n:r.n,c:r.c,a:(r.a||'(unassigned)'),r:r.r,s:+r.s||0,x:r.x});
+  }));
+  rows.sort((x,y)=> x.wk===y.wk ? (y.s-x.s) : (x.wk<y.wk?-1:1));
+  const grand=rows.reduce((t,r)=>t+r.s,0);
+  const wkTxt=d=>{const z=new Date(d+'T00:00:00');return (z.getMonth()+1)+'/'+z.getDate();};
+  const money=v=>(isIn?'':'-')+fcUsd(v).replace('-','');
+
+  // Per-AM roll-up, biggest book first. Shown inside the dropdown so the split is
+  // readable without selecting anything.
+  const byAm=new Map();
+  rows.forEach(r=>{const g=byAm.get(r.a)||{n:0,s:0};g.n++;g.s+=r.s;byAm.set(r.a,g);});
+  const ams=[...byAm.entries()].sort((x,y)=>y[1].s-x[1].s);
+
+  document.getElementById('m-title').textContent=
+    (isIn?'Locked-up spread':'Planned attrition')+' — '+label;
+
+  function paint(am){
+    const show = am ? rows.filter(r=>r.a===am) : rows;
+    const sub  = show.reduce((t,r)=>t+r.s,0);
+    const noun = n=>isIn ? (n===1?'start booked':'starts booked')
+                         : (n===1?'placement rolling off':'placements rolling off');
+    document.getElementById('m-sub').textContent = rows.length
+      ? (am ? show.length+' of '+rows.length+' '+noun(show.length)+' · '+money(sub)
+              +' of '+money(grand)+' · '+am
+            : rows.length+' '+noun(rows.length)+' · '+money(grand)+' weekly spread · '
+              +new Set(rows.map(r=>r.wk)).size+' weeks')
+      : 'No placement detail in this quarter yet.';
+
+    let html='';
+    if(rows.length){
+      html='<div class="fbar"><label for="fc-am">Account manager</label>'
+        +'<select id="fc-am"><option value="">All AMs — '+rows.length+' · '+money(grand)+'</option>'
+        +ams.map(([k,g])=>'<option value="'+esc(k)+'"'+(k===am?' selected':'')+'>'
+            +esc(k)+' — '+g.n+' · '+money(g.s)+'</option>').join('')
+        +'</select>'
+        +(am?'<button id="fc-clear">Show all</button>':'')
+        +'<span class="fnote">'+(am
+            ? 'Filtered — the export below is <b>'+esc(am)+'</b> only.'
+            : ams.length+' AM'+(ams.length===1?'':'s')+' · pick one to filter the list and the export')
+        +'</span></div>';
+    }
+    if(show.length){
+      html+='<table class="hasfbar"><thead><tr><th>Week</th><th>Consultant</th><th>Client</th><th>AM</th>'
+        +(isIn?'<th>Recruiter</th>':'')
+        +'<th class="num">Weekly $'+(isIn?'':' out')+'</th><th>'+(isIn?'Status':'Still active')
+        +'</th></tr></thead><tbody>';
+      show.forEach(r=>{
+        const last = !isIn && String(r.x||'').toUpperCase()==='Y'
+          ? '<span class="tag">still active</span>' : (isIn?esc(r.x||''):'');
+        html+='<tr><td>'+wkTxt(r.wk)+(r.past?'':' <span class="tag">fcst</span>')+'</td>'
+          +'<td>'+esc(r.n)+'</td><td>'+esc(r.c)+'</td><td>'+esc(r.a)+'</td>'
+          +(isIn?'<td>'+esc(r.r)+'</td>':'')
+          +'<td class="num">'+fcUsd(r.s)+'</td><td>'+last+'</td></tr>';
+      });
+      // When filtered the footer must NOT claim to match the tile - the tile is the
+      // all-AM number and someone checking the two against each other has to be able
+      // to see why they differ.
+      html+='</tbody><tfoot><tr><td colspan="'+(isIn?5:4)+'">'
+        +(am ? esc(am)+' subtotal — tile shows '+money(grand)+' across all AMs'
+             : 'Total — matches the tile'+(isIn?'':' (rows are amounts going out)'))
+        +'</td><td class="num">'+money(sub)+'</td><td></td></tr></tfoot></table>';
+      if(!isIn){
+        html+='<div class="empty">Booked roll-off only. The amber estimated-unplanned-attrition '
+          +'allowance is a model, not placements, so it has no detail and is not included here.</div>';
+      }
+    } else if(rows.length){
+      html+='<div class="empty">Nothing for '+esc(am)+' in this quarter.</div>';
+    } else {
+      html='<div class="empty">Nothing booked in this quarter yet.</div>';
+    }
+    document.getElementById('m-body').innerHTML=html;
+
+    // The export always mirrors exactly what is on screen, filter included.
+    setExport('innovien-'+slug(isIn?'locked-up-spread':'planned-attrition')+'-'+slug(label)
+                +(am?'-'+slug(am):'')+'.csv',
+      ['Week','Consultant','Client','AM'].concat(isIn?['Recruiter']:[])
+        .concat(['Weekly Spread',isIn?'Status':'Still Active']),
+      show.map(r=>[r.wk,r.n,r.c,r.a].concat(isIn?[r.r]:[])
+        .concat([csvNum(isIn?r.s:-r.s),
+                 isIn?(r.x||''):(String(r.x||'').toUpperCase()==='Y'?'Yes':'No')])));
+
+    fcSticky();
+    const sel=document.getElementById('fc-am');
+    if(sel) sel.onchange=()=>paint(sel.value||null);
+    const clr=document.getElementById('fc-clear');
+    if(clr) clr.onclick=()=>paint(null);
+  }
+
+  paint(null);
+  document.getElementById('modal').classList.add('open');
+  // The modal is display:none until the line above, so anything measured before it
+  // reads 0. Re-sync once it is actually laid out.
+  requestAnimationFrame(fcSticky);
+}
+
+// The filter bar and the table head are both sticky inside the scrolling body.
+// Hard-coding the head's offset leaves a band that scrolled rows show through, and
+// the bar's height changes when its note wraps - so measure it as rendered.
+function fcSticky(){
+  const fb=document.querySelector('#modal .fbar');
+  const tb=document.querySelector('#modal table.hasfbar');
+  if(!fb||!tb) return;
+  const h=fb.getBoundingClientRect().height;
+  if(h>0) tb.querySelectorAll('thead th').forEach(th=>{th.style.top=h+'px';});
+}
+addEventListener('resize',fcSticky);
+
+function closeDetail(){document.getElementById('modal').classList.remove('open');setExport(null,null,null);}
+
+function renderFcSummary(weeks,label){
+  const el=document.getElementById('fc-summary'); if(!el) return;
+  const usd=v=>'$'+Math.round(Math.abs(v)).toLocaleString();
+  const lock=weeks.reduce((a,w)=>a+(w.plannedIn||0),0);
+  const lockN=weeks.reduce((a,w)=>a+(w.inCount||0),0);
+  const pout=weeks.reduce((a,w)=>a+(w.plannedOut||0),0);
+  const poutN=weeks.reduce((a,w)=>a+((w.outDetail||[]).length),0);
+  const unp=weeks.reduce((a,w)=>a+(w.unplannedOut||0),0);
+  const unpW=weeks.filter(w=>(w.unplannedOut||0)>0).length;
+  const net=lock-pout-unp;
+  const card=(sw,l,v,sub,cls,id)=>'<div class="s'+(cls||'')+'"'+
+    (id?' id="'+id+'" role="button" tabindex="0" title="See the placements behind this number"':'')+
+    '><div class="l">'+
+    (sw?'<i style="background:'+sw+'"></i>':'')+l+'</div><div class="v">'+v+
+    '</div><div class="sub">'+sub+'</div></div>';
+  // Locked-up spread and Planned attrition are sums of per-placement detail, so they open.
+  // Unplanned is a modelled allowance and Net change is arithmetic on the other three -
+  // neither has a list behind it, so neither is clickable. (Josh, 2026-10-07)
+  const canIn = weeks.some(w=>(w.inDetail||[]).length);
+  const canOut= weeks.some(w=>(w.outDetail||[]).length);
+  el.innerHTML =
+    card('#B0DD66','Locked-up spread',usd(lock),lockN+' start'+(lockN===1?'':'s')+' booked',
+         canIn?' clk':'', canIn?'fcs-in':'')+
+    card('#747777','Planned attrition','-'+usd(pout),poutN+' placement'+(poutN===1?'':'s'),
+         canOut?' clk':'', canOut?'fcs-out':'')+
+    card('rgba(214,158,46,0.75)','Unplanned (est.)',unp?'-'+usd(unp):'—',
+         unp?unpW+' wk'+(unpW===1?'':'s')+' x '+usd(unp/unpW):'not applied')+
+    card('','Net change',(net<0?'-':'+')+usd(net),
+         label+(unp?' · booked + est.':' · as booked today'),' net');
+  const bind=(id,kind)=>{
+    const n=document.getElementById(id); if(!n) return;
+    const go=()=>openFcTile(weeks,kind,label);
+    n.onclick=go;
+    n.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go();}};
+  };
+  bind('fcs-in','in'); bind('fcs-out','out');
+}
+function drawForecast(weeks){
+  const ctx=document.getElementById('forecastChart'); if(chart1)chart1.destroy();
+  const labels=weeks.map(w=>w.weekStart.slice(5));
+  // past weeks = solid Innovien colors (actuals); future weeks = lighter (forecast)
+  const inColors =weeks.map(w=>w.isPast?'#B0DD66':'rgba(176,221,102,0.45)');
+  const outColors=weeks.map(w=>w.isPast?'#747777':'rgba(116,119,119,0.40)');
+  // estimated unplanned attrition: amber, always "forecast" toned — never a booked placement
+  const unpColors=weeks.map(()=>'rgba(214,158,46,0.55)');
+  const hasUnp=weeks.some(w=>(w.unplannedOut||0)>0);
+  const kfmt=v=>{v=Math.abs(v); return v>=1000 ? '$'+(v/1000).toFixed(v>=10000?0:1)+'k' : '$'+Math.round(v);};
+  // inline plugin: draw the $ value at the tip of each In/Out bar
+  const barValueLabels={id:'barValueLabels',afterDatasetsDraw(chart){const{ctx}=chart;ctx.save();ctx.font='600 9px Calibri, sans-serif';ctx.textAlign='center';
+    [0,1].forEach(di=>{const meta=chart.getDatasetMeta(di); if(meta.hidden)return;
+      meta.data.forEach((el,i)=>{const raw=chart.data.datasets[di].data[i]; if(!raw)return;
+        ctx.fillStyle = di===0 ? '#3a5a10' : '#5a5c5c';
+        let txt=kfmt(raw);
+        if(di===0){const ct=weeks[i]&&weeks[i].inCount; if(ct!=null) txt+=' ('+ct+')';}
+        if(raw>=0){ctx.textBaseline='bottom'; ctx.fillText(txt, el.x, el.y-2);}
+        else {ctx.textBaseline='top'; ctx.fillText(txt, el.x, el.y+2);}
+      });});
+    const um=chart.getDatasetMeta(2);
+    if(um && !um.hidden){ctx.font='600 8px Calibri, sans-serif';ctx.fillStyle='#8a6d1f';ctx.textBaseline='middle';
+      um.data.forEach((el,i)=>{const raw=chart.data.datasets[2].data[i]; if(!raw)return;
+        const p=el.getCenterPoint(); ctx.fillText(kfmt(raw), p.x, p.y);});}
+    ctx.restore();}};
+  chart1=new Chart(ctx,{plugins:[barValueLabels],data:{labels,datasets:[
+    {type:'bar',label:'In the door (starts)',data:weeks.map(w=>w.plannedIn),backgroundColor:inColors,stack:'flow',order:2},
+    {type:'bar',label:'Out the door (ended)',data:weeks.map(w=>-w.plannedOut),backgroundColor:outColors,stack:'flow',order:2},
+    {type:'bar',label:'Unplanned attrition (est.)',data:weeks.map(w=>-(w.unplannedOut||0)),backgroundColor:unpColors,borderColor:'#f4f6f1',borderWidth:{top:2},stack:'flow',order:2,hidden:!hasUnp},
+    {type:'line',label:'Cumulative spread growth (vs baseline)',data:weeks.map(w=>w.cumNet),borderColor:'#3a5a10',backgroundColor:'#3a5a10',borderWidth:2,pointRadius:2,tension:.25,yAxisID:'yCum',order:1}
+  ]},options:{responsive:true,interaction:{mode:'index',intersect:false},
+    onClick:(evt,els,ch)=>{const hit=ch.getElementsAtEventForMode(evt,'nearest',{intersect:true},true);
+      if(hit.length && hit[0].datasetIndex<2) openDetail(weeks,hit[0].datasetIndex,hit[0].index);},
+    onHover:(evt,els,ch)=>{const hit=ch.getElementsAtEventForMode(evt,'nearest',{intersect:true},true);
+      ch.canvas.style.cursor = (hit.length && hit[0].datasetIndex<2) ? 'pointer' : 'default';},
+    plugins:{legend:{position:'bottom'},tooltip:{callbacks:{label:c=>{
+      const v=c.raw; const lbl=c.dataset.label;
+      return lbl+': '+(v<0?'-$':'$')+Math.abs(Math.round(v)).toLocaleString();
+    }}}},
+    scales:{x:{stacked:true},
+      y:{stacked:true,title:{display:true,text:'Weekly $ in / out'},ticks:{callback:v=>'$'+(v/1000)+'k'}},
+      yCum:{position:'right',grid:{drawOnChartArea:false},title:{display:true,text:'Cumulative growth'},ticks:{callback:v=>'$'+(v/1000)+'k'}}}}});
+}
+
+/* =========================== LIVE RAFFLE ==================================
+   Drawn live in front of the team, so the rules here matter more than the
+   animation:
+     1. The winning ticket is chosen by crypto.getRandomValues BEFORE the wheel
+        moves, with rejection sampling so there is no modulo bias. The animation
+        is then aimed at that ticket. The spin never decides anything.
+     2. After the wheel stops, the slice actually under the pointer is recomputed
+        from the final rotation and compared to the ticket that was drawn. If they
+        ever disagree the result is withheld rather than announced wrong.
+     3. One slice per ticket, so the room can count why someone has better odds.
+        Slices are dealt round-robin so one person's tickets are spread around the
+        wheel instead of sitting in a block.
+   Nothing is stored: closing the stage clears the result. (Taylor, 2026-10-07)
+========================================================================== */
+const RAFFLE={rf:null,tickets:[],rot:0,spinning:false,result:null,sound:true,audio:null,raf:0};
+const TAU=Math.PI*2;
+
+// Unbiased integer in [0,n). Plain `% n` over-weights the low indices; rejecting
+// the ragged tail of the uint32 range removes that.
+function randIdx(n){
+  const a=new Uint32Array(1), lim=Math.floor(4294967296/n)*n;
+  let v; do{ crypto.getRandomValues(a); v=a[0]; }while(v>=lim);
+  return v%n;
+}
+// One ticket per slot earned, built from the drawing's own starts so every slice
+// knows which consultant earned it and in which role.
+function raffleTickets(rf){
+  const t=[];
+  (rf&&rf.currentMembers||[]).forEach(m=>{
+    if(m.am)        t.push({person:m.am,        role:'AM',        consultant:m.name, spread:m.spread});
+    if(m.recruiter) t.push({person:m.recruiter, role:'Recruiter', consultant:m.name, spread:m.spread});
+  });
+  return t;
+}
+function ticketCounts(tix){
+  const m=new Map(); tix.forEach(t=>m.set(t.person,(m.get(t.person)||0)+1)); return m;
+}
+// The tab's leaderboard is built server-side from the same starts. If our count
+// disagrees with it, something upstream is wrong and we do not run a live draw.
+function raffleMismatch(tix,leaderboard){
+  const mine=ticketCounts(tix), bad=[];
+  (leaderboard||[]).forEach(l=>{
+    const got=mine.get(l.name)||0;
+    if(got!==l.tickets) bad.push(`${l.name}: wheel ${got} vs leaderboard ${l.tickets}`);
+    mine.delete(l.name);
+  });
+  mine.forEach((v,k)=>bad.push(`${k}: ${v} on the wheel but absent from the leaderboard`));
+  return bad;
+}
+// Deal round-robin from the biggest holders, then repair any neighbours that ended
+// up matching. Round-robin alone clusters the biggest holder's last tickets at the
+// tail (the small holders run out first), and three of one name side by side reads
+// as a bug to a room watching a prize draw. The wheel is a circle, so position 0 and
+// the last position count as neighbours too. This is purely cosmetic - it cannot
+// change anyone's odds, because odds depend only on how MANY slices a person has.
+function spreadTickets(tix){
+  const by=new Map();
+  tix.forEach(t=>{ if(!by.has(t.person)) by.set(t.person,[]); by.get(t.person).push(t); });
+  const groups=[...by.values()].sort((a,b)=>b.length-a.length);
+  const out=[]; let placed=true;
+  while(placed){ placed=false; for(const g of groups){ if(g.length){ out.push(g.shift()); placed=true; } } }
+
+  const n=out.length, nm=i=>out[((i%n)+n)%n].person;
+  const clash=i=>nm(i)===nm(i-1)||nm(i)===nm(i+1);
+  for(let pass=0; pass<4; pass++){
+    let fixed=false;
+    for(let i=0;i<n;i++){
+      if(nm(i)!==nm(i+1)) continue;                 // i and its neighbour differ - fine
+      const a=(i+1)%n;
+      for(let k=1;k<n;k++){
+        const b=(a+k)%n;
+        if(nm(b)===nm(a)) continue;                 // same person, pointless
+        // the swap must not create a new clash at either end
+        if(nm(b)===nm(a-1)||nm(b)===nm(a+1)) continue;
+        if(nm(a)===nm(b-1)||nm(a)===nm(b+1)) continue;
+        const t=out[a]; out[a]=out[b]; out[b]=t; fixed=true; break;
+      }
+    }
+    if(!fixed) break;
+  }
+  return out;
+}
+// Slice i spans [i*step, (i+1)*step) measured clockwise from 12 o'clock, so the
+// index under the pointer is a pure function of the rotation.
+function landedIdx(rot,n){
+  const step=TAU/n;
+  return Math.floor(((((-rot)%TAU)+TAU)%TAU)/step)%n;
+}
+function rotationFor(idx,n,jitter){
+  const step=TAU/n;
+  return -(idx+0.5)*step + (jitter||0);
+}
+
+function beep(freq,dur,vol,type){
+  if(!RAFFLE.sound||!RAFFLE.audio) return;
+  const ac=RAFFLE.audio, o=ac.createOscillator(), g=ac.createGain();
+  o.type=type||'square'; o.frequency.value=freq;
+  o.connect(g); g.connect(ac.destination);
+  const t=ac.currentTime;
+  g.gain.setValueAtTime(vol,t); g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+  o.start(t); o.stop(t+dur+0.02);
+}
+function fanfare(){
+  if(!RAFFLE.sound||!RAFFLE.audio) return;
+  [[523,0],[659,110],[784,220],[1047,330]].forEach(([f,d])=>
+    setTimeout(()=>beep(f,0.34,0.11,'triangle'),d));
+}
+
+function drawWheel(){
+  const cv=document.getElementById('wheel'); if(!cv) return;
+  const g=cv.getContext('2d'), n=RAFFLE.tickets.length; if(!n) return;
+  const W=cv.width, R=W/2, step=TAU/n, rot=RAFFLE.rot;
+  const win=RAFFLE.result&&!RAFFLE.spinning ? RAFFLE.result.idx : -1;
+  g.clearRect(0,0,W,W);
+  g.save(); g.translate(R,R); g.rotate(rot);
+  const fs=Math.max(9,Math.min(20,520/n+6));
+  for(let i=0;i<n;i++){
+    const a0=-Math.PI/2+i*step;
+    g.beginPath(); g.moveTo(0,0); g.arc(0,0,R-8,a0,a0+step); g.closePath();
+    g.fillStyle = i===win ? '#FFD166' : (i%2 ? '#93c452' : '#B0DD66');
+    g.fill(); g.strokeStyle='rgba(29,36,32,.22)'; g.lineWidth=1; g.stroke();
+    // Radial labels read outward from the hub. On the left half of the SCREEN that
+    // would put them upside down, so those get rotated 180 degrees and right-aligned
+    // from the other end - the whole wheel stays readable from the back of the room
+    // at every rotation, not just at rest.
+    const mid=a0+step/2, flip=Math.cos(rot+mid)<0;
+    g.save(); g.rotate(mid); if(flip) g.rotate(Math.PI);
+    g.textAlign=flip?'left':'right'; g.textBaseline='middle';
+    g.fillStyle='#22301f'; g.font=(i===win?'800 ':'600 ')+fs+'px Calibri,Segoe UI,sans-serif';
+    g.fillText(RAFFLE.tickets[i].person, flip?-(R-22):(R-22), 0);
+    g.restore();
+  }
+  g.restore();
+  g.beginPath(); g.arc(R,R,R*0.165,0,TAU); g.fillStyle='#1d2420'; g.fill();
+  g.strokeStyle='#B0DD66'; g.lineWidth=3; g.stroke();
+  g.textAlign='center'; g.textBaseline='middle';
+  g.fillStyle='#B0DD66'; g.font='700 '+Math.round(R*0.11)+'px Calibri,Segoe UI,sans-serif';
+  g.fillText('$'+((RAFFLE.rf&&RAFFLE.rf.threshold)||1250).toLocaleString(),R,R-R*0.035);
+  g.fillStyle='#cfd9cb'; g.font='600 '+Math.round(R*0.045)+'px Calibri,Segoe UI,sans-serif';
+  g.fillText(n+' tickets',R,R+R*0.06);
+}
+
+function spinRaffle(){
+  if(RAFFLE.spinning||!RAFFLE.tickets.length) return;
+  const n=RAFFLE.tickets.length;
+  if(!RAFFLE.audio){
+    try{ RAFFLE.audio=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){}
+  }
+  if(RAFFLE.audio&&RAFFLE.audio.state==='suspended') RAFFLE.audio.resume();
+
+  // 1. pick the winner first - the animation is only ever aimed at this.
+  const idx=randIdx(n);
+  const step=TAU/n;
+  const jitter=(Math.random()-0.5)*step*0.7;      // stays well inside the slice
+  const target=rotationFor(idx,n,jitter);
+  const turns=6+randIdx(4);
+  const from=RAFFLE.rot;
+  const delta=turns*TAU+(((target-from)%TAU)+TAU)%TAU;
+  const DUR=8200;
+
+  RAFFLE.spinning=true; RAFFLE.result=null;
+  document.getElementById('rs-spin').disabled=true;
+  document.getElementById('rs-spin').textContent='Spinning…';
+  let lastTick=Math.floor(from/step), t0=null;
+
+  const frame=ts=>{
+    if(t0===null) t0=ts;
+    const t=Math.min(1,(ts-t0)/DUR);
+    const e=1-Math.pow(1-t,5);                     // fast off the line, long slow finish
+    RAFFLE.rot=from+delta*e;
+    const tick=Math.floor(RAFFLE.rot/step);
+    if(tick!==lastTick){ if(t>0.12||tick-lastTick<3) beep(1180,0.022,0.05); lastTick=tick; }
+    drawWheel();
+    if(t<1){ RAFFLE.raf=requestAnimationFrame(frame); return; }
+
+    // 2. recompute what the pointer is actually over and refuse to announce a
+    //    winner the wheel does not agree with.
+    RAFFLE.rot=from+delta;
+    const landed=landedIdx(RAFFLE.rot,n);
+    RAFFLE.spinning=false;
+    const btn=document.getElementById('rs-spin');
+    btn.disabled=false; btn.textContent='Spin again';
+    if(landed!==idx){
+      drawWheel();
+      alert('Raffle aborted: the wheel stopped on slice '+landed+' but the drawn ticket was '
+            +idx+'. Nothing has been awarded — please re-spin and report this.');
+      return;
+    }
+    RAFFLE.result={idx:idx,ticket:RAFFLE.tickets[idx],turns:turns};
+    drawWheel();
+    revealWinner();
+  };
+  RAFFLE.raf=requestAnimationFrame(frame);
+}
+
+function revealWinner(){
+  const r=RAFFLE.result, rf=RAFFLE.rf, n=RAFFLE.tickets.length;
+  const held=ticketCounts(RAFFLE.tickets).get(r.ticket.person)||1;
+  const earned=RAFFLE.tickets.filter(t=>t.person===r.ticket.person);
+  document.getElementById('rw-kicker').textContent='Drawing #'+rf.currentDrawingNo+' — Winner';
+  document.getElementById('rw-name').textContent=r.ticket.person;
+  document.getElementById('rw-amt').textContent='$'+(rf.threshold||1250).toLocaleString()+' Raffle';
+  document.getElementById('rw-why').innerHTML=
+    'Won on the ticket earned as <b>'+esc(r.ticket.role)+'</b> for <b>'+esc(r.ticket.consultant)+'</b>'
+    +' ('+fcUsd(r.ticket.spread)+'/wk).<br>Held <b>'+held+'</b> of <b>'+n+'</b> tickets — '
+    +((held/n)*100).toFixed(1)+'% of the wheel — from: '
+    +earned.map(t=>esc(t.consultant)+' ('+t.role.toLowerCase()+')').join(', ')+'.';
+  document.getElementById('rw-audit').textContent=
+    'ticket '+(r.idx+1)+' of '+n+' · crypto.getRandomValues · '+new Date().toLocaleString();
+  document.getElementById('rs-winner').classList.add('open');
+  fanfare(); confettiBurst();
+}
+
+function confettiBurst(){
+  const cv=document.getElementById('confetti'); if(!cv) return;
+  cv.width=innerWidth; cv.height=innerHeight; cv.classList.add('on');
+  const g=cv.getContext('2d'), cols=['#B0DD66','#FFD166','#ffffff','#93c452','#7fb3ff'];
+  const P=[...Array(180)].map(()=>({x:Math.random()*cv.width,y:-20-Math.random()*cv.height*0.5,
+    w:6+Math.random()*7,h:9+Math.random()*11,vy:2.2+Math.random()*3.4,vx:(Math.random()-0.5)*2.2,
+    a:Math.random()*TAU,va:(Math.random()-0.5)*0.26,c:cols[(Math.random()*cols.length)|0]}));
+  const t0=performance.now();
+  (function step(ts){
+    g.clearRect(0,0,cv.width,cv.height);
+    P.forEach(p=>{ p.x+=p.vx; p.y+=p.vy; p.a+=p.va;
+      g.save(); g.translate(p.x,p.y); g.rotate(p.a); g.fillStyle=p.c;
+      g.fillRect(-p.w/2,-p.h/2,p.w,p.h); g.restore(); });
+    if(ts-t0<5200) requestAnimationFrame(step);
+    else { g.clearRect(0,0,cv.width,cv.height); cv.classList.remove('on'); }
+  })(t0);
+}
+
+function openRaffleStage(){
+  const rf=RAFFLE.rf; if(!rf) return;
+  const tix=raffleTickets(rf);
+  const bad=raffleMismatch(tix,rf.leaderboard);
+  if(bad.length){
+    alert('Not opening the raffle — the wheel and the ticket leaderboard disagree:\n\n'
+          +bad.join('\n')+'\n\nFix the data before drawing live.');
+    return;
+  }
+  RAFFLE.tickets=spreadTickets(tix);
+  RAFFLE.rot=0; RAFFLE.result=null; RAFFLE.spinning=false;
+  const people=ticketCounts(RAFFLE.tickets).size;
+  document.getElementById('rs-title').innerHTML='$'+(rf.threshold||1250).toLocaleString()
+    +' Raffle — <span>Drawing #'+rf.currentDrawingNo+'</span>';
+  document.getElementById('rs-note').textContent=
+    RAFFLE.tickets.length+' tickets · '+people+' people · '
+    +(rf.currentReady ? 'all '+rf.batchSize+' qualifying starts in'
+                      : 'PREVIEW — drawing only '+rf.currentCount+'/'+rf.batchSize+' complete');
+  const top=[...ticketCounts(RAFFLE.tickets).entries()].sort((a,b)=>b[1]-a[1]).slice(0,3)
+    .map(([k,v])=>k+' '+v).join('  ·  ');
+  const lg=document.getElementById('rs-legend-t');
+  lg.textContent='Best odds: '+top; lg.style.pointerEvents='none'; lg.style.border='0';
+  const sp=document.getElementById('rs-spin'); sp.disabled=false; sp.textContent='Spin';
+  document.getElementById('raffle-stage').classList.add('open');
+  drawWheel();
+}
+function closeRaffleStage(){
+  cancelAnimationFrame(RAFFLE.raf);
+  RAFFLE.spinning=false; RAFFLE.result=null;          // nothing is stored, by design
+  document.getElementById('rs-winner').classList.remove('open');
+  document.getElementById('confetti').classList.remove('on');
+  document.getElementById('raffle-stage').classList.remove('open');
+}
+function renderRaffleBar(rf){
+  const el=document.getElementById('raffle-bar'); if(!el) return;
+  RAFFLE.rf=rf;
+  const tix=raffleTickets(rf);
+  if(!tix.length){
+    el.innerHTML='<span class="hint">No tickets in this drawing yet — the live wheel '
+      +'appears once the first qualifying start lands.</span>';
+    return;
+  }
+  const people=ticketCounts(tix).size;
+  el.innerHTML='<button id="rb-go">▶ Draw Drawing #'+rf.currentDrawingNo+' live</button>'
+    +'<span class="hint">'+tix.length+' tickets · '+people+' people · opens full screen for the room'
+    +(rf.currentReady?'':' · <b>preview only, drawing not complete</b>')+'</span>';
+  document.getElementById('rb-go').onclick=openRaffleStage;
+}
+
+async function load(forceLive){
+  const banner=document.getElementById('banner');
+  try{
+    const res=await fetch('/api/scorecard'+(forceLive?'?refresh=1':''));
+    if(!res.ok) throw new Error((await res.json()).error||res.statusText);
+    const d=await res.json(); banner.style.display='none'; render(d);
+  }catch(e){
+    banner.style.display='block';
+    banner.innerHTML='\u26a0\ufe0f Showing <b>sample data</b> \u2014 live Notion feed not reachable yet ('+e.message+'). Set <code>NOTION_TOKEN</code> in Vercel and share the databases with the integration. See README.';
+    render(SAMPLE);
+  }
+}
+document.getElementById('fc-next').onclick=()=>{FC.view='next';renderForecast();};
+document.getElementById('fc-prev').onclick=()=>{FC.view='cur';renderForecast();};
+document.getElementById('m-close').onclick=closeDetail;
+document.getElementById('m-export').onclick=doExport;
+document.getElementById('rs-exit').onclick=closeRaffleStage;
+document.getElementById('rs-spin').onclick=spinRaffle;
+document.getElementById('rs-sound').onclick=function(){
+  RAFFLE.sound=!RAFFLE.sound;
+  this.innerHTML=RAFFLE.sound?'\uD83D\uDD0A Sound on':'\uD83D\uDD07 Sound off';
+};
+document.getElementById('rw-done').onclick=closeRaffleStage;
+document.getElementById('rw-again').onclick=function(){
+  document.getElementById('rs-winner').classList.remove('open');
+  document.getElementById('confetti').classList.remove('on');
+  RAFFLE.result=null; drawWheel();
+};
+document.getElementById('rw-copy').onclick=function(){
+  const r=RAFFLE.result; if(!r) return;
+  const rf=RAFFLE.rf, n=RAFFLE.tickets.length;
+  const held=ticketCounts(RAFFLE.tickets).get(r.ticket.person)||1;
+  const txt='$'+(rf.threshold||1250).toLocaleString()+' Raffle \u2014 Drawing #'+rf.currentDrawingNo
+    +'\nWinner: '+r.ticket.person
+    +'\nWinning ticket: '+r.ticket.role+' on '+r.ticket.consultant+' ('+fcUsd(r.ticket.spread)+'/wk)'
+    +'\nOdds: '+held+' of '+n+' tickets ('+((held/n)*100).toFixed(1)+'%)'
+    +'\nDrawn: '+new Date().toLocaleString();
+  const done=()=>{ this.textContent='Copied'; setTimeout(()=>this.textContent='Copy result',1600); };
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(done,()=>prompt('Copy the result:',txt));
+  } else prompt('Copy the result:',txt);
+};
+document.getElementById('modal').onclick=e=>{if(e.target.id==='modal')closeDetail();};
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Escape') return;
+  if(document.getElementById('raffle-stage').classList.contains('open')) closeRaffleStage();
+  else closeDetail();
+});
+nav(); load(false);
+</script>
+</body>
+</html>
